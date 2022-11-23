@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>micha.elmurphy.com/</loc>
+        <loc>https://micha.elmurphy.com/</loc>
     </url>
     <url>
-        <loc>micha.elmurphy.com/first/</loc>
+        <loc>https://micha.elmurphy.com/first/</loc>
         <lastmod>2019-11-27</lastmod>
     </url>
     <url>
-        <loc>micha.elmurphy.com/page/1/</loc>
+        <loc>https://micha.elmurphy.com/page/1/</loc>
     </url>
     <url>
-        <loc>micha.elmurphy.com/second/</loc>
+        <loc>https://micha.elmurphy.com/second/</loc>
         <lastmod>2019-11-28</lastmod>
     </url>
     <url>
-        <loc>micha.elmurphy.com/tags/</loc>
+        <loc>https://micha.elmurphy.com/tags/</loc>
     </url>
 </urlset>
