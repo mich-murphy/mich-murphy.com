@@ -25,7 +25,7 @@ jobs:
           install_url: https://github.com/nix-community/nix-unstable-installer/releases/download/nix-2.12.0pre20221116_62960f3/install
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-            # experimental-features = nix-command flakes
+            experimental-features = nix-command flakes
       # Run general flake checks
       - run: nix flake check
       # Verify main program builds
