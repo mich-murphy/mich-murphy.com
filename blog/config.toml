@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "micha.elmurphy.com"
+base_url = "https://micha.elmurphy.com"
 
 theme = "terminimal"
 
