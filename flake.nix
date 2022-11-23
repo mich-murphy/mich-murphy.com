@@ -1,28 +1,29 @@
 {
+  # Credit goes to https://lukebentleyfox.net/posts/building-this-blog/
   description = "Nix Flake used to build micha.elmurphy.com";
-
+  
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    flake-utils.url = "gihub:numtide/flake-utils";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-    let
-      pkgsFor = system: import nixpkgs {
-        inherit system;
-        overlays = [ self.overlay ];
-      };
-    in {
-      overlay = final: prev: {
-        blog = prev.callPackage ./blog {};
-      };
-
-    } // flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = pkgsFor system;
-      in {
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ overlay ];
+        };
+        overlay = (final: prev: {
+          blog = prev.callPackage ./blog {};
+        });
+      in 
+      rec {
+        inherit (overlay);
         defaultPackage = pkgs.blog;
         devShell = pkgs.mkShell {
           buildInputs = [ pkgs.zola ];
         };
-      });
+      }
+    );
 }
