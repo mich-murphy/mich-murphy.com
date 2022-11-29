@@ -39,7 +39,7 @@ accent_color = "orange"
 background_color = "dark"
 
 # The logo text - defaults to "Terminimal theme"
-logo_text = "MM"
+logo_text = "mm"
 
 # The logo link - defaults to base_url.
 # logo_home_link = "/take/me/away!"
