@@ -82,7 +82,7 @@
 <p>The steps may vary depending on the provider you are using for object storage, for reference I am using <a href="https://www.linode.com/">Linode</a>.</p>
 <h2 id="install-s3fs-fuse">Install s3fs-fuse</h2>
 <p>On Ubuntu this is nice and easy, the package name will likely vary depending on your Linux distro:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> apt install s3fs
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">sudo</span><span style="color:#abb2bf;"> apt install s3fs
 </span></code></pre>
 <h2 id="access-keys-authentication">Access Keys &amp; Authentication</h2>
 <p>After creating an object store you will also need to create access keys. These should be a combination of:</p>
@@ -91,15 +91,15 @@
 <li>A <code>SECRET_KEY</code></li>
 </ol>
 <p>We need to store the access key on the machine we plan to mount the object store to, as it will be needed to authenticate the connection:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#96b5b4;">echo </span><span>&quot;</span><span style="color:#a3be8c;">ACCESS_KEY:SECRET_KEY</span><span>&quot; | </span><span style="color:#bf616a;">sudo</span><span> tee /etc/passwd-s3fs
-</span><span style="color:#bf616a;">sudo</span><span> chmod 600 /etc/passwd-s3fs
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#5ebfcc;">echo </span><span style="color:#9acc76;">&quot;ACCESS_KEY:SECRET_KEY&quot; </span><span style="color:#adb7c9;">| </span><span style="color:#eb6772;">sudo</span><span style="color:#abb2bf;"> tee /etc/passwd-s3fs
+</span><span style="color:#eb6772;">sudo</span><span style="color:#abb2bf;"> chmod 600 /etc/passwd-s3fs
 </span></code></pre>
 <h2 id="mount-storage">Mount Storage</h2>
 <p>First we need to create the directory the object store will be mounted to:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">mkdir</span><span> /mnt/my-object-storage
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">mkdir</span><span style="color:#abb2bf;"> /mnt/my-object-storage
 </span></code></pre>
 <p>Then we can mount the storage at the directory created above, filling in the placeholders with the appropriate values:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> s3fs {bucketname} {/mnt/my-object-storage}</span><span style="color:#bf616a;"> -o</span><span> passwd_file=/etc/passwd-s3fs</span><span style="color:#bf616a;"> -o</span><span> allow_other</span><span style="color:#bf616a;"> -o</span><span> url=https://{private-network-endpoint}
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">sudo</span><span style="color:#abb2bf;"> s3fs {bucketname} {/mnt/my-object-storage}</span><span style="color:#eb6772;"> -o</span><span style="color:#abb2bf;"> passwd_file=/etc/passwd-s3fs</span><span style="color:#eb6772;"> -o</span><span style="color:#abb2bf;"> allow_other</span><span style="color:#eb6772;"> -o</span><span style="color:#abb2bf;"> url=https://{private-network-endpoint}
 </span></code></pre>
 <ul>
 <li><code>{bucketname}</code> = the name of the bucket you wish to mount</li>
@@ -112,10 +112,10 @@
 <h2 id="ensuring-mount-persists-after-reboot">Ensuring Mount Persists After Reboot</h2>
 <p>Now that everything has been mounted properly we can setup an entry within <code>/etc/fstab</code>, so that the object store is mounted whenever the local machine reboots.</p>
 <p>First we need to unmount:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> umount /etc/my-object-storage
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">sudo</span><span style="color:#abb2bf;"> umount /etc/my-object-storage
 </span></code></pre>
 <p>Then we can edit <code>/etc/fstab</code> in whichever editor you are most comfortable with (<code>vim</code> is the correct answer), and add the following entry on a new line:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">s3fs#bucketname</span><span> /mnt/my-object-storage fuse _netdev,allow_other,passwd_file=/etc/passwd-s3fs,url=https://ap-south-1.linodeobjects.com/ 0 0
+<pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">s3fs#bucketname</span><span style="color:#abb2bf;"> /mnt/my-object-storage fuse _netdev,allow_other,passwd_file=/etc/passwd-s3fs,url=https://ap-south-1.linodeobjects.com/ 0 0
 </span></code></pre>
 <p>If you want more details on what each of the options do then I recommend checking out the FAQs at the <a href="https://github.com/s3fs-fuse/s3fs-fuse/wiki/FAQ">s3fs GitHub repo</a></p>
 <h2 id="final-thoughts">Final Thoughts</h2>
