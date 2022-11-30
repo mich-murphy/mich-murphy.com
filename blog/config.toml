@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://micha.elmurphy.com"
 
-theme = "terminimal"
+#theme = "terminimal"
 
 # Optional: Global favicon URL and mimetype.
 #           Mimetype defaults to "image/x-icon".
@@ -28,9 +28,9 @@ highlight_code = true
 [extra]
 # Put all your custom variables here
 
-# One of: blue, green, orange, pink, red.
+# One of: blue, green, orange, pink, red, purple.
 # Defaults to blue. 
-accent_color = "orange"
+accent_color = "monokai_pro"
 
 # One of: blue, dark, green, orange, pink, red.
 # Enabling dark background will also modify primary font color
@@ -76,7 +76,7 @@ enable_post_view_navigation = true
 # The text shown at the bottom of a post,
 # before earlier/later post links.
 # Defaults to "Thanks for reading! Read other posts?"
-post_view_navigation_prompt = "Read more"
+post_view_navigation_prompt = "read more..."
 
 default_language = "en"
 

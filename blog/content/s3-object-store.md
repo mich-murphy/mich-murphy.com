@@ -73,3 +73,11 @@ s3fs#bucketname /mnt/my-object-storage fuse _netdev,allow_other,passwd_file=/etc
 
 If you want more details on what each of the options do then I recommend checking out the FAQs at the [s3fs GitHub repo](https://github.com/s3fs-fuse/s3fs-fuse/wiki/FAQ)
 
+## Final Thoughts
+
+How well did this work for music streaming? I was able to point Roon to music on the object store, scan tracks and stream music, though there were some limitations in performance:
+- When selecting music to play there was ~3-5 second delay before the track started, when streaming from local storage or Tidal this is pretty much instant
+- Scanning tracks and collecting metadata with Roon took significantly longer - 1 album on the object store took longer than my entire library of ~1,500 tracks on local storage
+- Copying data across to the object store took significantly longer than an `rsync` between machines, which I do between my local homelab and another server outside of my network
+
+The above thoughts seem to align with my initial research into object storage - it works well for reading data that doesn't change frequently, once you start copying data across regularly then things slow down. If you are happy to accept a slight delay when first choosing music to play (this doesn't seem to be an issue when moving on to play the next track in an album), then this solution could work well. Backups seem an obvious use case for object storage, I'm currently backing up my Roon settings and library to the object store, I schedule these backups at night and it is working well.
