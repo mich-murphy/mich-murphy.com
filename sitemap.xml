@@ -7,13 +7,22 @@
         <loc>https://micha.elmurphy.com/about/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/archive/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/page/1/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/s3-object-store/</loc>
+        <loc>https://micha.elmurphy.com/s3-object-storage/</loc>
         <lastmod>2022-11-29</lastmod>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/homelab/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/ubuntu/</loc>
     </url>
 </urlset>

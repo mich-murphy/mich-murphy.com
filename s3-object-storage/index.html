@@ -59,7 +59,7 @@
         
     <div class="post">
         
-    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-store/">How To Mount S3 Compatible Object Storage in Ubuntu</a></h1>
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-storage/">How To Mount S3 Compatible Object Storage in Ubuntu</a></h1>
     <div class="post-meta-inline">
         
     <span class="post-date">
@@ -69,12 +69,18 @@
     </div>
 
     
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/ubuntu/">#ubuntu</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a></span>
+    
 
         
         <div class="post-content">
             <h1 id="motivations-for-using-object-storage">Motivations For Using Object Storage</h1>
 <p>I'm currently in the process of setting up a <a href="https://linuxhandbook.com/homelab/">Homelab</a>, one of the major tasks I want to manage is storage and streaming of music.</p>
 <p>For streaming music and managing metadata I'm using <a href="https://roonlabs.com/">Roon Server</a>, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in <a href="https://www.proxmox.com/en/">Proxmox</a>. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.</p>
+<span id="continue-reading"></span>
 <p>My end goal is to build a dedicated Homelab with a large amount of storage, either as <a href="https://arstechnica.com/information-technology/2020/05/zfs-101-understanding-zfs-storage-and-performance/">ZFS</a> or a combination of <a href="https://perfectmediaserver.com/tech-stack/mergerfs/">MergerFS</a> and <a href="https://perfectmediaserver.com/tech-stack/snapraid/">SnapRAID</a>. Unfortunately building a dedicated Homelab requires a significant financial contribution. I needed to find an interim solution - that's where S3 compatible object storage comes in.</p>
 <p>I hadn't previously used object storage, but had heard it worked well for storing files that don't change frequently e.g. media files and music. After doing some quick research I discovered that I could mount an object store to a computer running Linux, macOS or FreeBSD using <a href="https://github.com/s3fs-fuse/s3fs-fuse">s3fs-fuse</a>. I decided to test how well this worked by mounting the object store, adding some music to it and then pointing Roon Server to the object store. The steps I followed to mount the object store are detailed in <a href="https://upcloud.com/resources/tutorials/mount-object-storage-cloud-server-s3fs-fuse">this guide</a>, my own summarised version is below.</p>
 <h1 id="mounting-object-storage">Mounting Object Storage</h1>
@@ -117,7 +123,7 @@
 <pre data-lang="bash" style="background-color:#2b303b;color:#6c7079;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eb6772;">s3fs#bucketname</span><span style="color:#abb2bf;"> /mnt/my-object-storage fuse _netdev,allow_other,passwd_file=/etc/passwd-s3fs,url=https://ap-south-1.linodeobjects.com/ 0 0
 </span></code></pre>
 <p>If you want more details on what each of the options do then I recommend checking out the FAQs at the <a href="https://github.com/s3fs-fuse/s3fs-fuse/wiki/FAQ">s3fs GitHub repo</a></p>
-<h2 id="final-thoughts">Final Thoughts</h2>
+<h1 id="final-thoughts">Final Thoughts</h1>
 <p>How well did this work for music streaming? I was able to point Roon to music on the object store, scan tracks and stream music, though there were some limitations in performance:</p>
 <ul>
 <li>When selecting music to play there was ~3-5 second delay before the track started, when streaming from local storage or Tidal this is pretty much instant</li>
