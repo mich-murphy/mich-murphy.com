@@ -1,5 +1,5 @@
 +++
-title = "How To Mount S3 Compatible Object Store Using s3fs-fuse"
+title = "How To Mount S3 Compatible Object Storage in Ubuntu"
 date = 2022-11-29
 +++
 
