@@ -64,7 +64,7 @@ menu_items = [
     # see documentation below for more details
     {name = "tags", url = "$BASE_URL/tags"},
     {name = "archive", url = "$BASE_URL/archive"},
-    {name = "about me", url = "$BASE_URL/about"},
+    {name = "about", url = "$BASE_URL/about"},
     
     # set newtab to true to make the link open in new tab
     {name = "github", url = "https://github.com/mich-murphy", newtab = true},
