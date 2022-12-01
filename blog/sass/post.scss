@@ -113,6 +113,20 @@
     }
   }
 
+  ol {
+    list-style: none;
+    counter-reset: ol-counter;
+
+    li {
+      counter-increment: ol-counter;
+    }
+
+    li::marker {
+      content: counter(ol-counter) ". ";
+      color: var(--yellow);
+    }
+  }
+
   ul {
     list-style: none;
 
