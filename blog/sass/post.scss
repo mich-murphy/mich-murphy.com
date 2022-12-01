@@ -123,7 +123,7 @@
 
     li::marker {
       content: counter(ol-counter) ". ";
-      color: var(--yellow);
+      color: var(--cyan);
     }
   }
 
@@ -134,7 +134,7 @@
       content: '-';
       position: absolute;
       left: -20px;
-      color: var(--yellow);
+      color: var(--cyan);
     }
   }
 }
