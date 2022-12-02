@@ -1,14 +1,14 @@
 @import "variables";
 
 .footer {
-  padding: 40px 0;
+  padding: 0 0;
   flex-grow: 0;
   opacity: .5;
 
   &__inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     margin: 0;
     width: 760px;
     max-width: 100%;

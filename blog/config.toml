@@ -7,13 +7,6 @@ description = "Documentation of personal projects covering topics such as data a
 
 default_language = "en"
 
-# Optional: Global favicon URL and mimetype.
-#           Mimetype defaults to "image/x-icon".
-#           The URL should point at a file located
-#           in your site's "static" directory.
-# favicon = "/favicon.png"
-# favicon_mimetype = "image/png"
-
 # For overriding the default output directory `public`, set it to another value (e.g.: "docs")
 output_dir = "public"
 
@@ -131,6 +124,13 @@ truncate_content_length = 100
 
 [extra]
 # Put all your custom variables here
+
+# Optional: Global favicon URL and mimetype.
+#           Mimetype defaults to "image/x-icon".
+#           The URL should point at a file located
+#           in your site's "static" directory.
+favicon = "/favicon.png"
+favicon_mimetype = "image/png"
 
 # One of: blue, green, orange, pink, red, purple.
 # Defaults to blue. 
