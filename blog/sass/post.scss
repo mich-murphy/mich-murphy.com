@@ -36,7 +36,7 @@
   }
 
   &-title {
-    --border: 3px dotted var(--accent);
+    --border: 3px dashed var(--accent);
     position: relative;
     color: var(--accent);
     margin: 0 0 15px;
@@ -76,6 +76,27 @@
 
     h1, h2, h3, h4, h5, h6 {
       color: var(--magenta);
+      font-size: 1.15em;
+    }
+
+    h1:before {
+      content: "#";
+      padding-right: 8px;
+    }
+
+    h2:before {
+      content: "##";
+      padding-right: 8px;
+    }
+
+    h3:before {
+      content: "###";
+      padding-right: 8px;
+    }
+
+    h4:before, h5:before, h6:before {
+      content: "#### ";
+      padding-right: 8px;
     }
 
     a {

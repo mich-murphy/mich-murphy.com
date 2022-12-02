@@ -65,6 +65,8 @@ a.read-more:active {
   display: inline-flex;
   background: none;
   box-shadow: none;
+  text-decoration: none;
+  color: var(--yellow);
   padding: 0;
   margin: 20px 0;
   max-width: 100%;
