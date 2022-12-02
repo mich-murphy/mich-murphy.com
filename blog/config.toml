@@ -58,7 +58,7 @@ hard_link_static = false
 #     ]
 #
 taxonomies = [
-  {name = "tags"},
+  {name = "tags", feed = true},
 ]
 
 # When set to "true", a search index is built from the pages and section
@@ -92,14 +92,14 @@ smart_punctuation = false
 
 [link_checker]
 # Skip link checking for external URLs that start with these prefixes
-skip_prefixes = [
-    "http://[2001:db8::]/",
-]
+# skip_prefixes = [
+#     "http://[2001:db8::]/",
+# ]
 
 # Skip anchor checking for external URLs that start with these prefixes
-skip_anchor_prefixes = [
-    "https://caniuse.com/",
-]
+# skip_anchor_prefixes = [
+#     "https://caniuse.com/",
+# ]
 
 # Treat internal link problems as either "error" or "warn", default is "error"
 internal_level = "error"
@@ -180,7 +180,7 @@ enable_post_view_navigation = true
 # The text shown at the bottom of a post,
 # before earlier/later post links.
 # Defaults to "Thanks for reading! Read other posts?"
-post_view_navigation_prompt = "read more..."
+post_view_navigation_prompt = "Read more..."
 
 # Use full Hack character set, not just a subset.
 # Switch this to true if you need full unicode support.
