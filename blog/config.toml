@@ -5,6 +5,8 @@ base_url = "https://micha.elmurphy.com"
 title = "Michael Murphy - Blog"
 description = "Documentation of personal projects covering topics such as data and technology"
 
+theme = "terminimal"
+
 default_language = "en"
 
 # For overriding the default output directory `public`, set it to another value (e.g.: "docs")

@@ -60,7 +60,7 @@
 {% macro header(page) %}
     <h1 class="post-title"><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
     <div class="post-meta-inline">
-        {{ post_macros::date(page=page) }} 
+        {{ post_macros::date(page=page) }}
         <span class="post-readtime" style="color: rgba(171, 178, 191, .7);">| {{ page.reading_time }} min read</span>
     </div>
 
@@ -77,7 +77,7 @@
         <li class="post-list">
             <a href="{{ page.permalink | safe }}">
                 <span class="post-date">{{ page.date }}</span>
-                <span style="color: rgba(171, 178, 191, .7);">| </span><span class="post-list-title">{{ page.title }}</span></a>
+                | <span class="post-list-title">{{ page.title }}</span></a>
             {{ post_macros::tags(page=page, short=true) }}
         </li>
     {% endfor -%}
