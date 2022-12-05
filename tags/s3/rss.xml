@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-      <title>Michael Murphy - Blog - homelab</title>
+      <title>Michael Murphy - Blog - s3</title>
         <link>https://micha.elmurphy.com</link>
         <description>Documentation of personal projects covering topics such as data and technology</description>
         <generator>Zola</generator>
         <language>en</language>
-        <atom:link href="https://micha.elmurphy.com/tags/homelab/rss.xml" rel="self" type="application/rss+xml"/>
+        <atom:link href="https://micha.elmurphy.com/tags/s3/rss.xml" rel="self" type="application/rss+xml"/>
         <lastBuildDate>Tue, 29 Nov 2022 00:00:00 +0000</lastBuildDate>
         <item>
             <title>How To Mount S3 Compatible Object Storage in Ubuntu</title>
