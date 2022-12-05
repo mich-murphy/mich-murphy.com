@@ -3,10 +3,10 @@ title = "How To Mount S3 Compatible Object Storage in Ubuntu"
 date = 2022-11-29
 
 [taxonomies]
-tags = ["ubuntu", "homelab"]
+tags = ["ubuntu", "homelab", "s3"]
 +++
 
-# Motivations For Using Object Storage
+## Motivations For Using Object Storage
 
 I'm currently in the process of setting up a [Homelab](https://linuxhandbook.com/homelab/), one of the major tasks I want to manage is storage and streaming of music.
 
@@ -18,18 +18,18 @@ My end goal is to build a dedicated Homelab with a large amount of storage, eith
 
 I hadn't previously used object storage, but had heard it worked well for storing files that don't change frequently e.g. media files and music. After doing some quick research I discovered that I could mount an object store to a computer running Linux, macOS or FreeBSD using [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse). I decided to test how well this worked by mounting the object store, adding some music to it and then pointing Roon Server to the object store. The steps I followed to mount the object store are detailed in [this guide](https://upcloud.com/resources/tutorials/mount-object-storage-cloud-server-s3fs-fuse), my own summarised version is below.
 
-# Mounting Object Storage
+## Mounting Object Storage
 
 The steps may vary depending on the provider you are using for object storage, for reference I am using [Linode](https://www.linode.com/).
 
-## Install s3fs-fuse
+### Install s3fs-fuse
 
 On Ubuntu this is nice and easy, the package name will likely vary depending on your Linux distro:
 ```bash
 sudo apt install s3fs
 ```
 
-## Access Keys & Authentication
+### Access Keys & Authentication
 
 After creating an object store you will also need to create access keys. These should be a combination of:
 1. An `ACCESS_KEY`
@@ -41,7 +41,7 @@ echo "ACCESS_KEY:SECRET_KEY" | sudo tee /etc/passwd-s3fs
 sudo chmod 600 /etc/passwd-s3fs
 ```
 
-## Mount Storage
+### Mount Storage
 
 First we need to create the directory the object store will be mounted to:
 ```bash
@@ -58,11 +58,11 @@ sudo s3fs {bucketname} {/mnt/my-object-storage} -o passwd_file=/etc/passwd-s3fs 
 - `{private-network-endpoint}` = the url given by your provider to the object store e.g. https://ap-south-1.linodeobjects.com
 - the `allow_other` flag allows users other than root to have access to the bucket
 
-## Testing The Newly Mounted Storage
+### Testing The Newly Mounted Storage
 
 Assuming you didn't run into any errors after following the above instructions, you can now test the storage. I did this by opening a web browser and viewing the object store within my account dashboard at Linode, and copying some new files in to the object store on my homelab. If the file match between the web browser and your local machine then its a good sign that things are working. If this isn't the case unmount the storage and try again, double checking the values provided when making the connection.
 
-## Ensuring Mount Persists After Reboot
+### Ensuring Mount Persists After Reboot
 
 Now that everything has been mounted properly we can setup an entry within `/etc/fstab`, so that the object store is mounted whenever the local machine reboots.
 
@@ -78,7 +78,7 @@ s3fs#bucketname /mnt/my-object-storage fuse _netdev,allow_other,passwd_file=/etc
 
 If you want more details on what each of the options do then I recommend checking out the FAQs at the [s3fs GitHub repo](https://github.com/s3fs-fuse/s3fs-fuse/wiki/FAQ)
 
-# Final Thoughts
+## Final Thoughts
 
 How well did this work for music streaming? I was able to point Roon to music on the object store, scan tracks and stream music, though there were some limitations in performance:
 - When selecting music to play there was ~3-5 second delay before the track started, when streaming from local storage or Tidal this is pretty much instant
