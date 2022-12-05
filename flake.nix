@@ -1,5 +1,4 @@
 {
-  # Credit goes to https://lukebentleyfox.net/posts/building-this-blog/
   description = "Nix Flake used to build micha.elmurphy.com";
   
   inputs = {
