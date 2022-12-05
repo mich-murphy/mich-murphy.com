@@ -21,7 +21,7 @@ pre {
     }
 
     li:before {
-      color: var(--accent);
+      color: var(--accent-alpha-70);
       content: counter(list) ".";
       left: -38px;
       position: absolute;
@@ -33,7 +33,7 @@ pre {
   ul {
     li:before {
       content: '-';
-      color: var(--accent);
+      color: var(--accent-alpha-70);
     }
   }
 }
