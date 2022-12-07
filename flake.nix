@@ -19,8 +19,8 @@
       in 
       rec {
         inherit (overlay);
-        defaultPackage = pkgs.blog;
-        devShell = pkgs.mkShell {
+        packages.default = pkgs.blog;
+        devShells.default = pkgs.mkShell {
           buildInputs = [ pkgs.zola ];
         };
       }
