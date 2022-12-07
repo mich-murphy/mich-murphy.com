@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Michael Murphy - Blog - NixOS</title>
+        <link>https://micha.elmurphy.com</link>
+        <description>Documentation of personal projects covering topics such as data and technology</description>
+        <generator>Zola</generator>
+        <language>en</language>
+        <atom:link href="https://micha.elmurphy.com/tags/nixos/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Wed, 07 Dec 2022 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Useful References for Understanding Nix&#x2F;NixOS</title>
+            <pubDate>Wed, 07 Dec 2022 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/nix-useful-references/</link>
+            <guid>https://micha.elmurphy.com/nix-useful-references/</guid>
+            <description>&lt;h2 id=&quot;background&quot;&gt;Background&lt;&#x2F;h2&gt;
+&lt;p&gt;I recently used Nix to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&quot;&gt;configure my Macbook Air M2&lt;&#x2F;a&gt;, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m currently building out a similar solution for my homelab, and thought to document a list of useful references here.&lt;&#x2F;p&gt;
+</description>
+        </item>
+    </channel>
+</rss>

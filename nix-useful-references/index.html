@@ -59,9 +59,8 @@
 
     <div class="content">
         
-        <div class="posts">
-                <div class="post on-list">
-                    
+    <div class="post">
+        
     <h1 class="post-title"><a href="https://micha.elmurphy.com/nix-useful-references/">Useful References for Understanding Nix&#x2F;NixOS</a></h1>
     <div class="post-meta-inline">
         
@@ -79,65 +78,41 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/flakes/">#Flakes</a></span>
     
 
-                    
+        
         <div class="post-content">
             <h2 id="background">Background</h2>
 <p>I recently used Nix to <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config">configure my Macbook Air M2</a>, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.</p>
 <p>I'm currently building out a similar solution for my homelab, and thought to document a list of useful references here.</p>
+<span id="continue-reading"></span><h2 id="references">References</h2>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://github.com/MatthiasBenaets/nixos-config">Matthias Benaet's Dotfiles</a>: this is where I first began, Matthias has a really good video series introduction as well, you can find the details in the linked repo</li>
+<li><a rel="noopener" target="_blank" href="https://jdisaacs.com/blog/nixos-config/">Jordan Isaac on Nix Flakes</a>: comprehensive introduction into creating a Flake in Nix</li>
+<li><a rel="noopener" target="_blank" href="https://bobvanderlinden.me/customizing-packages-in-nix/">Bob Vanderlinden on Customising Nix Packages</a>: as you get deeper into the rabbit hole of Nix, you will likely need to customise Nix packages, this post clearly explains the different ways you can accomplish this, and why you would use one over another</li>
+<li><a rel="noopener" target="_blank" href="https://xeiaso.net/blog/paranoid-nixos-2021-07-18">Xe Iaso on Securing NixOS</a>: details how to create a more secure NixOS when running a production server</li>
+<li><a rel="noopener" target="_blank" href="https://grahamc.com/blog/erase-your-darlings">Graham Christensen on Impermanence in NixOS</a>: explains how to setup a NixOS system that erases at boot, and why the approach is useful - also checkout the <a rel="noopener" target="_blank" href="https://github.com/nix-community/impermanence">nix-community impermanence repo</a></li>
+</ul>
 
         </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://micha.elmurphy.com/nix-useful-references/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read more...</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/s3-object-storage/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">How To Mount S3 Compatible Object Storage in Ubuntu</span>
+                        </a>
+                    </span>
+                
+                </div>
         </div>
     
-
-                </div>
-            
-                <div class="post on-list">
-                    
-    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-storage/">How To Mount S3 Compatible Object Storage in Ubuntu</a></h1>
-    <div class="post-meta-inline">
-        
-    <span class="post-date">
-            2022-11-29
-        </span>
-
     </div>
 
-    
-        <span class="post-tags-inline">
-                |
-                <a class="post-tag" href="https://micha.elmurphy.com/tags/ubuntu/">#ubuntu</a>,
-                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>,
-                <a class="post-tag" href="https://micha.elmurphy.com/tags/s3/">#s3</a></span>
-    
-
-                    
-        <div class="post-content">
-            <h2 id="why-use-object-storage">Why Use Object Storage</h2>
-<p>I'm currently in the process of setting up a <a rel="noopener" target="_blank" href="https://linuxhandbook.com/homelab/">Homelab</a>, one of the major tasks I want to manage is storage and streaming of music.</p>
-<p>For streaming music and managing metadata I'm using <a rel="noopener" target="_blank" href="https://roonlabs.com/">Roon Server</a>, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in <a rel="noopener" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a>. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.</p>
-
-        </div>
-        <div>
-            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
-            <a class="read-more button" href="https://micha.elmurphy.com/s3-object-storage/">
-                <span class="button__text">Read more</span>&nbsp;
-                <span class="button__icon">&#8617;&#xFE0E;</span>
-            </a>
-        </div>
-    
-
-                </div>
-            <div class="pagination">
-                <div class="pagination__buttons"></div>
-            </div>
-        </div>
-        
     </div>
 
     

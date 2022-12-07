@@ -10,6 +10,10 @@
         <loc>https://micha.elmurphy.com/archive/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/nix-useful-references/</loc>
+        <lastmod>2022-12-07</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/page/1/</loc>
     </url>
     <url>
@@ -20,7 +24,16 @@
         <loc>https://micha.elmurphy.com/tags/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/tags/flakes/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/homelab/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/nix/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/nixos/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/s3/</loc>

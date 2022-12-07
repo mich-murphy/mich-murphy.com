@@ -13,7 +13,7 @@
             <pubDate>Tue, 29 Nov 2022 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/s3-object-storage/</link>
             <guid>https://micha.elmurphy.com/s3-object-storage/</guid>
-            <description>&lt;h2 id=&quot;motivations-for-using-object-storage&quot;&gt;Motivations For Using Object Storage&lt;&#x2F;h2&gt;
+            <description>&lt;h2 id=&quot;why-use-object-storage&quot;&gt;Why Use Object Storage&lt;&#x2F;h2&gt;
 &lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;Homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
 &lt;p&gt;For streaming music and managing metadata I&#x27;m using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;roonlabs.com&#x2F;&quot;&gt;Roon Server&lt;&#x2F;a&gt;, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt;. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.&lt;&#x2F;p&gt;
 </description>

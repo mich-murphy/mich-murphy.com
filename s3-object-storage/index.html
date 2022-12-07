@@ -80,19 +80,19 @@
 
         
         <div class="post-content">
-            <h2 id="motivations-for-using-object-storage">Motivations For Using Object Storage</h2>
+            <h2 id="why-use-object-storage">Why Use Object Storage</h2>
 <p>I'm currently in the process of setting up a <a rel="noopener" target="_blank" href="https://linuxhandbook.com/homelab/">Homelab</a>, one of the major tasks I want to manage is storage and streaming of music.</p>
 <p>For streaming music and managing metadata I'm using <a rel="noopener" target="_blank" href="https://roonlabs.com/">Roon Server</a>, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in <a rel="noopener" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a>. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.</p>
 <span id="continue-reading"></span>
 <p>My end goal is to build a dedicated Homelab with a large amount of storage, either as <a rel="noopener" target="_blank" href="https://arstechnica.com/information-technology/2020/05/zfs-101-understanding-zfs-storage-and-performance/">ZFS</a> or a combination of <a rel="noopener" target="_blank" href="https://perfectmediaserver.com/tech-stack/mergerfs/">MergerFS</a> and <a rel="noopener" target="_blank" href="https://perfectmediaserver.com/tech-stack/snapraid/">SnapRAID</a>. Unfortunately building a dedicated Homelab requires a significant financial contribution. I needed to find an interim solution - that's where S3 compatible object storage comes in.</p>
 <p>I hadn't previously used object storage, but had heard it worked well for storing files that don't change frequently e.g. media files and music. After doing some quick research I discovered that I could mount an object store to a computer running Linux, macOS or FreeBSD using <a rel="noopener" target="_blank" href="https://github.com/s3fs-fuse/s3fs-fuse">s3fs-fuse</a>. I decided to test how well this worked by mounting the object store, adding some music to it and then pointing Roon Server to the object store. The steps I followed to mount the object store are detailed in <a rel="noopener" target="_blank" href="https://upcloud.com/resources/tutorials/mount-object-storage-cloud-server-s3fs-fuse">this guide</a>, my own summarised version is below.</p>
-<h2 id="mounting-object-storage">Mounting Object Storage</h2>
+<h2 id="mounting-storage">Mounting Storage</h2>
 <p>The steps may vary depending on the provider you are using for object storage, for reference I am using <a rel="noopener" target="_blank" href="https://www.linode.com/">Linode</a>.</p>
 <h3 id="install-s3fs-fuse">Install s3fs-fuse</h3>
 <p>On Ubuntu this is nice and easy, the package name will likely vary depending on your Linux distro:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> apt install s3fs
 </span></code></pre>
-<h3 id="access-keys-authentication">Access Keys &amp; Authentication</h3>
+<h3 id="authentication">Authentication</h3>
 <p>After creating an object store you will also need to create access keys. These should be a combination of:</p>
 <ol>
 <li>An <code>ACCESS_KEY</code></li>
@@ -102,7 +102,7 @@
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">echo </span><span style="color:#a3be8c;">&quot;ACCESS_KEY:SECRET_KEY&quot; </span><span style="color:#81a1c1;">| </span><span style="color:#88c0d0;">sudo</span><span> tee /etc/passwd-s3fs
 </span><span style="color:#88c0d0;">sudo</span><span> chmod 600 /etc/passwd-s3fs
 </span></code></pre>
-<h3 id="mount-storage">Mount Storage</h3>
+<h3 id="mounting">Mounting</h3>
 <p>First we need to create the directory the object store will be mounted to:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">mkdir</span><span> /mnt/my-object-storage
 </span></code></pre>
@@ -115,9 +115,9 @@
 <li><code>{private-network-endpoint}</code> = the url given by your provider to the object store e.g. https://ap-south-1.linodeobjects.com</li>
 <li>the <code>allow_other</code> flag allows users other than root to have access to the bucket</li>
 </ul>
-<h3 id="testing-the-newly-mounted-storage">Testing The Newly Mounted Storage</h3>
+<h3 id="testing">Testing</h3>
 <p>Assuming you didn't run into any errors after following the above instructions, you can now test the storage. I did this by opening a web browser and viewing the object store within my account dashboard at Linode, and copying some new files in to the object store on my homelab. If the file match between the web browser and your local machine then its a good sign that things are working. If this isn't the case unmount the storage and try again, double checking the values provided when making the connection.</p>
-<h3 id="ensuring-mount-persists-after-reboot">Ensuring Mount Persists After Reboot</h3>
+<h3 id="persisting-after-reboot">Persisting After Reboot</h3>
 <p>Now that everything has been mounted properly we can setup an entry within <code>/etc/fstab</code>, so that the object store is mounted whenever the local machine reboots.</p>
 <p>First we need to unmount:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> umount /etc/my-object-storage
@@ -138,6 +138,22 @@
         </div>
 
         
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">Read more...</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                
+                    <span class="button next">
+                        <a href="https://micha.elmurphy.com/nix-useful-references/">
+                            <span class="button__text">Useful References for Understanding Nix&#x2F;NixOS</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
+                </div>
+        </div>
+    
     </div>
 
     </div>
