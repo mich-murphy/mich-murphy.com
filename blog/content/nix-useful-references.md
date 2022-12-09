@@ -18,6 +18,7 @@ I'm currently building out a similar solution for my homelab, and thought to doc
 
 - [Matthias Benaet's Dotfiles](https://github.com/MatthiasBenaets/nixos-config): this is where I first began, Matthias has a really good video series introduction as well, you can find the details in the linked repo
 - [Jordan Isaac on Nix Flakes](https://jdisaacs.com/blog/nixos-config/): comprehensive introduction into creating a Flake in Nix
+- [Alexander Bantyev on Nix Flakes](https://serokell.io/blog/practical-nix-flakes): great beginner friendly guide
 - [Bob Vanderlinden on Customising Nix Packages](https://bobvanderlinden.me/customizing-packages-in-nix/): as you get deeper into the rabbit hole of Nix, you will likely need to customise Nix packages, this post clearly explains the different ways you can accomplish this, and why you would use one over another
 - [Xe Iaso on Securing NixOS](https://xeiaso.net/blog/paranoid-nixos-2021-07-18): details how to create a more secure NixOS when running a production server
 - [Xe Iaso on Creating a Secure AWS NixOS Image](https://xeiaso.net/blog/paranoid-nixos-aws-2021-08-11): detailed walk through of code to create a secure NixOS image in AWS
