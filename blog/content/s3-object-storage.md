@@ -6,8 +6,6 @@ date = 2022-11-29
 tags = ["ubuntu", "homelab", "s3"]
 +++
 
-## Why Use Object Storage
-
 I'm currently in the process of setting up a [Homelab](https://linuxhandbook.com/homelab/), one of the major tasks I want to manage is storage and streaming of music.
 
 For streaming music and managing metadata I'm using [Roon Server](https://roonlabs.com/), this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in [Proxmox](https://www.proxmox.com/en/). My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.
