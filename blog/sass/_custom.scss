@@ -103,9 +103,18 @@ pre {
   }
 }
 
+.pagination__title-h {
+  text-transform: lowercase;
+}
+
 a.read-more,
 a.read-more:hover,
 a.read-more:active {
+  color: var(--yellow);
+}
+
+.button.previous,
+.button.next {
   color: var(--yellow);
 }
 
