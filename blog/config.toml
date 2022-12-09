@@ -182,7 +182,7 @@ enable_post_view_navigation = true
 # The text shown at the bottom of a post,
 # before earlier/later post links.
 # Defaults to "Thanks for reading! Read other posts?"
-post_view_navigation_prompt = "read more"
+post_view_navigation_prompt = "other posts"
 
 # Use full Hack character set, not just a subset.
 # Switch this to true if you need full unicode support.
