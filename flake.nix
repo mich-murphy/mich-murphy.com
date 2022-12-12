@@ -17,7 +17,7 @@
           blog = prev.callPackage ./blog {};
         });
       in 
-      rec {
+      {
         inherit (overlay);
         packages.default = pkgs.blog;
         devShells.default = pkgs.mkShell {

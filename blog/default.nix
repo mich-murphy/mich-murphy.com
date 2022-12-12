@@ -1,8 +1,11 @@
 { pkgs, stdenv, ... }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "personal-blog";
   version = "1.0.0";
-  src = ./.;
+  src = builtins.path {
+    path = ./.;
+    name = "blog";
+  };
   buildInputs = [ pkgs.zola ];
   buildPhase = ''
     zola build
