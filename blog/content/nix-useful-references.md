@@ -3,7 +3,7 @@ title = "Useful References for Understanding Nix/NixOS"
 date = 2022-12-07
 
 [taxonomies]
-tags = ["Nix", "NixOS", "Flakes"]
+tags = ["nix", "nixos", "flakes"]
 +++
 
 I recently used Nix to [configure my M2 Macbook Air](https://github.com/mich-murphy/nix-config), and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.
