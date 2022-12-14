@@ -81,7 +81,7 @@
         
         <div class="post-content">
             <p>I previously wrote about how I mounted s3 object storage to my <a href="/s3-object-storage.md">homelab running Ubuntu</a>. I've since been configuring my homelab to run using <a rel="noopener" target="_blank" href="https://nixos.org/">NixOS</a>. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.</p>
-<span id="continue-reading"></span>
+<span id="continue-reading"></span><h2 id="updating-nixos-configuration">Updating NixOS Configuration</h2>
 <p>Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.</p>
 <p>After a default install of NixOS the configuration file is available to edit at <code>/etc/nixos/configuration.nix</code>, to mount an s3 bucket we will expand on the <code>configuration.nix</code> by adding a new <code>module</code>, called <code>s3fs</code>. We will do this by importing a separate <code>s3fs.nix</code> file, which we will create shortly, for now edit <code>/etc/nixos/configuration.nix</code> and add the following:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
@@ -95,9 +95,11 @@
 </span><span>  services</span><span style="color:#81a1c1;">.</span><span>s3fs</span><span style="color:#81a1c1;">.</span><span>enable </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> </span><span style="color:#81a1c1;">true</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
 </span><span>)
 </span></code></pre>
+<h2 id="add-modules-directory">Add Modules Directory</h2>
 <p>Next we need to create the modules folder and create the <code>s3fs.nix</code> file:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> mkdir /etc/nixos/modules </span><span style="color:#81a1c1;">&amp;&amp; </span><span style="color:#88c0d0;">sudo</span><span> touch s3fs.nix
 </span></code></pre>
+<h2 id="add-s3fs-module">Add s3fs Module</h2>
 <p>Finally we can edit <code>/etc/nixos/modules/s3fs.nix</code> and add the following:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># s3fs configuration
 </span><span>
