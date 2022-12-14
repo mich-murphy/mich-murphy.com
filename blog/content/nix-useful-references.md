@@ -6,7 +6,7 @@ date = 2022-12-07
 tags = ["Nix", "NixOS", "Flakes"]
 +++
 
-I recently used Nix to [configure my Macbook Air M2](https://github.com/mich-murphy/nix-config), and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.
+I recently used Nix to [configure my M2 Macbook Air](https://github.com/mich-murphy/nix-config), and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.
 
 I'm currently building out a similar solution for my homelab, and thought to document a list of useful references here.
 
