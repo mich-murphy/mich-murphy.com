@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://micha.elmurphy.com/font-hack.css">
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-storage-nixos/">How To Mount S3 Compatible Object Storage in NixOS</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2022-12-14
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                |
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/s3/">#s3</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>I previously wrote about how I mounted s3 object storage to my <a href="/s3-object-storage.md">homelab running Ubuntu</a>. I've since been configuring my homelab to run using <a rel="noopener" target="_blank" href="https://nixos.org/">NixOS</a>. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.</p>
+<span id="continue-reading"></span>
+<p>Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.</p>
+<p>After a default install of NixOS the configuration file is available to edit at <code>/etc/nixos/configuration.nix</code>, to mount an s3 bucket we will expand on the <code>configuration.nix</code> by adding a new <code>module</code>, called <code>s3fs</code>. We will do this by importing a separate <code>s3fs.nix</code> file, which we will create shortly, for now edit <code>/etc/nixos/configuration.nix</code> and add the following:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
+</span><span>
+</span><span>(
+</span><span>  imports </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> [
+</span><span>    </span><span style="color:#a3be8c;">./hardware-configuration.nix </span><span style="color:#616e88;"># should be present by default
+</span><span>    </span><span style="color:#a3be8c;">./modules/s3fs.nix
+</span><span>  ]</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span><span>
+</span><span>  services</span><span style="color:#81a1c1;">.</span><span>s3fs</span><span style="color:#81a1c1;">.</span><span>enable </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> </span><span style="color:#81a1c1;">true</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span><span>)
+</span></code></pre>
+<p>Next we need to create the modules folder and create the <code>s3fs.nix</code> file:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> mkdir /etc/nixos/modules </span><span style="color:#81a1c1;">&amp;&amp; </span><span style="color:#88c0d0;">sudo</span><span> touch s3fs.nix
+</span></code></pre>
+<p>Finally we can edit <code>/etc/nixos/modules/s3fs.nix</code> and add the following:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># s3fs configuration
+</span><span>
+</span><span>{ config</span><span style="color:#81a1c1;">, </span><span>lib</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
+</span><span>
+</span><span style="color:#81a1c1;">with </span><span>lib;
+</span><span>
+</span><span style="color:#81a1c1;">let
+</span><span>  </span><span style="color:#8fbcbb;">cfg </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>services</span><span style="color:#81a1c1;">.</span><span>s3fs</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">in </span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">options</span><span>.</span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">s3fs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= </span><span>mkEnableOption </span><span style="color:#a3be8c;">&quot;Mounts s3 object storage using s3fs&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">keyPath </span><span style="color:#81a1c1;">= </span><span>mkOption {
+</span><span>      </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span>types</span><span style="color:#81a1c1;">.</span><span>str</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">default </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/etc/passwd-s3fs&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">mountPath </span><span style="color:#81a1c1;">= </span><span>mkOption {
+</span><span>      </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span>types</span><span style="color:#81a1c1;">.</span><span>str</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">default </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/mnt/data&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">bucket </span><span style="color:#81a1c1;">= </span><span>mkOption {
+</span><span>      </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span>types</span><span style="color:#81a1c1;">.</span><span>str</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">default </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;data&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span>mkOption {
+</span><span>      </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span>types</span><span style="color:#81a1c1;">.</span><span>str</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">default </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;https://ap-south-1.linodeobjects.com/&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">config </span><span style="color:#81a1c1;">= </span><span>mkIf cfg</span><span style="color:#81a1c1;">.</span><span>enable {
+</span><span>    </span><span style="color:#8fbcbb;">systemd</span><span>.</span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">s3fs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">description </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;Linode object storage s3fs&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">wantedBy </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;multi-user.target&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">serviceConfig </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">ExecStartPre </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>          </span><span style="color:#a3be8c;">&quot;</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">pkgs</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">coreutils</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">/bin/mkdir -pv </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">mountPath</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;
+</span><span>          </span><span style="color:#a3be8c;">&quot;</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">pkgs</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">e2fsprogs</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">/bin/chattr +i </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">mountPath</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot; </span><span style="color:#616e88;"># stop files being written to unmounted dir
+</span><span>        ]</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">ExecStart </span><span style="color:#81a1c1;">= let
+</span><span>          </span><span style="color:#8fbcbb;">options </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>            </span><span style="color:#a3be8c;">&quot;passwd_file=</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">keyPath</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;
+</span><span>            </span><span style="color:#a3be8c;">&quot;use_path_request_style&quot;
+</span><span>            </span><span style="color:#a3be8c;">&quot;allow_other&quot;
+</span><span>            </span><span style="color:#a3be8c;">&quot;url=</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">url</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;
+</span><span>            </span><span style="color:#a3be8c;">&quot;umask=0777&quot;
+</span><span>          ]</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#81a1c1;">in
+</span><span>          </span><span style="color:#a3be8c;">&quot;</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">pkgs</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">s3fs</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">/bin/s3fs </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">bucket</span><span style="font-style:italic;color:#a3be8c;">} ${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">mountPath</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;"> -f &quot;
+</span><span>            </span><span style="color:#81a1c1;">+ </span><span>lib</span><span style="color:#81a1c1;">.</span><span>concatMapStringsSep </span><span style="color:#a3be8c;">&quot; &quot; </span><span>(opt: </span><span style="color:#a3be8c;">&quot;-o </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">opt</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;</span><span>) options</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">ExecStopPost </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;-</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">pkgs</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">fuse</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">/bin/fusermount -u </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">cfg</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">mountPath</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">KillMode </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;process&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">Restart </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;on-failure&quot;</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>The above sets up a module for <code>services.s3fs</code>, allowing us to enable/disable the service as well as edit the default settings. When enabled a <code>systemd</code> service is created which mounts the s3 bucket, making it available at the specified path (<code>/mnt/data</code> by default).</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/nix-useful-references/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Useful References for Understanding Nix&#x2F;NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2022
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
