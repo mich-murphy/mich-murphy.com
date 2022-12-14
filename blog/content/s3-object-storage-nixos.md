@@ -1,6 +1,6 @@
 
 +++
-title = "How To Mount S3 Compatible Object Storage in NixOS"
+title = "How To Mount S3 Object Storage in NixOS"
 date = 2022-12-14
 
 [taxonomies]
@@ -20,14 +20,14 @@ After a default install of NixOS the configuration file is available to edit at 
 ```nix
 { config, pkgs, ... }:
 
-(
+{
   imports = [
     ./hardware-configuration.nix # should be present by default
-    ./modules/s3fs.nix
+      ./modules/s3fs.nix
   ];
 
   services.s3fs.enable = true;
-)
+}
 ```
 
 ## Add Modules Directory
