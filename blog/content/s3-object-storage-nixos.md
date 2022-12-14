@@ -23,7 +23,7 @@ After a default install of NixOS the configuration file is available to edit at 
 {
   imports = [
     ./hardware-configuration.nix # should be present by default
-      ./modules/s3fs.nix
+    ./modules/s3fs.nix
   ];
 
   services.s3fs.enable = true;
