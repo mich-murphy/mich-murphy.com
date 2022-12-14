@@ -11,6 +11,8 @@ I previously wrote about how I mounted s3 object storage to my [homelab running 
 
 <!-- more -->
 
+## Updating NixOS Configuration
+
 Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.
 
 After a default install of NixOS the configuration file is available to edit at `/etc/nixos/configuration.nix`, to mount an s3 bucket we will expand on the `configuration.nix` by adding a new `module`, called `s3fs`. We will do this by importing a separate `s3fs.nix` file, which we will create shortly, for now edit `/etc/nixos/configuration.nix` and add the following:
@@ -28,11 +30,15 @@ After a default install of NixOS the configuration file is available to edit at 
 )
 ```
 
+## Add Modules Directory
+
 Next we need to create the modules folder and create the `s3fs.nix` file:
 
 ```bash
 sudo mkdir /etc/nixos/modules && sudo touch s3fs.nix
 ```
+## Add s3fs Module
+
 Finally we can edit `/etc/nixos/modules/s3fs.nix` and add the following:
 
 ```nix
