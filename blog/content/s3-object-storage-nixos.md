@@ -100,3 +100,5 @@ in {
 }
 ```
 The above sets up a module for `services.s3fs`, allowing us to enable/disable the service as well as edit the default settings. When enabled a `systemd` service is created which mounts the s3 bucket, making it available at the specified path (`/mnt/data` by default).
+
+Much of the credit for this post goes to a forum post on the [NixOS Discourse](https://discourse.nixos.org/t/how-to-setup-s3fs-mount/6283).
