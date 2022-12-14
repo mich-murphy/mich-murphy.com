@@ -61,7 +61,7 @@
         
     <div class="post">
         
-    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-storage-nixos/">How To Mount S3 Compatible Object Storage in NixOS</a></h1>
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/s3-object-storage-nixos/">How To Mount S3 Object Storage in NixOS</a></h1>
     <div class="post-meta-inline">
         
     <span class="post-date">
@@ -86,14 +86,14 @@
 <p>After a default install of NixOS the configuration file is available to edit at <code>/etc/nixos/configuration.nix</code>, to mount an s3 bucket we will expand on the <code>configuration.nix</code> by adding a new <code>module</code>, called <code>s3fs</code>. We will do this by importing a separate <code>s3fs.nix</code> file, which we will create shortly, for now edit <code>/etc/nixos/configuration.nix</code> and add the following:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
 </span><span>
-</span><span>(
-</span><span>  imports </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> [
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">imports </span><span style="color:#81a1c1;">= </span><span>[
 </span><span>    </span><span style="color:#a3be8c;">./hardware-configuration.nix </span><span style="color:#616e88;"># should be present by default
-</span><span>    </span><span style="color:#a3be8c;">./modules/s3fs.nix
-</span><span>  ]</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span><span>      </span><span style="color:#a3be8c;">./modules/s3fs.nix
+</span><span>  ]</span><span style="color:#eceff4;">;
 </span><span>
-</span><span>  services</span><span style="color:#81a1c1;">.</span><span>s3fs</span><span style="color:#81a1c1;">.</span><span>enable </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> </span><span style="color:#81a1c1;">true</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
-</span><span>)
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">s3fs</span><span>.</span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>}
 </span></code></pre>
 <h2 id="add-modules-directory">Add Modules Directory</h2>
 <p>Next we need to create the modules folder and create the <code>s3fs.nix</code> file:</p>
