@@ -3,7 +3,7 @@ title = "About Me"
 path = "about"
 +++
 
-I'm Michael Murphy, a full time Data Engineer and part time Linux enthusiast. I've put this blog together to document all of the personal projects I work on, which I would otherwise undoubtedly forget.
+I'm Michael Murphy, a full time Data Engineer and part time GNU/Linux enthusiast. I've put this blog together to document all of the personal projects I work on, which I would otherwise undoubtedly forget.
 
 ## Highlighted Projects
 
