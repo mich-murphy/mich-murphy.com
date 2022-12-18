@@ -23,7 +23,7 @@ pre {
     li:before {
       color: var(--accent-alpha-70);
       content: counter(list) ".";
-      left: -38px;
+      left: -25px;
       position: absolute;
       text-align: right;
       width: 28px;
