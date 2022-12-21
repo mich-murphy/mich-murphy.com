@@ -80,8 +80,9 @@
         
         <div class="post-content">
             <p>I use <a rel="noopener" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a> to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don't always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to <a rel="noopener" target="_blank" href="https://thehomelab.show/2022/11/30/the-homelab-show-ep-79-virtualization-vs-containers/">episode 79 of the homelab show</a>.</p>
-<span id="continue-reading"></span>
-<p>I recently opened up Proxmox to begin configuring a <a rel="noopener" target="_blank" href="https://nixos.org/">Nixos</a> VM, and noticed I had a bunch of errors when updating the package database <code>Error: command apt-get update failed: exit code 100</code>. I SSH'd into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a channel requiring a Proxmox subscription (which I don't have, as I use it for personal use).</p>
+<span id="continue-reading"></span><h2 id="failed-update-error">Failed Update Error</h2>
+<p>I recently opened up Proxmox to begin configuring a <a rel="noopener" target="_blank" href="https://nixos.org/">Nixos</a> VM, and noticed I had a bunch of errors when updating the package database <code>Error: command apt-get update failed: exit code 100</code>. I SSH'd into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a repo requiring a Proxmox subscription (which I don't have, as I use it for personal use).</p>
+<h2 id="updating-source-list">Updating Source List</h2>
 <p>I managed to find a <a rel="noopener" target="_blank" href="https://pve.proxmox.com/wiki/Package_Repositories">Proxmox wiki page</a> which provided some clarity. In summary I fixed the issue by commenting out the following repository inside of <code>/etc/apt/sources.list.d/pve-enterprise.list</code>:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise
 </span></code></pre>
