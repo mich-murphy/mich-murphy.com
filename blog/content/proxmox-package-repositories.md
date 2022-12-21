@@ -10,7 +10,11 @@ I use [Proxmox](https://www.proxmox.com/en/) to create and manage VMs on my exis
 
 <!-- more -->
 
-I recently opened up Proxmox to begin configuring a [Nixos](https://nixos.org/) VM, and noticed I had a bunch of errors when updating the package database `Error: command apt-get update failed: exit code 100`. I SSH'd into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a channel requiring a Proxmox subscription (which I don't have, as I use it for personal use).
+## Failed Update Error
+
+I recently opened up Proxmox to begin configuring a [Nixos](https://nixos.org/) VM, and noticed I had a bunch of errors when updating the package database `Error: command apt-get update failed: exit code 100`. I SSH'd into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a repo requiring a Proxmox subscription (which I don't have, as I use it for personal use).
+
+## Updating Source List
 
 I managed to find a [Proxmox wiki page](https://pve.proxmox.com/wiki/Package_Repositories) which provided some clarity. In summary I fixed the issue by commenting out the following repository inside of `/etc/apt/sources.list.d/pve-enterprise.list`:
 
