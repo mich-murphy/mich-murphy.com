@@ -17,6 +17,10 @@
         <loc>https://micha.elmurphy.com/page/1/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/proxmox-package-repositories/</loc>
+        <lastmod>2022-12-22</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/s3-object-storage-nixos/</loc>
         <lastmod>2022-12-14</lastmod>
     </url>
@@ -38,6 +42,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nixos/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/proxmox/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/s3/</loc>

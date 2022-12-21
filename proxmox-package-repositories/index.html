@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://micha.elmurphy.com/font-hack.css">
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/proxmox-package-repositories/">Configure Proxmox Package Repositories</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2022-12-22
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                |
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/proxmox/">#proxmox</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>I use <a rel="noopener" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a> to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don't always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to <a rel="noopener" target="_blank" href="https://thehomelab.show/2022/11/30/the-homelab-show-ep-79-virtualization-vs-containers/">episode 79 of the homelab show</a>.</p>
+<span id="continue-reading"></span>
+<p>I recently opened up Proxmox to begin configuring a <a rel="noopener" target="_blank" href="https://nixos.org/">Nixos</a> VM, and noticed I had a bunch of errors when updating the package database <code>Error: command apt-get update failed: exit code 100</code>. I SSH'd into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a channel requiring a Proxmox subscription (which I don't have, as I use it for personal use).</p>
+<p>I managed to find a <a rel="noopener" target="_blank" href="https://pve.proxmox.com/wiki/Package_Repositories">Proxmox wiki page</a> which provided some clarity. In summary I fixed the issue by commenting out the following repository inside of <code>/etc/apt/sources.list.d/pve-enterprise.list</code>:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise
+</span></code></pre>
+<p>I then edited <code>/etc/apt/sources.list</code> to look like the following, adding the pve-no-subscription repo:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">deb</span><span> http://ftp.debian.org/debian bullseye main contrib
+</span><span style="color:#88c0d0;">deb</span><span> http://ftp.debian.org/debian bullseye-updates main contrib
+</span><span>
+</span><span style="color:#616e88;"># PVE pve-no-subscription repository provided by proxmox.com,
+</span><span style="color:#616e88;"># NOT recommended for production use
+</span><span style="color:#88c0d0;">deb</span><span> http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+</span><span>
+</span><span style="color:#616e88;"># security updates
+</span><span style="color:#88c0d0;">deb</span><span> http://security.debian.org/debian-security bullseye-security main contrib
+</span></code></pre>
+<p>After the above changes I ran <code>apt-get update</code> and <code>apt-get upgrade</code>, everything updated without issue.</p>
+<p><strong>Note</strong>: Proxmox highlight in the linked wiki that the pve-no-subscription repo isn't tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/s3-object-storage-nixos/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">How To Mount S3 Object Storage in NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2022
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
