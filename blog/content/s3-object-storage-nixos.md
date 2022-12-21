@@ -1,4 +1,3 @@
-
 +++
 title = "How To Mount S3 Object Storage in NixOS"
 date = 2022-12-14
