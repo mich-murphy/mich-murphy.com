@@ -13,7 +13,7 @@
             <pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/proxmox-package-repositories/</link>
             <guid>https://micha.elmurphy.com/proxmox-package-repositories/</guid>
-            <description>&lt;p&gt;I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt; to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don&#x27;t always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;thehomelab.show&#x2F;2022&#x2F;11&#x2F;30&#x2F;the-homelab-show-ep-79-virtualization-vs-containers&#x2F;&quot;&gt;episode 79 of the homelab show&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+            <description>&lt;p&gt;I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt; to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don&#x27;t always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;thehomelab.show&#x2F;2022&#x2F;11&#x2F;30&#x2F;the-homelab-show-ep-79-virtualization-vs-containers&#x2F;&quot;&gt;this podcast&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 </description>
         </item>
         <item>
