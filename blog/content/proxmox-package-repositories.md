@@ -6,7 +6,7 @@ date = 2022-12-22
 tags = ["proxmox", "homelab"]
 +++
 
-I use [Proxmox](https://www.proxmox.com/en/) to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don't always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to [episode 79 of the homelab show](https://thehomelab.show/2022/11/30/the-homelab-show-ep-79-virtualization-vs-containers/).
+I use [Proxmox](https://www.proxmox.com/en/) to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don't always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to [this podcast](https://thehomelab.show/2022/11/30/the-homelab-show-ep-79-virtualization-vs-containers/).
 
 <!-- more -->
 
