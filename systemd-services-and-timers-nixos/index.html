@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://micha.elmurphy.com/font-hack.css">
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/systemd-services-and-timers-nixos/">How To Configure Systemd Services and Timers in Nixos</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-01-12
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                |
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nix/">#nix</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/systemd/">#systemd</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/cron/">#cron</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Whilst migrating my homelab from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.</p>
+<p>After doing a bit of research I discovered that rather than using a cron job, the preferred method is to <a rel="noopener" target="_blank" href="https://paperless.blog/systemd-services-and-timers-in-nixos">create a systemd service</a> and schedule it using a systemd timer. The major benefits of doing so are:</p>
+<span id="continue-reading"></span>
+<ol>
+<li>Jobs can be isolated to specific users</li>
+<li>Environment variables and paths can be explicitly declared</li>
+<li>Logging is easily viewed by <code>systemctl start example</code> followed by <code>journalctl --unit=example</code></li>
+<li>Timers let you know when the service will next run <code>systemctl status example.timer</code></li>
+</ol>
+<h2 id="initial-setup">Initial Setup</h2>
+<p>The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my <code>/etc/nixos/configuration.nix</code> to look like this:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>users </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> {
+</span><span>  </span><span style="color:#8fbcbb;">groups</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{}</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">users </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">isSystemUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">createHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">home </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/srv/server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span></code></pre>
+<p><strong>Note</strong>: I store all relevant files for my services in <code>/srv</code>, this is how I like to organise my system.</p>
+<h2 id="creating-service-timer">Creating Service &amp; Timer</h2>
+<p>I then add the following to <code>/etc/nixos/configuration.nix</code>, which defines the service and the timer:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>systemd </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> {
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#616e88;"># specify all packages required by the script being scheduled
+</span><span>    </span><span style="color:#8fbcbb;">path </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>      pkgs</span><span style="color:#81a1c1;">.</span><span>rsync
+</span><span>      pkgs</span><span style="color:#81a1c1;">.</span><span>openssh
+</span><span>    ]</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">serviceConfig </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">Type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;oneshot&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># specify the user and group we setup earlier
+</span><span>      </span><span style="color:#8fbcbb;">User </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">Group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># security settings to prevent service from having too many priviliges
+</span><span>      </span><span style="color:#8fbcbb;">ProtectSystem </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;full&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">ProtectHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">NoNewPriviliges </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># the action taken when the service runs
+</span><span>    </span><span style="color:#8fbcbb;">script </span><span style="color:#81a1c1;">= builtins.</span><span>readFile </span><span style="color:#a3be8c;">./server-sync.bash</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">timers</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">wantedBy </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;timers.target&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">timerConfig </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#616e88;"># schedule for the timer to run - this should run every 10 minutes
+</span><span>      </span><span style="color:#8fbcbb;">OnCalendar </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;*-*-* *:*0:00&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># the service to associate the timer with
+</span><span>      </span><span style="color:#8fbcbb;">Unit </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync.service&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span></code></pre>
+<p>If it makes sense for your use case, you may simply want to add the script to be run inside of <code>/etc/nixos/configuration.nix</code>.</p>
+<h2 id="separating-service-script">Separating Service Script</h2>
+<p>In case it's helpful I thought to detail what I have inside of the script being read into the service.</p>
+<p>I'm using <code>rsync</code> to pull my music from a remote server to my homelab. I specify the path to an SSH key for authentication to the server by <code>-e &quot;ssh -i /srv/server-sync/.ssh/server&quot;</code> and then the folders which should be kept in sync.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">rsync</span><span> -nat -e </span><span style="color:#a3be8c;">&quot;ssh -i /srv/server-sync/.ssh/server -o StrictHostKeyChecking=no&quot;</span><span> user@hostname:/home/mm/music/ /data/media/music/
+</span></code></pre>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/proxmox-package-repositories/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Configure Proxmox Package Repositories</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

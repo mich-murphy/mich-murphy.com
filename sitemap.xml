@@ -29,7 +29,14 @@
         <lastmod>2022-11-29</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</loc>
+        <lastmod>2023-01-12</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/cron/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/flakes/</loc>
@@ -48,6 +55,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/s3/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/systemd/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/ubuntu/</loc>
