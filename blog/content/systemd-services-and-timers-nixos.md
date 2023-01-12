@@ -58,6 +58,7 @@ systemd = {
       ProtectSystem = "full";
       ProtectHome = true;
       NoNewPriviliges = true;
+      ReadWritePaths = "/data";
     };
     # the action taken when the service runs
     script = builtins.readFile ./server-sync.bash;
@@ -65,8 +66,8 @@ systemd = {
   timers.server-sync = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      # schedule for the timer to run - this should run every 10 minutes
-      OnCalendar = "*-*-* *:*0:00";
+      # frequency of the service
+      OnCalendar = "hourly";
       # the service to associate the timer with
       Unit = "server-sync.service";
     };
@@ -82,5 +83,11 @@ In case it's helpful I thought to detail what I have inside of the script being 
 I'm using `rsync` to pull my music from a remote server to my homelab. I specify the path to an SSH key for authentication to the server by `-e "ssh -i /srv/server-sync/.ssh/server"` and then the folders which should be kept in sync.
 
 ```bash
-rsync -nat -e "ssh -i /srv/server-sync/.ssh/server -o StrictHostKeyChecking=no" user@hostname:/home/mm/music/ /data/media/music/
+rsync -nat -e "ssh -i /srv/server-sync/.ssh/server" user@hostname:/home/mm/music/ /data/media/music/
 ```
+
+If you run into any errors with SSH, its likely due to incorrect permissions being set for `/srv/server-sync`. Working permissions are as follows:
+- `chmod 700 /srv/server-sync/.ssh`
+- `chmod 644 /srv/server-sync/.ssh/server.pub`
+- `chmod 600 /srv/server-sync/.ssh/server`
+- `chmod 755 /srv/server-sync`
