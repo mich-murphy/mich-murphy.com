@@ -123,6 +123,7 @@
 </span><span>      </span><span style="color:#8fbcbb;">ProtectSystem </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;full&quot;</span><span style="color:#eceff4;">;
 </span><span>      </span><span style="color:#8fbcbb;">ProtectHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
 </span><span>      </span><span style="color:#8fbcbb;">NoNewPriviliges </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">ReadWritePaths </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data&quot;</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
 </span><span>    </span><span style="color:#616e88;"># the action taken when the service runs
 </span><span>    </span><span style="color:#8fbcbb;">script </span><span style="color:#81a1c1;">= builtins.</span><span>readFile </span><span style="color:#a3be8c;">./server-sync.bash</span><span style="color:#eceff4;">;
@@ -130,8 +131,8 @@
 </span><span>  </span><span style="color:#8fbcbb;">timers</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
 </span><span>    </span><span style="color:#8fbcbb;">wantedBy </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;timers.target&quot; </span><span>]</span><span style="color:#eceff4;">;
 </span><span>    </span><span style="color:#8fbcbb;">timerConfig </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>      </span><span style="color:#616e88;"># schedule for the timer to run - this should run every 10 minutes
-</span><span>      </span><span style="color:#8fbcbb;">OnCalendar </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;*-*-* *:*0:00&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># frequency of the service
+</span><span>      </span><span style="color:#8fbcbb;">OnCalendar </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;hourly&quot;</span><span style="color:#eceff4;">;
 </span><span>      </span><span style="color:#616e88;"># the service to associate the timer with
 </span><span>      </span><span style="color:#8fbcbb;">Unit </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync.service&quot;</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
@@ -142,8 +143,15 @@
 <h2 id="separating-service-script">Separating Service Script</h2>
 <p>In case it's helpful I thought to detail what I have inside of the script being read into the service.</p>
 <p>I'm using <code>rsync</code> to pull my music from a remote server to my homelab. I specify the path to an SSH key for authentication to the server by <code>-e &quot;ssh -i /srv/server-sync/.ssh/server&quot;</code> and then the folders which should be kept in sync.</p>
-<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">rsync</span><span> -nat -e </span><span style="color:#a3be8c;">&quot;ssh -i /srv/server-sync/.ssh/server -o StrictHostKeyChecking=no&quot;</span><span> user@hostname:/home/mm/music/ /data/media/music/
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">rsync</span><span> -nat -e </span><span style="color:#a3be8c;">&quot;ssh -i /srv/server-sync/.ssh/server&quot;</span><span> user@hostname:/home/mm/music/ /data/media/music/
 </span></code></pre>
+<p>If you run into any errors with SSH, its likely due to incorrect permissions being set for <code>/srv/server-sync</code>. Working permissions are as follows:</p>
+<ul>
+<li><code>chmod 700 /srv/server-sync/.ssh</code></li>
+<li><code>chmod 644 /srv/server-sync/.ssh/server.pub</code></li>
+<li><code>chmod 600 /srv/server-sync/.ssh/server</code></li>
+<li><code>chmod 755 /srv/server-sync</code></li>
+</ul>
 
         </div>
 
