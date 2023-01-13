@@ -105,6 +105,13 @@
 </span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
 </span></code></pre>
 <p><strong>Note</strong>: I store all relevant files for my services in <code>/srv</code>, this is how I like to organise my system.</p>
+<p>I also created a directory to store all of my media <code>mkdir -p /data/media/music</code>, and one to store my backups (for roon-server at this point) <code>mkdir -p /data/backups/roon-server</code>).</p>
+<p>Finally correct ownership of the new directories to be as follows:</p>
+<ul>
+<li><code>chown root:root /data</code></li>
+<li><code>chown -R server-sync:server-sync /data/media</code></li>
+<li><code>chown -R roon-server:roon-server /data/backups/roon-server</code></li>
+</ul>
 <h2 id="creating-service-timer">Creating Service &amp; Timer</h2>
 <p>I then add the following to <code>/etc/nixos/configuration.nix</code>, which defines the service and the timer:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>systemd </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> {
@@ -123,7 +130,7 @@
 </span><span>      </span><span style="color:#8fbcbb;">ProtectSystem </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;full&quot;</span><span style="color:#eceff4;">;
 </span><span>      </span><span style="color:#8fbcbb;">ProtectHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
 </span><span>      </span><span style="color:#8fbcbb;">NoNewPriviliges </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">ReadWritePaths </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">ReadWritePaths </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data/media&quot;</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
 </span><span>    </span><span style="color:#616e88;"># the action taken when the service runs
 </span><span>    </span><span style="color:#8fbcbb;">script </span><span style="color:#81a1c1;">= builtins.</span><span>readFile </span><span style="color:#a3be8c;">./server-sync.bash</span><span style="color:#eceff4;">;
@@ -140,6 +147,7 @@
 </span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
 </span></code></pre>
 <p>If it makes sense for your use case, you may simply want to add the script to be run inside of <code>/etc/nixos/configuration.nix</code>.</p>
+<p>If you want to read more about the systemd security settings above you can find a high level explanation <a rel="noopener" target="_blank" href="https://xeiaso.net/blog/paranoid-nixos-2021-07-18">here</a> and details of each individual setting at <a rel="noopener" target="_blank" href="https://man7.org/linux/man-pages/man5/systemd.exec.5.html">systemd.exec(5)</a>. A helpful command you can run to being reviewing security of services is <code>systemd-analyze security example.service</code>.</p>
 <h2 id="separating-service-script">Separating Service Script</h2>
 <p>In case it's helpful I thought to detail what I have inside of the script being read into the service.</p>
 <p>I'm using <code>rsync</code> to pull my music from a remote server to my homelab. I specify the path to an SSH key for authentication to the server by <code>-e &quot;ssh -i /srv/server-sync/.ssh/server&quot;</code> and then the folders which should be kept in sync.</p>
