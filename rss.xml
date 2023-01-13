@@ -13,7 +13,7 @@
             <pubDate>Thu, 12 Jan 2023 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</link>
             <guid>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</guid>
-            <description>&lt;p&gt;Whilst migrating my homelab from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.&lt;&#x2F;p&gt;
+            <description>&lt;p&gt;Whilst migrating my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.&lt;&#x2F;p&gt;
 &lt;p&gt;After doing a bit of research I discovered that rather than using a cron job, the preferred method is to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;paperless.blog&#x2F;systemd-services-and-timers-in-nixos&quot;&gt;create a systemd service&lt;&#x2F;a&gt; and schedule it using a systemd timer. The major benefits of doing so are:&lt;&#x2F;p&gt;
 </description>
         </item>
@@ -30,7 +30,7 @@
             <pubDate>Wed, 14 Dec 2022 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/s3-object-storage-nixos/</link>
             <guid>https://micha.elmurphy.com/s3-object-storage-nixos/</guid>
-            <description>&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my homelab to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
+            <description>&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
 </description>
         </item>
         <item>
@@ -47,7 +47,7 @@
             <pubDate>Tue, 29 Nov 2022 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/s3-object-storage/</link>
             <guid>https://micha.elmurphy.com/s3-object-storage/</guid>
-            <description>&lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;Homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
+            <description>&lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
 &lt;p&gt;For streaming music and managing metadata I&#x27;m using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;roonlabs.com&#x2F;&quot;&gt;Roon Server&lt;&#x2F;a&gt;, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt;. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.&lt;&#x2F;p&gt;
 </description>
         </item>
