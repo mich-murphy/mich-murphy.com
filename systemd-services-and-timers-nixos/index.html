@@ -92,17 +92,23 @@
 </ol>
 <h2 id="initial-setup">Initial Setup</h2>
 <p>The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my <code>/etc/nixos/configuration.nix</code> to look like this:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>users </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> {
-</span><span>  </span><span style="color:#8fbcbb;">groups</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{}</span><span style="color:#eceff4;">;
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pgks</span><span style="color:#81a1c1;">, ... </span><span>}:
+</span><span>
+</span><span>{
+</span><span>
 </span><span>  </span><span style="color:#8fbcbb;">users </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>    </span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>      </span><span style="color:#8fbcbb;">group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">isSystemUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">createHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">home </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/srv/server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">groups</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{}</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">users </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">isSystemUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">createHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">home </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/srv/server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
 </span><span>  }</span><span style="color:#eceff4;">;
-</span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span><span>
+</span><span>}
 </span></code></pre>
 <p><strong>Note</strong>: I store all relevant files for my services in <code>/srv</code>, this is how I like to organise my system.</p>
 <p>I also created a directory to store all of my media <code>mkdir -p /data/media/music</code>, and one to store my backups (for roon-server at this point) <code>mkdir -p /data/backups/roon-server</code>).</p>
@@ -114,37 +120,43 @@
 </ul>
 <h2 id="creating-service-timer">Creating Service &amp; Timer</h2>
 <p>I then add the following to <code>/etc/nixos/configuration.nix</code>, which defines the service and the timer:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>systemd </span><span style="background-color:#bf616a;color:#d8dee9;">=</span><span> {
-</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>    </span><span style="color:#616e88;"># specify all packages required by the script being scheduled
-</span><span>    </span><span style="color:#8fbcbb;">path </span><span style="color:#81a1c1;">= </span><span>[
-</span><span>      pkgs</span><span style="color:#81a1c1;">.</span><span>rsync
-</span><span>      pkgs</span><span style="color:#81a1c1;">.</span><span>openssh
-</span><span>    ]</span><span style="color:#eceff4;">;
-</span><span>    </span><span style="color:#8fbcbb;">serviceConfig </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>      </span><span style="color:#8fbcbb;">Type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;oneshot&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#616e88;"># specify the user and group we setup earlier
-</span><span>      </span><span style="color:#8fbcbb;">User </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">Group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#616e88;"># security settings to prevent service from having too many priviliges
-</span><span>      </span><span style="color:#8fbcbb;">ProtectSystem </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;full&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">ProtectHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">NoNewPriviliges </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">ReadWritePaths </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data/media&quot;</span><span style="color:#eceff4;">;
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pgks</span><span style="color:#81a1c1;">, ... </span><span>}:
+</span><span>
+</span><span>{
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">systemd </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#616e88;"># specify all packages required by the script being scheduled
+</span><span>      </span><span style="color:#8fbcbb;">path </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>        pkgs</span><span style="color:#81a1c1;">.</span><span>rsync
+</span><span>        pkgs</span><span style="color:#81a1c1;">.</span><span>openssh
+</span><span>      ]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">serviceConfig </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">Type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;oneshot&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#616e88;"># specify the user and group we setup earlier
+</span><span>        </span><span style="color:#8fbcbb;">User </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">Group </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#616e88;"># security settings to prevent service from having too many priviliges
+</span><span>        </span><span style="color:#8fbcbb;">ProtectSystem </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;full&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">ProtectHome </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">NoNewPriviliges </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">ReadWritePaths </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data/media&quot;</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># the action taken when the service runs
+</span><span>      </span><span style="color:#8fbcbb;">script </span><span style="color:#81a1c1;">= builtins.</span><span>readFile </span><span style="color:#a3be8c;">./server-sync.bash</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
-</span><span>    </span><span style="color:#616e88;"># the action taken when the service runs
-</span><span>    </span><span style="color:#8fbcbb;">script </span><span style="color:#81a1c1;">= builtins.</span><span>readFile </span><span style="color:#a3be8c;">./server-sync.bash</span><span style="color:#eceff4;">;
-</span><span>  }</span><span style="color:#eceff4;">;
-</span><span>  </span><span style="color:#8fbcbb;">timers</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>    </span><span style="color:#8fbcbb;">wantedBy </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;timers.target&quot; </span><span>]</span><span style="color:#eceff4;">;
-</span><span>    </span><span style="color:#8fbcbb;">timerConfig </span><span style="color:#81a1c1;">= </span><span>{
-</span><span>      </span><span style="color:#616e88;"># frequency of the service
-</span><span>      </span><span style="color:#8fbcbb;">OnCalendar </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;hourly&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#616e88;"># the service to associate the timer with
-</span><span>      </span><span style="color:#8fbcbb;">Unit </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync.service&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">timers</span><span>.</span><span style="color:#8fbcbb;">server-sync </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">wantedBy </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;timers.target&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">timerConfig </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#616e88;"># frequency of the service
+</span><span>        </span><span style="color:#8fbcbb;">OnCalendar </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;hourly&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#616e88;"># the service to associate the timer with
+</span><span>        </span><span style="color:#8fbcbb;">Unit </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;server-sync.service&quot;</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
 </span><span>    }</span><span style="color:#eceff4;">;
 </span><span>  }</span><span style="color:#eceff4;">;
-</span><span>}</span><span style="background-color:#bf616a;color:#d8dee9;">;</span><span>
+</span><span>
+</span><span>}
 </span></code></pre>
 <p>If it makes sense for your use case, you may simply want to add the script to be run inside of <code>/etc/nixos/configuration.nix</code>.</p>
 <p>If you want to read more about the systemd security settings above you can find a high level explanation <a rel="noopener" target="_blank" href="https://xeiaso.net/blog/paranoid-nixos-2021-07-18">here</a> and details of each individual setting at <a rel="noopener" target="_blank" href="https://man7.org/linux/man-pages/man5/systemd.exec.5.html">systemd.exec(5)</a>. A helpful command you can run to being reviewing security of services is <code>systemd-analyze security example.service</code>.</p>
