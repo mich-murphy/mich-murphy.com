@@ -37,6 +37,13 @@ users = {
 
 **Note**: I store all relevant files for my services in `/srv`, this is how I like to organise my system.
 
+I also created a directory to store all of my media `mkdir -p /data/media/music`, and one to store my backups (for roon-server at this point) `mkdir -p /data/backups/roon-server`).
+
+Finally correct ownership of the new directories to be as follows:
+- `chown root:root /data`
+- `chown -R server-sync:server-sync /data/media`
+- `chown -R roon-server:roon-server /data/backups/roon-server`
+
 ## Creating Service & Timer
 
 I then add the following to `/etc/nixos/configuration.nix`, which defines the service and the timer:
@@ -58,7 +65,7 @@ systemd = {
       ProtectSystem = "full";
       ProtectHome = true;
       NoNewPriviliges = true;
-      ReadWritePaths = "/data";
+      ReadWritePaths = "/data/media";
     };
     # the action taken when the service runs
     script = builtins.readFile ./server-sync.bash;
@@ -75,6 +82,8 @@ systemd = {
 };
 ```
 If it makes sense for your use case, you may simply want to add the script to be run inside of `/etc/nixos/configuration.nix`.
+
+If you want to read more about the systemd security settings above you can find a high level explanation [here](https://xeiaso.net/blog/paranoid-nixos-2021-07-18) and details of each individual setting at [systemd.exec(5)](https://man7.org/linux/man-pages/man5/systemd.exec.5.html). A helpful command you can run to being reviewing security of services is `systemd-analyze security example.service`.
 
 ## Separating Service Script
 
