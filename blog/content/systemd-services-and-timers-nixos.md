@@ -22,17 +22,23 @@ After doing a bit of research I discovered that rather than using a cron job, th
 The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my `/etc/nixos/configuration.nix` to look like this:
 
 ```nix
-users = {
-  groups.server-sync = {};
+{ config, pgks, ... }:
+
+{
+
   users = {
-    server-sync = {
-      group = "server-sync";
-      isSystemUser = true;
-      createHome = true;
-      home = "/srv/server-sync";
+    groups.server-sync = {};
+    users = {
+      server-sync = {
+        group = "server-sync";
+        isSystemUser = true;
+        createHome = true;
+        home = "/srv/server-sync";
+      };
     };
   };
-};
+
+}
 ```
 
 **Note**: I store all relevant files for my services in `/srv`, this is how I like to organise my system.
@@ -49,37 +55,43 @@ Finally correct ownership of the new directories to be as follows:
 I then add the following to `/etc/nixos/configuration.nix`, which defines the service and the timer:
 
 ```nix
-systemd = {
-  services.server-sync = {
-    # specify all packages required by the script being scheduled
-    path = [
-      pkgs.rsync
-      pkgs.openssh
-    ];
-    serviceConfig = {
-      Type = "oneshot";
-      # specify the user and group we setup earlier
-      User = "server-sync";
-      Group = "server-sync";
-      # security settings to prevent service from having too many priviliges
-      ProtectSystem = "full";
-      ProtectHome = true;
-      NoNewPriviliges = true;
-      ReadWritePaths = "/data/media";
+{ config, pgks, ... }:
+
+{
+
+  systemd = {
+    services.server-sync = {
+      # specify all packages required by the script being scheduled
+      path = [
+        pkgs.rsync
+        pkgs.openssh
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        # specify the user and group we setup earlier
+        User = "server-sync";
+        Group = "server-sync";
+        # security settings to prevent service from having too many priviliges
+        ProtectSystem = "full";
+        ProtectHome = true;
+        NoNewPriviliges = true;
+        ReadWritePaths = "/data/media";
+      };
+      # the action taken when the service runs
+      script = builtins.readFile ./server-sync.bash;
     };
-    # the action taken when the service runs
-    script = builtins.readFile ./server-sync.bash;
-  };
-  timers.server-sync = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      # frequency of the service
-      OnCalendar = "hourly";
-      # the service to associate the timer with
-      Unit = "server-sync.service";
+    timers.server-sync = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        # frequency of the service
+        OnCalendar = "hourly";
+        # the service to associate the timer with
+        Unit = "server-sync.service";
+      };
     };
   };
-};
+
+}
 ```
 If it makes sense for your use case, you may simply want to add the script to be run inside of `/etc/nixos/configuration.nix`.
 

@@ -76,7 +76,7 @@ in {
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStartPre = [
-          "${pkgs.coreutils}/bin/mkdir -pv ${cfg.mountPath}"
+          "${pkgs.coreutils}/bin/mkdir -m 777 -pv ${cfg.mountPath}"
           "${pkgs.e2fsprogs}/bin/chattr +i ${cfg.mountPath}" # stop files being written to unmounted dir
         ];
         ExecStart = let
@@ -85,7 +85,7 @@ in {
             "use_path_request_style"
             "allow_other"
             "url=${cfg.url}"
-            "umask=0777"
+            "umask=0000"
           ];
         in
           "${pkgs.s3fs}/bin/s3fs ${cfg.bucket} ${cfg.mountPath} -f "
@@ -99,5 +99,14 @@ in {
 }
 ```
 The above sets up a module for `services.s3fs`, allowing us to enable/disable the service as well as edit the default settings. When enabled a `systemd` service is created which mounts the s3 bucket, making it available at the specified path (`/mnt/data` by default).
+
+The service will look for a file containing an access and API key by default in `/etc/passwd-s3fs`, before running the service you will need to run the following to configure authentication details:
+
+```bash
+echo "ACCESS_KEY:SECRET_KEY" | sudo tee /etc/passwd-s3fs
+sudo chmod 600 /etc/passwd-s3fs
+```
+
+**Note**: I recently ran into an issue when setting this up and had to comment out `"${pkgs.e2fsprogs}/bin/chattr +i ${cfg.mountPath}"` to resolve the issue. I'll update if I figure out a solution. For now everything is working without it.
 
 Much of the credit for this post goes to a forum post on the [NixOS Discourse](https://discourse.nixos.org/t/how-to-setup-s3fs-mount/6283).
