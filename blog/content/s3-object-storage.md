@@ -6,13 +6,13 @@ date = 2022-11-29
 tags = ["ubuntu", "homelab", "s3"]
 +++
 
-I'm currently in the process of setting up a [Homelab](https://linuxhandbook.com/homelab/), one of the major tasks I want to manage is storage and streaming of music.
+I'm currently in the process of setting up a [homelab](https://linuxhandbook.com/homelab/), one of the major tasks I want to manage is storage and streaming of music.
 
 For streaming music and managing metadata I'm using [Roon Server](https://roonlabs.com/), this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in [Proxmox](https://www.proxmox.com/en/). My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.
 
 <!-- more -->
 
-My end goal is to build a dedicated Homelab with a large amount of storage, either as [ZFS](https://arstechnica.com/information-technology/2020/05/zfs-101-understanding-zfs-storage-and-performance/) or a combination of [MergerFS](https://perfectmediaserver.com/tech-stack/mergerfs/) and [SnapRAID](https://perfectmediaserver.com/tech-stack/snapraid/). Unfortunately building a dedicated Homelab requires a significant financial contribution. I needed to find an interim solution - that's where S3 compatible object storage comes in.
+My end goal is to build a dedicated homelab with a large amount of storage, either as [ZFS](https://arstechnica.com/information-technology/2020/05/zfs-101-understanding-zfs-storage-and-performance/) or a combination of [MergerFS](https://perfectmediaserver.com/tech-stack/mergerfs/) and [SnapRAID](https://perfectmediaserver.com/tech-stack/snapraid/). Unfortunately building a dedicated homelab requires a significant financial contribution. I needed to find an interim solution - that's where S3 compatible object storage comes in.
 
 I hadn't previously used object storage, but had heard it worked well for storing files that don't change frequently e.g. media files and music. After doing some quick research I discovered that I could mount an object store to a computer running Linux, macOS or FreeBSD using [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse). I decided to test how well this worked by mounting the object store, adding some music to it and then pointing Roon Server to the object store. The steps I followed to mount the object store are detailed in [this guide](https://upcloud.com/resources/tutorials/mount-object-storage-cloud-server-s3fs-fuse), my own summarised version is below.
 

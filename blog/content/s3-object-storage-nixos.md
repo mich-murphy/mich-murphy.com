@@ -6,7 +6,7 @@ date = 2022-12-14
 tags = ["nixos", "homelab", "s3"]
 +++
 
-I previously wrote about how I mounted s3 object storage to my [homelab running Ubuntu](/s3-object-storage.md). I've since been configuring my homelab to run using [NixOS](https://nixos.org/). NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.
+I previously wrote about how I mounted s3 object storage to my [homelab running Ubuntu](/s3-object-storage.md). I've since been configuring my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) to run using [NixOS](https://nixos.org/). NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.
 
 <!-- more -->
 
