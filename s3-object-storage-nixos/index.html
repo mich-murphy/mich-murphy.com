@@ -84,7 +84,8 @@
 <span id="continue-reading"></span><h2 id="updating-nixos-configuration">Updating NixOS Configuration</h2>
 <p>Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.</p>
 <p>After a default install of NixOS the configuration file is available to edit at <code>/etc/nixos/configuration.nix</code>, to mount an s3 bucket we will expand on the <code>configuration.nix</code> by adding a new <code>module</code>, called <code>s3fs</code>. We will do this by importing a separate <code>s3fs.nix</code> file, which we will create shortly, for now edit <code>/etc/nixos/configuration.nix</code> and add the following:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>  </span><span style="color:#8fbcbb;">imports </span><span style="color:#81a1c1;">= </span><span>[
@@ -103,6 +104,7 @@
 <p>Finally we can edit <code>/etc/nixos/modules/s3fs.nix</code> and add the following:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># s3fs configuration
 </span><span>
+</span><span style="color:#616e88;"># /etc/nixos/modules/s3fs.nix
 </span><span>{ config</span><span style="color:#81a1c1;">, </span><span>lib</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
 </span><span>
 </span><span style="color:#81a1c1;">with </span><span>lib;

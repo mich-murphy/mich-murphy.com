@@ -73,7 +73,6 @@
     
         <span class="post-tags-inline">
                 |
-                <a class="post-tag" href="https://micha.elmurphy.com/tags/nix/">#nix</a>,
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>,
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/systemd/">#systemd</a>,
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/cron/">#cron</a></span>
@@ -92,7 +91,8 @@
 </ol>
 <h2 id="initial-setup">Initial Setup</h2>
 <p>The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my <code>/etc/nixos/configuration.nix</code> to look like this:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pgks</span><span style="color:#81a1c1;">, ... </span><span>}:
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>
@@ -120,7 +120,8 @@
 </ul>
 <h2 id="creating-service-timer">Creating Service &amp; Timer</h2>
 <p>I then add the following to <code>/etc/nixos/configuration.nix</code>, which defines the service and the timer:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ config</span><span style="color:#81a1c1;">, </span><span>pgks</span><span style="color:#81a1c1;">, ... </span><span>}:
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>
@@ -189,6 +190,13 @@
                         </a>
                     </span>
                 
+                
+                    <span class="button next">
+                        <a href="https://micha.elmurphy.com/nixos-impermanence/">
+                            <span class="button__text">Configuring NixOS for Impermanence</span>&nbsp;
+                            <span class="button__icon">→</span>
+                        </a>
+                    </span>
                 </div>
         </div>
     

@@ -7,16 +7,7 @@
         <generator>Zola</generator>
         <language>en</language>
         <atom:link href="https://micha.elmurphy.com/tags/nix/rss.xml" rel="self" type="application/rss+xml"/>
-        <lastBuildDate>Thu, 12 Jan 2023 00:00:00 +0000</lastBuildDate>
-        <item>
-            <title>How To Configure Systemd Services and Timers in Nixos</title>
-            <pubDate>Thu, 12 Jan 2023 00:00:00 +0000</pubDate>
-            <link>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</link>
-            <guid>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</guid>
-            <description>&lt;p&gt;Whilst migrating my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.&lt;&#x2F;p&gt;
-&lt;p&gt;After doing a bit of research I discovered that rather than using a cron job, the preferred method is to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;paperless.blog&#x2F;systemd-services-and-timers-in-nixos&quot;&gt;create a systemd service&lt;&#x2F;a&gt; and schedule it using a systemd timer. The major benefits of doing so are:&lt;&#x2F;p&gt;
-</description>
-        </item>
+        <lastBuildDate>Wed, 07 Dec 2022 00:00:00 +0000</lastBuildDate>
         <item>
             <title>Useful References for Understanding Nix&#x2F;NixOS</title>
             <pubDate>Wed, 07 Dec 2022 00:00:00 +0000</pubDate>
