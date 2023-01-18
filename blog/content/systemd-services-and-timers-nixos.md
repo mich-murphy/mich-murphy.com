@@ -22,7 +22,8 @@ After doing a bit of research I discovered that rather than using a cron job, th
 The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my `/etc/nixos/configuration.nix` to look like this:
 
 ```nix
-{ config, pgks, ... }:
+# /etc/nixos/configuration.nix
+{ ... }:
 
 {
 
@@ -55,7 +56,8 @@ Finally correct ownership of the new directories to be as follows:
 I then add the following to `/etc/nixos/configuration.nix`, which defines the service and the timer:
 
 ```nix
-{ config, pgks, ... }:
+# /etc/nixos/configuration.nix
+{ ... }:
 
 {
 
