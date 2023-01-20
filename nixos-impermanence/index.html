@@ -103,7 +103,6 @@
 <h2 id="configuring-persistence">Configuring Persistence</h2>
 <p>With the above complete I was able to configure directories I needed to persist from within <code>/etc/nixos/configuration.nix</code>.</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
-</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>  </span><span style="color:#8fbcbb;">environment </span><span style="color:#81a1c1;">= </span><span>{
@@ -135,7 +134,6 @@
 <h2 id="managing-users">Managing Users</h2>
 <p>You may have noticed in the configuration above I also persist <code>/users/admin</code>, this allows me to store a hashed password for the user inside of the directory, which is read from within <code>/etc/nixos/configuration.nix</code>. The alternative is to either include a password directly, which would then be available for everyone to see in the nix store, or to add a temporary password and change it on each reboot:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
-</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>  </span><span style="color:#8fbcbb;">users </span><span style="color:#81a1c1;">= </span><span>{

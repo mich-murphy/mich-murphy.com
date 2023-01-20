@@ -92,7 +92,6 @@
 <h2 id="initial-setup">Initial Setup</h2>
 <p>The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my <code>/etc/nixos/configuration.nix</code> to look like this:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
-</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>
@@ -121,7 +120,6 @@
 <h2 id="creating-service-timer">Creating Service &amp; Timer</h2>
 <p>I then add the following to <code>/etc/nixos/configuration.nix</code>, which defines the service and the timer:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
-</span><span>{ </span><span style="color:#81a1c1;">... </span><span>}:
 </span><span>
 </span><span>{
 </span><span>
