@@ -23,7 +23,6 @@ The first step is to create a dedicated user and group which we can use to isola
 
 ```nix
 # /etc/nixos/configuration.nix
-{ ... }:
 
 {
 
@@ -57,7 +56,6 @@ I then add the following to `/etc/nixos/configuration.nix`, which defines the se
 
 ```nix
 # /etc/nixos/configuration.nix
-{ ... }:
 
 {
 

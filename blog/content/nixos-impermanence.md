@@ -38,7 +38,6 @@ With the above complete I was able to configure directories I needed to persist 
 
 ```nix
 # /etc/nixos/configuration.nix
-{ ... }:
 
 {
   environment = {
@@ -76,7 +75,6 @@ You may have noticed in the configuration above I also persist `/users/admin`, t
 
 ```nix
 # /etc/nixos/configuration.nix
-{ ... }:
 
 {
   users = {

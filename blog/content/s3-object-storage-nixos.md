@@ -42,8 +42,6 @@ sudo mkdir /etc/nixos/modules && sudo touch s3fs.nix
 Finally we can edit `/etc/nixos/modules/s3fs.nix` and add the following:
 
 ```nix
-# s3fs configuration
-
 # /etc/nixos/modules/s3fs.nix
 { config, lib, pkgs, ... }:
 
