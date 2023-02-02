@@ -3,7 +3,7 @@ title = "How To Configure Systemd Services and Timers in Nixos"
 date = 2023-01-12
 
 [taxonomies]
-tags = ["nix", "nixos", "systemd", "cron"]
+tags = ["nixos", "systemd", "cron"]
 +++
 
 Whilst migrating my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.
@@ -22,7 +22,7 @@ After doing a bit of research I discovered that rather than using a cron job, th
 The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my `/etc/nixos/configuration.nix` to look like this:
 
 ```nix
-{ config, pgks, ... }:
+# /etc/nixos/configuration.nix
 
 {
 
@@ -55,7 +55,7 @@ Finally correct ownership of the new directories to be as follows:
 I then add the following to `/etc/nixos/configuration.nix`, which defines the service and the timer:
 
 ```nix
-{ config, pgks, ... }:
+# /etc/nixos/configuration.nix
 
 {
 

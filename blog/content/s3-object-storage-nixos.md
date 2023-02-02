@@ -17,6 +17,7 @@ Whilst you could in theory install the required tools and manually mount an s3 o
 After a default install of NixOS the configuration file is available to edit at `/etc/nixos/configuration.nix`, to mount an s3 bucket we will expand on the `configuration.nix` by adding a new `module`, called `s3fs`. We will do this by importing a separate `s3fs.nix` file, which we will create shortly, for now edit `/etc/nixos/configuration.nix` and add the following:
 
 ```nix
+# /etc/nixos/configuration.nix
 { config, pkgs, ... }:
 
 {
@@ -41,8 +42,7 @@ sudo mkdir /etc/nixos/modules && sudo touch s3fs.nix
 Finally we can edit `/etc/nixos/modules/s3fs.nix` and add the following:
 
 ```nix
-# s3fs configuration
-
+# /etc/nixos/modules/s3fs.nix
 { config, lib, pkgs, ... }:
 
 with lib;
