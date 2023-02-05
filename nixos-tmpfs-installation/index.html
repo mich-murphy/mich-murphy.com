@@ -80,10 +80,10 @@
 
         
         <div class="post-content">
-            <p>In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the <a rel="noopener" target="_blank" href="https://micha.elmurphy.com/nixos-impermanence/">post I wrote</a> about configuring NixOS for impermanence, and walks through the installation.</p>
+            <p>In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about <a rel="noopener" target="_blank" href="https://micha.elmurphy.com/nixos-impermanence/">configuring NixOS for impermanence</a>, and walks through the installation.</p>
 <span id="continue-reading"></span><h2 id="useful-references-notes">Useful References &amp; Notes</h2>
 <p>The following is summarised from a combination of 2 different blog posts: one detailing how to <a rel="noopener" target="_blank" href="https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/">configure a tmpfs on NixOS</a> and another showing how to <a rel="noopener" target="_blank" href="https://xeiaso.net/blog/paranoid-nixos-2021-07-18">harden the NixOS install</a>.</p>
-<p>The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. <strong>Note</strong>: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for EUFI instructions.</p>
+<p>The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. <strong>Note</strong>: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.</p>
 <p>Before proceeding you will need a copy of the <a rel="noopener" target="_blank" href="https://nixos.org/download.html#nix-more">NixOS Minimal ISO</a>.</p>
 <h2 id="partitioning-labelling-drives">Partitioning &amp; Labelling Drives</h2>
 <p>If unsure first check which drives are available, and confirm which to install on with <code>lsblk</code>. I will be installing on <code>/dev/sda</code>, replace this with the relevant drive if it's different.</p>
@@ -134,15 +134,15 @@
 </span><span>  }</span><span style="color:#eceff4;">;
 </span><span>
 </span><span>  </span><span style="color:#616e88;"># Update both /boot and /nix to use labels rather than UUID
-</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/boot&quot; </span><span style="color:#81a1c1;">=
-</span><span>    { </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/boot&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
-</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/boot&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/boot&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
 </span><span>
-</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/nix&quot; </span><span style="color:#81a1c1;">=
-</span><span>    { </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/nix&quot;</span><span style="color:#eceff4;">;
-</span><span>      </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
-</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/nix&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/nix&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
 </span><span>}
 </span></code></pre>
 <p>You will also need to edit <code>/etc/nixos/configuration.nix</code>, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">deploy-rs</a>:</p>

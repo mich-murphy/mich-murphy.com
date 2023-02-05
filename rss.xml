@@ -13,7 +13,7 @@
             <pubDate>Mon, 06 Feb 2023 00:00:00 +0000</pubDate>
             <link>https://micha.elmurphy.com/nixos-tmpfs-installation/</link>
             <guid>https://micha.elmurphy.com/nixos-tmpfs-installation/</guid>
-            <description>&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;micha.elmurphy.com&#x2F;nixos-impermanence&#x2F;&quot;&gt;post I wrote&lt;&#x2F;a&gt; about configuring NixOS for impermanence, and walks through the installation.&lt;&#x2F;p&gt;
+            <description>&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;micha.elmurphy.com&#x2F;nixos-impermanence&#x2F;&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
 </description>
         </item>
         <item>
