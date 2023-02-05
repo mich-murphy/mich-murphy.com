@@ -6,7 +6,7 @@ date = 2023-02-06
 tags = ["nixos", "impermanence", "homelab"]
 +++
 
-In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the [post I wrote](https://micha.elmurphy.com/nixos-impermanence/) about configuring NixOS for impermanence, and walks through the installation.
+In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about [configuring NixOS for impermanence](https://micha.elmurphy.com/nixos-impermanence/), and walks through the installation.
 
 <!-- more -->
 
@@ -14,7 +14,7 @@ In this post I explain how to install NixOS using a temporary file system (tmpfs
 
 The following is summarised from a combination of 2 different blog posts: one detailing how to [configure a tmpfs on NixOS](https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/) and another showing how to [harden the NixOS install](https://xeiaso.net/blog/paranoid-nixos-2021-07-18).
 
-The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. **Note**: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for EUFI instructions.
+The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. **Note**: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.
 
 Before proceeding you will need a copy of the [NixOS Minimal ISO](https://nixos.org/download.html#nix-more).
 
@@ -77,15 +77,15 @@ Before completing the final install we need to make some changes to the generate
   };
 
   # Update both /boot and /nix to use labels rather than UUID
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-label/boot";
-      fsType = "ext4";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/boot";
+    fsType = "ext4";
+  };
 
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-label/nix";
-      fsType = "ext4";
-    };
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-label/nix";
+    fsType = "ext4";
+  };
 }
 ```
 
