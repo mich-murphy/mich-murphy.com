@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Installing NixOS on a Temporary File System | Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://micha.elmurphy.com/font-hack.css">
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/nixos-tmpfs-installation/">Installing NixOS on a Temporary File System</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-02-06
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                |
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/impermanence/">#impermanence</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the <a rel="noopener" target="_blank" href="https://micha.elmurphy.com/nixos-impermanence/">post I wrote</a> about configuring NixOS for impermanence, and walks through the installation.</p>
+<span id="continue-reading"></span><h2 id="useful-references-notes">Useful References &amp; Notes</h2>
+<p>The following is summarised from a combination of 2 different blog posts: one detailing how to <a rel="noopener" target="_blank" href="https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/">configure a tmpfs on NixOS</a> and another showing how to <a rel="noopener" target="_blank" href="https://xeiaso.net/blog/paranoid-nixos-2021-07-18">harden the NixOS install</a>.</p>
+<p>The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. <strong>Note</strong>: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for EUFI instructions.</p>
+<p>Before proceeding you will need a copy of the <a rel="noopener" target="_blank" href="https://nixos.org/download.html#nix-more">NixOS Minimal ISO</a>.</p>
+<h2 id="partitioning-labelling-drives">Partitioning &amp; Labelling Drives</h2>
+<p>If unsure first check which drives are available, and confirm which to install on with <code>lsblk</code>. I will be installing on <code>/dev/sda</code>, replace this with the relevant drive if it's different.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># Create legacy boot partition of 512MB
+</span><span style="color:#88c0d0;">parted</span><span> /dev/sda</span><span style="color:#81a1c1;"> --</span><span> mklabel msdos
+</span><span style="color:#88c0d0;">parted</span><span> /dev/sda</span><span style="color:#81a1c1;"> --</span><span> mkpart primary ext4 1M 512M
+</span><span style="color:#88c0d0;">parted</span><span> /dev/sda</span><span style="color:#81a1c1;"> --</span><span> set 1 boot on
+</span><span>
+</span><span style="color:#616e88;"># Create root partition on remaining storage
+</span><span style="color:#88c0d0;">parted</span><span> /dev/sda</span><span style="color:#81a1c1;"> --</span><span> mkpart primary ext4 512MiB 100</span><span style="color:#81a1c1;">%
+</span><span>
+</span><span style="color:#616e88;"># Label both partitions
+</span><span style="color:#88c0d0;">mkfs.ext4</span><span> -L boot /dev/sda1
+</span><span style="color:#88c0d0;">mkfs.ext4</span><span> -L nix /dev/sda2
+</span></code></pre>
+<h2 id="mount-drive-create-folders">Mount Drive &amp; Create Folders</h2>
+<p>We need to setup the following folder structure on the drive we prepared before starting a NixOS install.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># Create root mount with tmpfs
+</span><span style="color:#88c0d0;">mount</span><span> -t tmpfs none /mnt
+</span><span>
+</span><span style="color:#616e88;"># Create folder structure to persist in /nix/persist - srv is optional, used as home directory for services
+</span><span style="color:#88c0d0;">mkdir</span><span> -p /mnt/{boot</span><span style="color:#eceff4;">,</span><span>nix</span><span style="color:#eceff4;">,</span><span>etc/{nixos</span><span style="color:#eceff4;">,</span><span>ssh}</span><span style="color:#eceff4;">,</span><span>var/{lib</span><span style="color:#eceff4;">,</span><span>log}</span><span style="color:#eceff4;">,</span><span>srv}
+</span><span>
+</span><span style="color:#616e88;"># Mount relevant partitions to each folder
+</span><span style="color:#88c0d0;">mount</span><span> /dev/sda1 /mnt/boot
+</span><span style="color:#88c0d0;">mount</span><span> /dev/sda2 /mnt/nix
+</span><span>
+</span><span style="color:#616e88;"># Create matching folders in /mnt/nix/persist
+</span><span style="color:#88c0d0;">mkdir</span><span> -p /mnt/nix/persist/{etc/{nixos</span><span style="color:#eceff4;">,</span><span>ssh}</span><span style="color:#eceff4;">,</span><span>var/{lib</span><span style="color:#eceff4;">,</span><span>log}</span><span style="color:#eceff4;">,</span><span>srv}
+</span><span>
+</span><span style="color:#616e88;"># Create temporary bind mounts (later replaced with impermanence - refer to post linked above)
+</span><span style="color:#88c0d0;">mount</span><span> -o bind /mnt/nix/persist/etc/nixos /mnt/etc/nixos
+</span><span style="color:#88c0d0;">mount</span><span> -o bind /mnt/nix/persist/var/log /mnt/var/log
+</span><span>
+</span><span style="color:#616e88;"># Generate a base config
+</span><span style="color:#88c0d0;">nixos-generate-config</span><span> --root /mnt
+</span></code></pre>
+<h2 id="editing-configuration-files">Editing Configuration Files</h2>
+<p>Before completing the final install we need to make some changes to the generated configuration:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/hardware-configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;none&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;tmpfs&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># add the line below - limits root storage to 2G maximum
+</span><span>    </span><span style="color:#8fbcbb;">options </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;defaults&quot; &quot;size=2G&quot; &quot;mode=755&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># Update both /boot and /nix to use labels rather than UUID
+</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/boot&quot; </span><span style="color:#81a1c1;">=
+</span><span>    { </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/boot&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/nix&quot; </span><span style="color:#81a1c1;">=
+</span><span>    { </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/disk/by-label/nix&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">fsType </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>You will also need to edit <code>/etc/nixos/configuration.nix</code>, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">deploy-rs</a>:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#616e88;"># Configure user with sudo access and SSH key authentication
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">mutableUsers </span><span style="color:#81a1c1;">= false</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># prevents any changes to users outside of config file
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">mm </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">isNormalUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">extraGroups </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;wheel&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">openssh</span><span>.</span><span style="color:#8fbcbb;">authorizedKeys</span><span>.</span><span style="color:#8fbcbb;">keys </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>      </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMne13aa88i97xAUqU33dk2FNz+w8OIMGi8LH4BCRFaN&quot;
+</span><span>    ]</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>  
+</span><span>  </span><span style="color:#616e88;"># Persist host ssh keys to enable decrycption of agenix secrets
+</span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_rsa_key&quot;</span><span>.</span><span style="color:#8fbcbb;">source
+</span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_rsa_key&quot;</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_rsa_key.pub&quot;</span><span>.</span><span style="color:#8fbcbb;">source
+</span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_rsa_key.pub&quot;</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_ed25519_key&quot;</span><span>.</span><span style="color:#8fbcbb;">source
+</span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_ed25519_key&quot;</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_ed25519_key.pub&quot;</span><span>.</span><span style="color:#8fbcbb;">source
+</span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_ed25519_key.pub&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># enable nix flakes
+</span><span>  </span><span style="color:#8fbcbb;">nix</span><span>.</span><span style="color:#8fbcbb;">extraOptions </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&#39;&#39;
+</span><span style="color:#a3be8c;">    experimental-features = nix-command flakes
+</span><span style="color:#a3be8c;">  &#39;&#39;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># allow for deployment without entering password
+</span><span>  </span><span style="color:#8fbcbb;">security</span><span>.</span><span style="color:#8fbcbb;">sudo</span><span>.</span><span style="color:#8fbcbb;">wheelNeedsPassword </span><span style="color:#81a1c1;">= false</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>If you plan on using <code>/etc/nixos/ocnfiguration.nix</code> for configuration, then you will want to ensure your created user also has a password. You may also want to edit the timezone, network settings, hostname and bootloader.</p>
+<h2 id="complete-nixos-install">Complete NixOS Install</h2>
+<p>Finally we run the following to install NixOS:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nixos-install</span><span> --no-root-passwd
+</span></code></pre>
+<h3 id="deploy-rs-agenix-preparation">Deploy-rs &amp; Agenix Preparation</h3>
+<p>This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> encrypts any secrets used in the flakes using SSH keys. </p>
+<p>To ensure the host has the correct SSH keys to allow for decryption of secrets I edit <code>/etc/ssh/ssh_host_ed25519_key</code> and <code>/etc/ssh/ssh_host_ed25516_key.pub</code>, replacing the existing keys with those I have to configured in agenix.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/nixos-impermanence/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Configuring NixOS for Impermanence</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
