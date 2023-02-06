@@ -39,3 +39,11 @@ deb http://security.debian.org/debian-security bullseye-security main contrib
 After the above changes I ran `apt update` and `apt dist-upgrade`, everything updated without issue.
 
 **Note**: Proxmox highlight in the linked wiki that the pve-no-subscription repo isn't tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.
+
+## Automated Script
+
+Tteck has provided a number of [useful Proxmox scripts](https://github.com/tteck/Proxmox), one of them completes the above automatically, as well as removing subscription notices and optionally adding beta repositories. Have a read through [here](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh) before running:
+
+```bash
+bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)" 
+```
