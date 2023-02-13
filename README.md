@@ -13,3 +13,6 @@ The idea of using Nix, as well as the build and deploy actions were heavily insp
 
 The license for MonoLisa fonts used is included in
 [LICENSE-monolisa.md](../master/LICENSE-monolisa.md).
+
+The license for JetBrainsMono fonts used is included in
+[LICENSE-jetbrainsmono.txt](../master/LICENSE-jetbrainsmono.txt).

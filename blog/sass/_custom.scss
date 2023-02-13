@@ -4,6 +4,12 @@
 
 .post-title {
   --border: 2px solid var(--accent);
+  font-weight: bold;
+}
+
+.post-tags-inline {
+  display: block;
+  margin-top: 8px;
 }
 
 code {
@@ -130,4 +136,8 @@ a.read-more:active {
 
 .footer__inner {
   justify-content: center;
+}
+
+body, code, pre {
+  font-family: JetBrainsMono, DejaVu Sans Mono, Monaco, Consolas, Ubuntu Mono, monospace;
 }

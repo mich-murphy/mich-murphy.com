@@ -17,10 +17,14 @@
     {% endif -%}
 {% endif -%}
 
-{%- if config.extra.use_monolisa_font %}
-    <link rel="stylesheet" href="{{ get_url(path="font-monolisa.css", trailing_slash=false) | safe }}">
-{% else %}
-    <link rel="stylesheet" href="{{ get_url(path="font-hack.css", trailing_slash=false) | safe }}">
+{%- if config.extra.use_font %}
+    {%- if config.extra.use_font == "MonoLisa" %}
+        <link rel="stylesheet" href="{{ get_url(path="font-monolisa.css", trailing_slash=false) | safe }}">
+    {%- elif config.extra.use_font == "Hack" %}
+        <link rel="stylesheet" href="{{ get_url(path="font-hack.css", trailing_slash=false) | safe }}">
+    {%- elif config.extra.use_font == "JetBrainsMono" %}
+        <link rel="stylesheet" href="{{ get_url(path="font-jetbrainsmono.css", trailing_slash=false) | safe }}">
+    {% endif -%}
 {% endif -%}
 
 {% endmacro head %}

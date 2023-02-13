@@ -184,10 +184,12 @@ enable_post_view_navigation = true
 # Defaults to "Thanks for reading! Read other posts?"
 post_view_navigation_prompt = "other posts"
 
-# Use full Hack character set, not just a subset.
-# Switch this to true if you need full unicode support.
-# Defaults to false.
-use_monolisa_font = true
+# Choose font to render website in
+# Values:
+# - "MonoLisa" -- MonoLisa web font
+# - "JetBrainsMono" -- JetBrainsMono web font
+# - "Hack" -- Hack font (the standard theme for font)
+use_font = "JetBrainsMono"
 
 # Optional: Set how <title> elements are rendered.
 # Values:
