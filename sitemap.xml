@@ -10,6 +10,10 @@
         <loc>https://micha.elmurphy.com/archive/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/backup-solutions-nixos/</loc>
+        <lastmod>2023-02-13</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/nix-useful-references/</loc>
         <lastmod>2022-12-07</lastmod>
     </url>
@@ -47,7 +51,13 @@
         <loc>https://micha.elmurphy.com/tags/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/tags/borg/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/cron/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/duplicati/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/flakes/</loc>

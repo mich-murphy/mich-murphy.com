@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://micha.elmurphy.com/font-hack.css">
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/backup-solutions-nixos/">Configuring Backup Solutions in NixOS</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-02-13
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                |
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/duplicati/">#duplicati</a>,
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/borg/">#borg</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of <a rel="noopener" target="_blank" href="https://nextcloud.com/">Nextcloud</a> when I don't know whether data will exist after a hardware fault. One common backup strategy is the <a rel="noopener" target="_blank" href="https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/">3-2-1 approach</a>:</p>
+<ul>
+<li>3 copies of the data being backup up</li>
+<li>2 different media types for storage</li>
+<li>1 off-site backup</li>
+</ul>
+<span id="continue-reading"></span>
+<p>This post details 2 methods of creating encrypted off-site backups in NixOS using <a rel="noopener" target="_blank" href="https://www.duplicati.com/">Duplicati</a> or <a rel="noopener" target="_blank" href="https://www.borgbackup.org/">BorgBackup</a>.</p>
+<h2 id="duplicati">Duplicati</h2>
+<p>NixOS provides a fairly bare bones <a rel="noopener" target="_blank" href="https://search.nixos.org/options?channel=22.11&amp;from=0&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=services.duplicati">module</a> for setting up Duplicati. Here's how I configured it:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">duplicati </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># Allow web access for machines other than localhost
+</span><span>      </span><span style="color:#8fbcbb;">interface </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;0.0.0.0&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>You can optionally specify a different user, group, port and data directory should you wish. </p>
+<p>After running <code>nixos-rebuild switch</code> you can manually configure backups via the web interface at <code>&lt;serverip&gt;:8200</code>. Duplicati has many options for configuring backups, I decided to backup to an S3 object store. Backups can be scheduled, and rules can be set to delete old backups at the target location. Duplicati will also capture logs and display warnings if it encounters any problems during the backup. The only issue I encountered was initially with access rights to the directories I wanted to backup. You can also set encryption keys for backups, with options for different encryption methods.</p>
+<p>I found Duplicati worked quite well, and I did have to test a restore in the brief time I used it. There was one major factor that made me continue looking for a different solution: I wanted to avoid the need for manual configuration, rather having Nix manage as much as possible for me declaratively.</p>
+<h2 id="borgbackup">BorgBackup</h2>
+<p>Thanks to an episode of the <a rel="noopener" target="_blank" href="https://www.jupiterbroadcasting.com/show/linux-unplugged/494/">Linux Unplugged Podcast</a> I came across BorgBackup. I found that the NixOS <a rel="noopener" target="_blank" href="https://search.nixos.org/options?channel=22.11&amp;from=0&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=services.borgbackup.jobs">module</a> was pretty extensive, and I learnt that a number of cloud hosting options existed for storing these backups, and they seemed to be pretty competitively priced (<a rel="noopener" target="_blank" href="https://www.borgbase.com/">BorgBase</a> and <a rel="noopener" target="_blank" href="https://rsync.net/">Rsync.net</a>). </p>
+<p>After doing some further digging I came across a very helpful <a rel="noopener" target="_blank" href="https://xeiaso.net/blog/borg-backup-2021-01-09">blog post</a> which detailed all the steps in configuring BorgBackup on NixOS. After looking through the modules and reading the blog post I ended up with the following configuration:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">borgbackup</span><span>.</span><span style="color:#8fbcbb;">jobs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#a3be8c;">&quot;media&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">paths </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;/data/media&quot;
+</span><span>        </span><span style="color:#a3be8c;">&quot;/data/backup&quot;
+</span><span>        </span><span style="color:#a3be8c;">&quot;/var/lib/nextcloud&quot;
+</span><span>      ]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># Note: you will need to edit the SSH url provided by BorgBase to match the below format
+</span><span>      </span><span style="color:#8fbcbb;">repo </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;o6h6zl22@o6h6zl22.repo.borgbase.com:repo&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">encryption </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">mode </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;repokey-blake2&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">passCommand </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;cat </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">config</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">age</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">secrets</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">mediaBorgPass</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">path</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">BORG_RSH </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ssh -i </span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">config</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">age</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">secrets</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">borgSSHKey</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">path</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">compression </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;auto,lzma&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">startAt </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;daily&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>   
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">mediaBorgPass</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/mediaBorgPass.age</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">borgSSHKey</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/borgSSHKey.age</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>The above configures a backup to my BorgBase repo which runs daily at midnight, backing up the specified directories. The backup is encrypted and compressed, and the repo requires an authorized SSH key for access. This continually monitors and updates a single backup, however you can optionally configure BorgBackup for <a rel="noopener" target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/notes.html#append-only-mode-forbid-compaction">append-only mode</a> which allows for some delay in deletion of older files.</p>
+<p><strong>Note</strong>: in the above I've used <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> for managing my secrets (SSH key and encryption key). I plan on writing a future post about this topic.</p>
+<h3 id="monitoring-initial-borgbackup">Monitoring Initial BorgBackup</h3>
+<p>I thought to add some additional notes on how to monitor the initial backup, as this process is not as straight forward as when using a tool such as Duplicati. Credit for the commands in this and the next section go to the blog post listed earlier.</p>
+<p>After adding the above configuration and running <code>nixos-rebuild switch</code> a Systemd service is configured to connect to the BorgBase repo and begin a backup. You can manually start the backup by running:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">systemctl</span><span> start borgbackup-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span>.service
+</span></code></pre>
+<p>You can then keep an eye on the backup by monitoring it via <code>journalctl</code> (keep in mind the backup will take a long time initially, subsequent backups are incremental and much faster):</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">journalctl</span><span> -fu borgbackup-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span>.service
+</span></code></pre>
+<p>All being well you should see a successful connection being established and a successful disconnection once the backup has completed.</p>
+<h3 id="restoring-from-borgbackup">Restoring From BorgBackup</h3>
+<p>We first need to create a directory and mount the Borg repo inside:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">mkdir</span><span> mount
+</span><span style="color:#88c0d0;">borg-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span> mount o6h6zl22@o6h6zl22.repo.borgbase.com:repo ./mount
+</span></code></pre>
+<p>We are then presented with a list of snapshot dates to choose from, and can select the time period at which we wish to restore. Copy across files as normal e.g. using the <code>cp</code> command</p>
+<p>When everything has been restored we can unmount with the below command:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">borg-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span> umount /mount
+</span></code></pre>
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>I ended up using BorgBackup as it meant I could configure almost everything once in my NixOS configuration and not have to think about it again. I setup email alerts in BorgBase to notify me if no backups are completed after a certain period of time, so that I don't have to constantly monitor them. Another benefit of BorgBackup was that with my configuration the backups are performed as root, so I didn't have to worry about file permissions when backing up e.g. <code>/var/lib/nextcloud</code> (obviously you need to decide whether this is the appropriate approach for you).</p>
+<p>If you want an intuitive UI, without the fuss of the initial configuration then Duplicati is also a great solution. It also has the advantage of providing a much larger choice for the backup targets, with BorgBackup you need to store everything in a Borg repo (which you have the option of self hosting).</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/nixos-tmpfs-installation/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Installing NixOS on a Temporary File System</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

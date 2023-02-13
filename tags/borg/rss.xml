@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Michael Murphy - Blog - borg</title>
+        <link>https://micha.elmurphy.com</link>
+        <description>Documentation of personal projects covering topics such as data and technology</description>
+        <generator>Zola</generator>
+        <language>en</language>
+        <atom:link href="https://micha.elmurphy.com/tags/borg/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Mon, 13 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Configuring Backup Solutions in NixOS</title>
+            <pubDate>Mon, 13 Feb 2023 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/backup-solutions-nixos/</link>
+            <guid>https://micha.elmurphy.com/backup-solutions-nixos/</guid>
+            <description>&lt;p&gt;One of my first consideration in setting up a homelab has been about a backup strategy - it&#x27;s difficult to have trust in a self-hosted instance of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; when I don&#x27;t know whether data will exist after a hardware fault. One common backup strategy is the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.seagate.com&#x2F;au&#x2F;en&#x2F;blog&#x2F;what-is-a-3-2-1-backup-strategy&#x2F;&quot;&gt;3-2-1 approach&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;3 copies of the data being backup up&lt;&#x2F;li&gt;
+&lt;li&gt;2 different media types for storage&lt;&#x2F;li&gt;
+&lt;li&gt;1 off-site backup&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</description>
+        </item>
+    </channel>
+</rss>
