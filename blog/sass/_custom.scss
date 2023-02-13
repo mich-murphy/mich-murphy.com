@@ -112,9 +112,10 @@ pre {
 }
 
 .pagination__title-h {
-  text-transform: capitalize;
+  text-transform: lowercase;
 }
 
+/*
 a.read-more,
 a.read-more:hover,
 a.read-more:active {
@@ -125,6 +126,7 @@ a.read-more:active {
 .button.next {
   color: var(--yellow);
 }
+*/
 
 .footer__inner {
   justify-content: center;
