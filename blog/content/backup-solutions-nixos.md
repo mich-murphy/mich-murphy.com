@@ -8,11 +8,11 @@ tags = ["nixos", "homelab", "duplicati", "borg"]
 
 One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of [Nextcloud](https://nextcloud.com/) when I don't know whether data will exist after a hardware fault. One common backup strategy is the [3-2-1 approach](https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/):
 
+<!-- more -->
+
 - 3 copies of the data being backup up
 - 2 different media types for storage
 - 1 off-site backup
-
-<!-- more -->
 
 This post details 2 methods of creating encrypted off-site backups in NixOS using [Duplicati](https://www.duplicati.com/) or [BorgBackup](https://www.borgbackup.org/).
 
