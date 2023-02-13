@@ -6,9 +6,7 @@ date = 2023-01-12
 tags = ["nixos", "systemd", "cron"]
 +++
 
-Whilst migrating my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.
-
-After doing a bit of research I discovered that rather than using a cron job, the preferred method is to [create a systemd service](https://paperless.blog/systemd-services-and-timers-in-nixos) and schedule it using a systemd timer. The major benefits of doing so are:
+Whilst migrating my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server. After doing a bit of research I discovered that rather than using a cron job, the preferred method is to [create a systemd service](https://paperless.blog/systemd-services-and-timers-in-nixos) and schedule it using a systemd timer. The major benefits of doing so are:
 
 <!-- more -->
 
