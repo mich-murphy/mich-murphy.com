@@ -8,3 +8,8 @@ This is a static site built using [Zola](https://www.getzola.org/). I've setup a
 
 ## Special Thanks
 The idea of using Nix, as well as the build and deploy actions were heavily inspired by [jdisaacs.com](https://github.com/jordanisaacs/jdisaacs.com).
+
+## License
+
+The license for MonoLisa fonts used is included in
+[LICENSE-monolisa.md](../master/LICENSE-monolisa.md).
