@@ -59,9 +59,9 @@
 
     <div class="content">
         
-        <div class="posts">
-                <div class="post on-list">
-                    
+<div class="posts">
+        <div class="post on-list">
+            
     <h1 class="post-title"><a href="https://micha.elmurphy.com/backup-solutions-nixos/">Configuring Backup Solutions in NixOS</a></h1>
     <div class="post-meta-inline">
         
@@ -80,29 +80,24 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/borg/">#borg</a></span>
     
 
-                    
+            
         <div class="post-content">
             <p>One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of <a rel="noopener" target="_blank" href="https://nextcloud.com/">Nextcloud</a> when I don't know whether data will exist after a hardware fault. One common backup strategy is the <a rel="noopener" target="_blank" href="https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/">3-2-1 approach</a>:</p>
-<ul>
-<li>3 copies of the data being backup up</li>
-<li>2 different media types for storage</li>
-<li>1 off-site backup</li>
-</ul>
 
         </div>
         <div>
             <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
             <a class="read-more button" href="https://micha.elmurphy.com/backup-solutions-nixos/">
-                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__text">read more</span>&nbsp;
                 <span class="button__icon">&#8617;&#xFE0E;</span>
             </a>
         </div>
     
 
-                </div>
+        </div>
+    
+        <div class="post on-list">
             
-                <div class="post on-list">
-                    
     <h1 class="post-title"><a href="https://micha.elmurphy.com/nixos-tmpfs-installation/">Installing NixOS on a Temporary File System</a></h1>
     <div class="post-meta-inline">
         
@@ -120,7 +115,7 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/impermanence/">#impermanence</a></span>
     
 
-                    
+            
         <div class="post-content">
             <p>In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about <a rel="noopener" target="_blank" href="https://micha.elmurphy.com/nixos-impermanence/">configuring NixOS for impermanence</a>, and walks through the installation.</p>
 
@@ -128,16 +123,16 @@
         <div>
             <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
             <a class="read-more button" href="https://micha.elmurphy.com/nixos-tmpfs-installation/">
-                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__text">read more</span>&nbsp;
                 <span class="button__icon">&#8617;&#xFE0E;</span>
             </a>
         </div>
     
 
-                </div>
+        </div>
+    
+        <div class="post on-list">
             
-                <div class="post on-list">
-                    
     <h1 class="post-title"><a href="https://micha.elmurphy.com/nixos-impermanence/">Configuring NixOS for Impermanence</a></h1>
     <div class="post-meta-inline">
         
@@ -155,7 +150,7 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/impermanence/">#impermanence</a></span>
     
 
-                    
+            
         <div class="post-content">
             <p>After reading posts from both <a rel="noopener" target="_blank" href="https://grahamc.com/blog/erase-your-darlings">Graham Christensen</a> and <a rel="noopener" target="_blank" href="https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/">Elis Hirwing</a> about the idea of impermanence in NixOS I decided to try setting it up on my homelab. The basic idea is that we configure the system to use a temporary file system, where everything is wiped after a reboot, unless specified otherwise.</p>
 
@@ -163,16 +158,16 @@
         <div>
             <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
             <a class="read-more button" href="https://micha.elmurphy.com/nixos-impermanence/">
-                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__text">read more</span>&nbsp;
                 <span class="button__icon">&#8617;&#xFE0E;</span>
             </a>
         </div>
     
 
-                </div>
+        </div>
+    
+        <div class="post on-list">
             
-                <div class="post on-list">
-                    
     <h1 class="post-title"><a href="https://micha.elmurphy.com/systemd-services-and-timers-nixos/">How To Configure Systemd Services and Timers in Nixos</a></h1>
     <div class="post-meta-inline">
         
@@ -190,7 +185,7 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/cron/">#cron</a></span>
     
 
-                    
+            
         <div class="post-content">
             <p>Whilst migrating my <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix">homelab</a> from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server.</p>
 <p>After doing a bit of research I discovered that rather than using a cron job, the preferred method is to <a rel="noopener" target="_blank" href="https://paperless.blog/systemd-services-and-timers-in-nixos">create a systemd service</a> and schedule it using a systemd timer. The major benefits of doing so are:</p>
@@ -199,16 +194,16 @@
         <div>
             <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
             <a class="read-more button" href="https://micha.elmurphy.com/systemd-services-and-timers-nixos/">
-                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__text">read more</span>&nbsp;
                 <span class="button__icon">&#8617;&#xFE0E;</span>
             </a>
         </div>
     
 
-                </div>
+        </div>
+    
+        <div class="post on-list">
             
-                <div class="post on-list">
-                    
     <h1 class="post-title"><a href="https://micha.elmurphy.com/proxmox-package-repositories/">Configure Proxmox Package Repositories</a></h1>
     <div class="post-meta-inline">
         
@@ -225,7 +220,7 @@
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a></span>
     
 
-                    
+            
         <div class="post-content">
             <p>I use <a rel="noopener" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a> to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don't always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to <a rel="noopener" target="_blank" href="https://thehomelab.show/2022/11/30/the-homelab-show-ep-79-virtualization-vs-containers/">this podcast</a>.</p>
 
@@ -233,25 +228,25 @@
         <div>
             <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
             <a class="read-more button" href="https://micha.elmurphy.com/proxmox-package-repositories/">
-                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__text">read more</span>&nbsp;
                 <span class="button__icon">&#8617;&#xFE0E;</span>
             </a>
         </div>
     
 
-                </div>
-            <div class="pagination">
-                <div class="pagination__buttons">
-                    <span class="button next">
-                        <a href="https://micha.elmurphy.com/page/2/">
-                            <span class="button__text">Older posts</span>&nbsp;
-                            <span class="button__icon">→</span>
-                        </a>
-                    </span>
-                </div>
-            </div>
         </div>
-        
+    <div class="pagination">
+        <div class="pagination__buttons">
+            <span class="button next">
+                <a href="https://micha.elmurphy.com/page/2/">
+                    <span class="button__text">older posts</span>&nbsp;
+                    <span class="button__icon">→</span>
+                </a>
+            </span>
+        </div>
+    </div>
+</div>
+
     </div>
 
     

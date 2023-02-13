@@ -82,12 +82,12 @@
         
         <div class="post-content">
             <p>One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of <a rel="noopener" target="_blank" href="https://nextcloud.com/">Nextcloud</a> when I don't know whether data will exist after a hardware fault. One common backup strategy is the <a rel="noopener" target="_blank" href="https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/">3-2-1 approach</a>:</p>
+<span id="continue-reading"></span>
 <ul>
 <li>3 copies of the data being backup up</li>
 <li>2 different media types for storage</li>
 <li>1 off-site backup</li>
 </ul>
-<span id="continue-reading"></span>
 <p>This post details 2 methods of creating encrypted off-site backups in NixOS using <a rel="noopener" target="_blank" href="https://www.duplicati.com/">Duplicati</a> or <a rel="noopener" target="_blank" href="https://www.borgbackup.org/">BorgBackup</a>.</p>
 <h2 id="duplicati">Duplicati</h2>
 <p>NixOS provides a fairly bare bones <a rel="noopener" target="_blank" href="https://search.nixos.org/options?channel=22.11&amp;from=0&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=services.duplicati">module</a> for setting up Duplicati. Here's how I configured it:</p>
