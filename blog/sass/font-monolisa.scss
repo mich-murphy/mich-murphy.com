@@ -1,0 +1,32 @@
+/*!
+ *  Hack typeface https://www.monolisa.dev/
+ */
+/* FONT PATHS
+ * -------------------------- */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('fonts/MonoLisa-Regular.woff2?sha=3114f1256') format('woff2'), url('fonts/MonoLisa-Regular.woff?sha=3114f1256') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('fonts/MonoLisa-Bold.woff2?sha=3114f1256') format('woff2'), url('fonts/MonoLisa-Bold.woff?sha=3114f1256') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('fonts/MonoLisa-RegularItalic.woff2?sha=3114f1256') format('woff2'), url('fonts/MonoLisa-RegularItalic.woff?sha=3114f1256') format('woff');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('fonts/MonoLisa-BoldItalic.woff2?sha=3114f1256') format('woff2'), url('fonts/MonoLisa-BoldItalic.woff?sha=3114f1256') format('woff');
+  font-weight: 600;
+  font-style: italic;
+}

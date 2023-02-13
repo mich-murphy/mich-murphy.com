@@ -187,7 +187,7 @@ post_view_navigation_prompt = "other posts"
 # Use full Hack character set, not just a subset.
 # Switch this to true if you need full unicode support.
 # Defaults to false.
-use_full_hack_font = true
+use_monolisa_font = true
 
 # Optional: Set how <title> elements are rendered.
 # Values:
