@@ -78,6 +78,12 @@ The above configures a backup to my BorgBase repo which runs daily at midnight, 
 
 **Note**: in the above I've used [Agenix](https://github.com/ryantm/agenix) for managing my secrets (SSH key and encryption key). I plan on writing a future post about this topic.
 
+**Note**: You'll likely have to run an initial SSH connection to the Borg repo to add its keys to `known_hosts`, as I am using an SSH key via Agenix I need to run the following as sudo:
+
+```bash
+sudo ssh -i /var/run/agenix/borgSSHKey o6h6zl22@o6h6zl22.repo.borgbase.com
+```
+
 ### Monitoring Initial BorgBackup
 
 I thought to add some additional notes on how to monitor the initial backup, as this process is not as straight forward as when using a tool such as Duplicati. Credit for the commands in this and the next section go to the blog post listed earlier.
