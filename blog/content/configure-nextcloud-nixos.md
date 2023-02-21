@@ -3,14 +3,14 @@ title = "How to Configure Nextcloud on NixOS"
 date = 2023-02-21
 
 [taxonomies]
-tags = ["nixos", "homelab", "Nextcloud"]
+tags = ["nixos", "homelab", "nextcloud"]
 +++
 
 [Nextcloud](https://nextcloud.com/) provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.
 
 <!-- more -->
 
-Jacob Neplokh wrote an incredibly helpful [blog post](https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/) which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything.
+Jacob Neplokh wrote an incredibly helpful [blog post](https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/) which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The [NixOS Wiki](https://nixos.wiki/wiki/Nextcloud) also had some very helpful information.
 
 There are several services that need to be configured to setup Nextcloud:
 - Nextcloud
@@ -108,7 +108,7 @@ It's highly recommended that you replace the default Sqlite database with Postgr
 }
 ```
 
-**Note**: As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to a [BorgBackup](/backup-solutions-nixos/).
+As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to using [BorgBackup](/backup-solutions-nixos/).
 
 ## Redis Caching
 
@@ -132,9 +132,9 @@ This allows for caching of frequently used files in Nextcloud, which likely prov
 
 In order to login once Nextcloud is configured, we must setup HTTPS. My Nextcloud service is run behind a [Tailscale](https://tailscale.com/) VPN, so I had a couple of different options for [configuring HTTPS](https://tailscale.com/kb/1153/enabling-https/):
 1. Having Tailscale do it with `tailscale cert`
-2. Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider
+2. Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider and configuring the HTTPS via ACME
 
-I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. Here's my config:
+I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. NixOS has builtin tooling using a service called [lego](https://github.com/go-acme/lego) behind the scenes to create certificates. Here's my config:
 
 ```nix
 # etc/nixos/configuration.nix
@@ -181,10 +181,10 @@ I opted for the second option, as such I also had to configure ACME to automatic
 }
 ```
 
-**Note**: I pieced together this setup thanks to the [documentation in the NixOS Manual](https://nixos.org/manual/nixos/stable/index.html#module-security-acme-config-dns-with-vhosts), I recommend giving it a read to understand what's going on here.
+I pieced together this setup thanks to the [documentation in the NixOS Manual](https://nixos.org/manual/nixos/stable/index.html#module-security-acme-config-dns-with-vhosts), I recommend giving it a read to understand what's going on here.
 
 ## Conclusion
 
-As you can see above, there are a few steps to properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.
+As you can see above, there are a few steps involved in properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.
 
 I ended up putting all of the above config into its own module, for reference you can view it [here](https://github.com/mich-murphy/nix-config/blob/master/common/nixos/nextcloud.nix).
