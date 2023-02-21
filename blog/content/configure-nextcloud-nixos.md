@@ -130,9 +130,9 @@ This allows for caching of frequently used files in Nextcloud, which likely prov
 
 ## Nginx Configuration
 
-In order to login once Nextcloud is configured, we must setup HTTPS. My Nextcloud service is run behind a [Tailscale](https://tailscale.com/) VPN, so I had a couple of different options for [configuring HTTPS](https://tailscale.com/kb/1153/enabling-https/):
+In order to login once Nextcloud is configured, HTTPS must be setup. My Nextcloud service is run behind a [Tailscale](https://tailscale.com/) VPN, so I had a couple of different options for [configuring HTTPS](https://tailscale.com/kb/1153/enabling-https/):
 1. Having Tailscale do it with `tailscale cert`
-2. Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider and configuring the HTTPS via ACME
+2. Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider, and configuring HTTPS via ACME
 
 I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. NixOS has builtin tooling using a service called [lego](https://github.com/go-acme/lego) behind the scenes to create certificates. Here's my config:
 
