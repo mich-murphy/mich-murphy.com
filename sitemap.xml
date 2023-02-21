@@ -14,6 +14,10 @@
         <lastmod>2023-02-13</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/configure-nextcloud-nixos/</loc>
+        <lastmod>2023-02-21</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/nix-useful-references/</loc>
         <lastmod>2022-12-07</lastmod>
     </url>
@@ -64,6 +68,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/impermanence/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/nextcloud/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nix/</loc>

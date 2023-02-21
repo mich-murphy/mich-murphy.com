@@ -7,7 +7,15 @@
         <generator>Zola</generator>
         <language>en</language>
         <atom:link href="https://micha.elmurphy.com/rss.xml" rel="self" type="application/rss+xml"/>
-        <lastBuildDate>Mon, 13 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <lastBuildDate>Tue, 21 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>How to Configure Nextcloud on NixOS</title>
+            <pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/configure-nextcloud-nixos/</link>
+            <guid>https://micha.elmurphy.com/configure-nextcloud-nixos/</guid>
+            <description>&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.&lt;&#x2F;p&gt;
+</description>
+        </item>
         <item>
             <title>Configuring Backup Solutions in NixOS</title>
             <pubDate>Mon, 13 Feb 2023 00:00:00 +0000</pubDate>

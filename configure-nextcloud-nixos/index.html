@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/configure-nextcloud-nixos/">How to Configure Nextcloud on NixOS</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-02-21
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nextcloud/">#Nextcloud</a></span>
+    
+
+        
+        <div class="post-content">
+            <p><a rel="noopener" target="_blank" href="https://nextcloud.com/">Nextcloud</a> provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.</p>
+<span id="continue-reading"></span>
+<p>Jacob Neplokh wrote an incredibly helpful <a rel="noopener" target="_blank" href="https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/">blog post</a> which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything.</p>
+<p>There are several services that need to be configured to setup Nextcloud:</p>
+<ul>
+<li>Nextcloud</li>
+<li>Postgresql (optional but recommended)</li>
+<li>Redis (optional)</li>
+<li>Nginx</li>
+</ul>
+<h2 id="nextcloud-setup">Nextcloud Setup</h2>
+<p>Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look <a rel="noopener" target="_blank" href="https://search.nixos.org/options?channel=22.11&amp;from=0&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=services.nextcloud">here</a>.</p>
+<p>Here is a look at my config:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">nextcloud </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># specify either a domain you own or localhost
+</span><span>    </span><span style="color:#8fbcbb;">hostName </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nextcloud.yourdomain.com&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">autoUpdateApps</span><span>.</span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">https </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># only specify caching if using redis or alternative service
+</span><span>    </span><span style="color:#8fbcbb;">caching</span><span>.</span><span style="color:#8fbcbb;">redis </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">config </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#616e88;"># only specify dbtype if using postgresql db
+</span><span>      </span><span style="color:#8fbcbb;">dbtype </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;pgsql&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">dbname </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nextcloud&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">dbuser </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nextcloud&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># default directory for postgresql, ensures automatic setup of db
+</span><span>      </span><span style="color:#8fbcbb;">dbhost </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/run/postgresql&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">adminuser </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;admin&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># specified using agenix, provide path to file as alternative
+</span><span>      </span><span style="color:#8fbcbb;">adminpassFile </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>age</span><span style="color:#81a1c1;">.</span><span>secrets</span><span style="color:#81a1c1;">.</span><span>nextcloudPass</span><span style="color:#81a1c1;">.</span><span>path</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># error thrown unless specified
+</span><span>      </span><span style="color:#8fbcbb;">defaultPhoneRegion </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;AU&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># specify only if you want redis caching
+</span><span>    </span><span style="color:#8fbcbb;">extraOptions </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">redis </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">host </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;127.0.0.1&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">port </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">31638</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">dbindex </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">0</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">timeout </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">1</span><span style="color:#81a1c1;">.</span><span style="color:#b48ead;">5</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;    
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># only needed if using agenix for secret encryption
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">nextcloudPass </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/nextcloudPass.age</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># allow default nextcloud user access to secret
+</span><span>      </span><span style="color:#8fbcbb;">owner </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nextcloud&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<h2 id="postgresql-setup">Postgresql Setup</h2>
+<p>It's highly recommended that you replace the default Sqlite database with Postgresql, here are the steps involved in making the change:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nix/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">postgresql </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">ensureDatabases </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;nextcloud&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">ensureUsers </span><span style="color:#81a1c1;">= </span><span>[{
+</span><span>        </span><span style="color:#8fbcbb;">name </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nextcloud&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">ensurePermissions</span><span>.</span><span style="color:#a3be8c;">&quot;DATABASE nextcloud&quot; </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ALL PRIVILEGES&quot;</span><span style="color:#eceff4;">;
+</span><span>      }]</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># optional backup for postgresql db
+</span><span>    </span><span style="color:#8fbcbb;">postgresqlBackup </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">location </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data/backup/nextclouddb&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">databases </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;nextcloud&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># time to start backup in systemd.time format
+</span><span>      </span><span style="color:#8fbcbb;">startAt </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;*-*-* 23:15:00&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># ensure postgresql db is started with nextcloud
+</span><span>  </span><span style="color:#8fbcbb;">systemd </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#a3be8c;">&quot;nextcloud-setup&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">requires </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;postgresql.service&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">after </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;postgresql.service&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p><strong>Note</strong>: As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to a <a href="/backup-solutions-nixos/">BorgBackup</a>.</p>
+<h2 id="redis-caching">Redis Caching</h2>
+<p>This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy experience. Here's my configuration:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">redis</span><span>.</span><span style="color:#8fbcbb;">servers</span><span>.</span><span style="color:#8fbcbb;">nextcloud </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">port </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">31638</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">bind </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;127.0.0.1&quot;</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<h2 id="nginx-configuration">Nginx Configuration</h2>
+<p>In order to login once Nextcloud is configured, we must setup HTTPS. My Nextcloud service is run behind a <a rel="noopener" target="_blank" href="https://tailscale.com/">Tailscale</a> VPN, so I had a couple of different options for <a rel="noopener" target="_blank" href="https://tailscale.com/kb/1153/enabling-https/">configuring HTTPS</a>:</p>
+<ol>
+<li>Having Tailscale do it with <code>tailscale cert</code></li>
+<li>Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider</li>
+</ol>
+<p>I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. Here's my config:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">nginx </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">recommendedGzipSettings </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">recommendedOptimisation </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">recommendedProxySettings </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">recommendedTlsSettings </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># pulls in the hostname we set for nextcloud above (nextcloud.yourdomain.com)
+</span><span>    </span><span style="color:#8fbcbb;">virtualHosts</span><span>.</span><span style="font-style:italic;color:#d8dee9;">${config</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">services</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">nextcloud</span><span style="font-style:italic;color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">hostName} </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">enableACME </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">acmeRoot </span><span style="color:#81a1c1;">= null</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">addSSL </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># directs traffic to the appropriate port for nextcloud
+</span><span>      </span><span style="color:#8fbcbb;">locations</span><span>.</span><span style="color:#a3be8c;">&quot;/&quot; </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">proxyPass </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;http://localhost:8080&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">proxyWebsockets </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">security</span><span>.</span><span style="color:#8fbcbb;">acme </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">acceptTerms </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">preliminarySelfsigned </span><span style="color:#81a1c1;">= false</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">defaults </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>      </span><span style="color:#8fbcbb;">email </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;acme@yourdomain.com&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">dnsProvider </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;cloudflare&quot;</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#616e88;"># API for authentication to DNA provider e.g.
+</span><span>      </span><span style="color:#616e88;"># CF_API_KEY=&lt;insert-global-key&gt;
+</span><span>      </span><span style="color:#616e88;"># CF_API_EMAIL=&lt;insert-dns-account-email&gt;
+</span><span>      </span><span style="color:#616e88;"># specify file if not using agenix
+</span><span>      </span><span style="color:#8fbcbb;">credentialsFile </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>age</span><span style="color:#81a1c1;">.</span><span>secrets</span><span style="color:#81a1c1;">.</span><span>acmeCredentials</span><span style="color:#81a1c1;">.</span><span>path</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># allow nginx to configure acme
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">nginx</span><span>.</span><span style="color:#8fbcbb;">extraGroups </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">&quot;acme&quot; </span><span>]</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># if providing credentialsFile via agenix
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">acmeCredentials</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/acmeCredentials.age</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p><strong>Note</strong>: I pieced together this setup thanks to the <a rel="noopener" target="_blank" href="https://nixos.org/manual/nixos/stable/index.html#module-security-acme-config-dns-with-vhosts">documentation in the NixOS Manual</a>, I recommend giving it a read to understand what's going on here.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>As you can see above, there are a few steps to properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.</p>
+<p>I ended up putting all of the above config into its own module, for reference you can view it <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config/blob/master/common/nixos/nextcloud.nix">here</a>.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/backup-solutions-nixos/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Configuring Backup Solutions in NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
