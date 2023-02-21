@@ -52,6 +52,9 @@
         <loc>https://micha.elmurphy.com/tags/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/tags/acme/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/borg/</loc>
     </url>
     <url>
@@ -71,6 +74,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nextcloud/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/nginx/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nix/</loc>
