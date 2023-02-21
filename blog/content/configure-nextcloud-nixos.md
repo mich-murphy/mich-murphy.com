@@ -3,7 +3,7 @@ title = "How to Configure Nextcloud on NixOS"
 date = 2023-02-21
 
 [taxonomies]
-tags = ["nixos", "homelab", "nextcloud"]
+tags = ["nixos", "homelab", "nextcloud", "nginx", "acme"]
 +++
 
 [Nextcloud](https://nextcloud.com/) provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.
