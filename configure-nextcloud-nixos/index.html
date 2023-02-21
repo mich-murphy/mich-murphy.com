@@ -74,14 +74,14 @@
         <span class="post-tags-inline">
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>&nbsp;
                 <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>&nbsp;
-                <a class="post-tag" href="https://micha.elmurphy.com/tags/nextcloud/">#Nextcloud</a></span>
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nextcloud/">#nextcloud</a></span>
     
 
         
         <div class="post-content">
             <p><a rel="noopener" target="_blank" href="https://nextcloud.com/">Nextcloud</a> provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.</p>
 <span id="continue-reading"></span>
-<p>Jacob Neplokh wrote an incredibly helpful <a rel="noopener" target="_blank" href="https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/">blog post</a> which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything.</p>
+<p>Jacob Neplokh wrote an incredibly helpful <a rel="noopener" target="_blank" href="https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/">blog post</a> which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The <a rel="noopener" target="_blank" href="https://nixos.wiki/wiki/Nextcloud">NixOS Wiki</a> also had some very helpful information.</p>
 <p>There are several services that need to be configured to setup Nextcloud:</p>
 <ul>
 <li>Nextcloud</li>
@@ -170,7 +170,7 @@
 </span><span>  }</span><span style="color:#eceff4;">;
 </span><span>}
 </span></code></pre>
-<p><strong>Note</strong>: As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to a <a href="/backup-solutions-nixos/">BorgBackup</a>.</p>
+<p>As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to using <a href="/backup-solutions-nixos/">BorgBackup</a>.</p>
 <h2 id="redis-caching">Redis Caching</h2>
 <p>This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy experience. Here's my configuration:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># etc/nixos/configuration.nix
@@ -189,9 +189,9 @@
 <p>In order to login once Nextcloud is configured, we must setup HTTPS. My Nextcloud service is run behind a <a rel="noopener" target="_blank" href="https://tailscale.com/">Tailscale</a> VPN, so I had a couple of different options for <a rel="noopener" target="_blank" href="https://tailscale.com/kb/1153/enabling-https/">configuring HTTPS</a>:</p>
 <ol>
 <li>Having Tailscale do it with <code>tailscale cert</code></li>
-<li>Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider</li>
+<li>Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider and configuring the HTTPS via ACME</li>
 </ol>
-<p>I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. Here's my config:</p>
+<p>I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. NixOS has builtin tooling using a service called <a rel="noopener" target="_blank" href="https://github.com/go-acme/lego">lego</a> behind the scenes to create certificates. Here's my config:</p>
 <pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># etc/nixos/configuration.nix
 </span><span>
 </span><span>{
@@ -235,9 +235,9 @@
 </span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">acmeCredentials</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/acmeCredentials.age</span><span style="color:#eceff4;">;
 </span><span>}
 </span></code></pre>
-<p><strong>Note</strong>: I pieced together this setup thanks to the <a rel="noopener" target="_blank" href="https://nixos.org/manual/nixos/stable/index.html#module-security-acme-config-dns-with-vhosts">documentation in the NixOS Manual</a>, I recommend giving it a read to understand what's going on here.</p>
+<p>I pieced together this setup thanks to the <a rel="noopener" target="_blank" href="https://nixos.org/manual/nixos/stable/index.html#module-security-acme-config-dns-with-vhosts">documentation in the NixOS Manual</a>, I recommend giving it a read to understand what's going on here.</p>
 <h2 id="conclusion">Conclusion</h2>
-<p>As you can see above, there are a few steps to properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.</p>
+<p>As you can see above, there are a few steps involved in properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.</p>
 <p>I ended up putting all of the above config into its own module, for reference you can view it <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config/blob/master/common/nixos/nextcloud.nix">here</a>.</p>
 
         </div>
