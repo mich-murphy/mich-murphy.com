@@ -112,7 +112,7 @@ As mentioned in the comments above, I've included an optional backup service, wh
 
 ## Redis Caching
 
-This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy experience. Here's my configuration:
+This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy user experience. Here's my configuration:
 
 ```nix
 # etc/nixos/configuration.nix
