@@ -1,5 +1,5 @@
 +++
-title = "Encrypting Secrets in NixOS Configurations"
+title = "Encrypting Secrets in NixOS With Agenix"
 date = 2023-02-22
 
 [taxonomies]
@@ -77,6 +77,35 @@ Once the above has been completed you can now add secrets to your NixOS configur
     passwordFile = config.age.secrets.secretpassword.path;
   };
 
-  age.secrets.secretpassword.file = ../../secrets/userPass.age;
+  age.secrets.secretpassword.file = ../../secrets/secretpassword.age;
+}
+```
+
+### Secrets Folder Structure
+
+I discovered interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem's [dotfiles](https://git.chvp.be/chvp/nixos-config/-/tree/main/secrets). I didn't see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.
+
+```bash
+# /etc/nixos/secrets
+
+.
+├── secrets.nix
+├── passwords
+│   └── secretpassword.age
+```
+
+When we need to refer to these nested secrets in our Nix configuration, we specify the path to each age file e.g.
+
+```nix
+# /etc/nixos/configuration.nix
+
+{
+  users.users.captainsecure = {
+    isNormalUser = true;
+    home = "/home/captainsecure";
+    passwordFile = config.age.secrets."passwords/secretpassword".path;
+  };
+
+  age.secrets."passwords/secretpassword".file = ../../secrets/passwords/secretpassword.age;
 }
 ```
