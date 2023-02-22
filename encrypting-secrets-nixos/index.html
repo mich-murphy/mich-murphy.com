@@ -61,7 +61,7 @@
         
     <div class="post">
         
-    <h1 class="post-title"><a href="https://micha.elmurphy.com/encrypting-secrets-nixos/">Encrypting Secrets in NixOS Configurations</a></h1>
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/encrypting-secrets-nixos/">Encrypting Secrets in NixOS With Agenix</a></h1>
     <div class="post-meta-inline">
         
     <span class="post-date">
@@ -125,7 +125,29 @@
 </span><span>    </span><span style="color:#8fbcbb;">passwordFile </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>age</span><span style="color:#81a1c1;">.</span><span>secrets</span><span style="color:#81a1c1;">.</span><span>secretpassword</span><span style="color:#81a1c1;">.</span><span>path</span><span style="color:#eceff4;">;
 </span><span>  }</span><span style="color:#eceff4;">;
 </span><span>
-</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">secretpassword</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/userPass.age</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">secretpassword</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/secretpassword.age</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<h3 id="secrets-folder-structure">Secrets Folder Structure</h3>
+<p>I discovered interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem's <a rel="noopener" target="_blank" href="https://git.chvp.be/chvp/nixos-config/-/tree/main/secrets">dotfiles</a>. I didn't see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># /etc/nixos/secrets
+</span><span>
+</span><span style="color:#88c0d0;">.
+</span><span style="color:#88c0d0;">├──</span><span> secrets.nix
+</span><span style="color:#88c0d0;">├──</span><span> passwords
+</span><span style="color:#88c0d0;">│</span><span>   └── secretpassword.age
+</span></code></pre>
+<p>When we need to refer to these nested secrets in our Nix configuration, we specify the path to each age file e.g.</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">captainsecure </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">isNormalUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">home </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/home/captainsecure&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">passwordFile </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>age</span><span style="color:#81a1c1;">.</span><span>secrets</span><span style="color:#81a1c1;">.</span><span style="color:#a3be8c;">&quot;passwords/secretpassword&quot;</span><span style="color:#81a1c1;">.</span><span>path</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#a3be8c;">&quot;passwords/secretpassword&quot;</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/passwords/secretpassword.age</span><span style="color:#eceff4;">;
 </span><span>}
 </span></code></pre>
 
