@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/encrypting-secrets-nixos/">Encrypting Secrets in NixOS Configurations</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-02-22
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/agenix/">#agenix</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the <a rel="noopener" target="_blank" href="https://github.com/NixOS/nixpkgs/issues/24288">world readable Nix store</a>.</p>
+<span id="continue-reading"></span>
+<p>There are a number of <a rel="noopener" target="_blank" href="https://nixos.wiki/wiki/Comparison_of_secret_managing_schemes">solutions available</a> to encrypt secrets in NixOS, I landed on <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a>, as it's relatively easy to configure and works with my deployment tool of choice - <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">Deploy-rs</a>.</p>
+<h2 id="how-agenix-works">How Agenix Works</h2>
+<p>Agenix uses pre-existing SSH keys to encrypt secrets using the <a rel="noopener" target="_blank" href="https://github.com/FiloSottile/age">Age</a> encryption tool. These secrets are then decrypted using the <em>private</em> SSH <em>host</em> key on the target system.</p>
+<p>There are a couple of points worth considering when using Agenix:</p>
+<ol>
+<li>Agenix doesn't officially have support for Home Manager - though an alternative is <a rel="noopener" target="_blank" href="https://github.com/jordanisaacs/homeage">available</a> (I haven't tried this)</li>
+<li>Agenix provides a secret file, rather than a string. This means that if there is no option in an existing module to pass a filepath for a secret, we need to have the service read the clear text file path at runtime</li>
+</ol>
+<h2 id="using-agenix">Using Agenix</h2>
+<p>I'll run through a simple example here, should you want more detail I recommend reading through the Agenix <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">readme</a>.</p>
+<h3 id="agenix-configuration">Agenix Configuration</h3>
+<p>Create a directory for secrets and secret config - this should be somewhere that makes sense e.g. <code>/etc/nixos/secrets</code></p>
+<p>Next we need to create a secret configuration file <code>secrets.nix</code>. This tells Agenix which SSH keys to use when encrypting secrets, which secrets are available, and which systems/users should have access to each secret.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">mkdir</span><span> -p /etc/nixos/secrets
+</span><span style="color:#88c0d0;">vim</span><span> /etc/nixos/secrets/secrets.nix
+</span></code></pre>
+<p>The contents of the file should look something like this:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/secrets/secrets.nix
+</span><span>
+</span><span style="color:#81a1c1;">let
+</span><span>  </span><span style="color:#8fbcbb;">system </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0idNvgGiucWgup/mP78zyC23uFjYq0evcWdjGQUaBH&quot;</span><span style="color:#eceff4;">;
+</span><span>{
+</span><span>  </span><span style="color:#a3be8c;">&quot;secretpassword.age&quot;</span><span>.</span><span style="color:#8fbcbb;">publicKeys </span><span style="color:#81a1c1;">= </span><span>[ system ]</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<h3 id="creating-a-secret">Creating a Secret</h3>
+<p>We are now ready to create out first secret <code>secretpassword</code>. This next part will differ depending on how you have installed Agenix.</p>
+<p>Given I'm using Nix Flakes, I can simply run:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nix</span><span> run github:ryantm/agenix</span><span style="color:#81a1c1;"> --</span><span> -e secretpassword.age
+</span></code></pre>
+<p>The above assumes my SSH keys have been added to <code>~/.ssh/</code>. If this is not the case we can specify which SSH keys to use:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nix</span><span> run github:ryantm/agenix</span><span style="color:#81a1c1;"> --</span><span> -e secretpassword.age -i /path/to/ssh/key
+</span></code></pre>
+<h3 id="adding-secret-to-nixos">Adding Secret to NixOS</h3>
+<p>Once the above has been completed you can now add secrets to your NixOS configurations like so:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">captainsecure </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">isNormalUser </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">home </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/home/captainsecure&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">passwordFile </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>age</span><span style="color:#81a1c1;">.</span><span>secrets</span><span style="color:#81a1c1;">.</span><span>secretpassword</span><span style="color:#81a1c1;">.</span><span>path</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">age</span><span>.</span><span style="color:#8fbcbb;">secrets</span><span>.</span><span style="color:#8fbcbb;">secretpassword</span><span>.</span><span style="color:#8fbcbb;">file </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">../../secrets/userPass.age</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/configure-nextcloud-nixos/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">How to Configure Nextcloud on NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

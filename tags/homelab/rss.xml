@@ -7,7 +7,15 @@
         <generator>Zola</generator>
         <language>en</language>
         <atom:link href="https://micha.elmurphy.com/tags/homelab/rss.xml" rel="self" type="application/rss+xml"/>
-        <lastBuildDate>Tue, 21 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <lastBuildDate>Wed, 22 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Encrypting Secrets in NixOS Configurations</title>
+            <pubDate>Wed, 22 Feb 2023 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/encrypting-secrets-nixos/</link>
+            <guid>https://micha.elmurphy.com/encrypting-secrets-nixos/</guid>
+            <description>&lt;p&gt;After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;issues&#x2F;24288&quot;&gt;world readable Nix store&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</description>
+        </item>
         <item>
             <title>How to Configure Nextcloud on NixOS</title>
             <pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate>
