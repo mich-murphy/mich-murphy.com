@@ -105,7 +105,7 @@ You will also need to edit `/etc/nixos/configuration.nix`, how you go about this
     ];
   };
   
-  # Persist host ssh keys to enable decrycption of agenix secrets
+  # Persist host ssh keys to enable decrycption of agenix secrets (see below)
   environment.etc."ssh/ssh_host_rsa_key".source
     = "/nix/persist/etc/ssh/ssh_host_rsa_key";
   environment.etc."ssh/ssh_host_rsa_key.pub".source
@@ -137,6 +137,6 @@ nixos-install --no-root-passwd
 
 ### Deploy-rs & Agenix Preparation
 
-This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys. 
+This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've written about it [here](/encrypting-secrets-nixos)).
 
 To ensure the host has the correct SSH keys to allow for decryption of secrets I edit `/etc/ssh/ssh_host_ed25519_key` and `/etc/ssh/ssh_host_ed25516_key.pub`, replacing the existing keys with those I have to configured in agenix.

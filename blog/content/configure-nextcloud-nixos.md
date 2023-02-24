@@ -22,7 +22,7 @@ There are several services that need to be configured to setup Nextcloud:
 
 Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look [here](https://search.nixos.org/options?channel=22.11&from=0&size=50&sort=relevance&type=packages&query=services.nextcloud).
 
-Here is a look at my config:
+Here is a look at my config - you'll note that secrets are managed with Agenix, which I've written about [here](/encrypting-secrets-nixos):
 
 ```nix
 # /etc/nixos/configuration.nix

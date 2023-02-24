@@ -18,7 +18,7 @@ For the initial installation of NixOS I followed Elis' walk through (linked abov
 
 ```nix
 # /etc/nixos/configuration.nix
-{ config, pkgs, ... }:
+{ ... }:
 
 let
   impermanence = builtins.fetchTarball {
@@ -38,6 +38,7 @@ With the above complete I was able to configure directories I needed to persist 
 
 ```nix
 # /etc/nixos/configuration.nix
+{ ... }:
 
 {
   environment = {
@@ -75,21 +76,21 @@ You may have noticed in the configuration above I also persist `/users/admin`, t
 
 ```nix
 # /etc/nixos/configuration.nix
+{ ... }:
 
-{
+{}
+users = {
+  mutableUsers = false;
   users = {
-    mutableUsers = false;
-    users = {
-      admin = {
-        isNormalUser = true;
-        home = "/home/admin";
-        # generate with: nix-shell --run 'mkpasswd -m SHA-512 -s' -p mkpasswd
-        passwordFile = "/nix/persist/users/admin";
-        extraGroups = [ "wheel" ];
-      };
+    admin = {
+      isNormalUser = true;
+      home = "/home/admin";
+      # generate with: nix-shell --run 'mkpasswd -m SHA-512 -s' -p mkpasswd
+      passwordFile = "/nix/persist/users/admin";
+      extraGroups = [ "wheel" ];
     };
   };
-}
+};
 ```
 
 
