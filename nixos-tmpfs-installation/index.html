@@ -158,7 +158,7 @@
 </span><span>    ]</span><span style="color:#eceff4;">;
 </span><span>  }</span><span style="color:#eceff4;">;
 </span><span>  
-</span><span>  </span><span style="color:#616e88;"># Persist host ssh keys to enable decrycption of agenix secrets
+</span><span>  </span><span style="color:#616e88;"># Persist host ssh keys to enable decrycption of agenix secrets (see below)
 </span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_rsa_key&quot;</span><span>.</span><span style="color:#8fbcbb;">source
 </span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_rsa_key&quot;</span><span style="color:#eceff4;">;
 </span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_rsa_key.pub&quot;</span><span>.</span><span style="color:#8fbcbb;">source
@@ -183,7 +183,7 @@
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nixos-install</span><span> --no-root-passwd
 </span></code></pre>
 <h3 id="deploy-rs-agenix-preparation">Deploy-rs &amp; Agenix Preparation</h3>
-<p>This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> encrypts any secrets used in the flakes using SSH keys. </p>
+<p>This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> encrypts any secrets used in the flakes using SSH keys (I've written about it <a href="/encrypting-secrets-nixos">here</a>).</p>
 <p>To ensure the host has the correct SSH keys to allow for decryption of secrets I edit <code>/etc/ssh/ssh_host_ed25519_key</code> and <code>/etc/ssh/ssh_host_ed25516_key.pub</code>, replacing the existing keys with those I have to configured in agenix.</p>
 
         </div>

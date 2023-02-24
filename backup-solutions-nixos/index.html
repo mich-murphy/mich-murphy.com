@@ -135,7 +135,7 @@
 </span><span>}
 </span></code></pre>
 <p>The above configures a backup to my BorgBase repo which runs daily at midnight, backing up the specified directories. The backup is encrypted and compressed, and the repo requires an authorized SSH key for access. This continually monitors and updates a single backup, however you can optionally configure BorgBackup for <a rel="noopener" target="_blank" href="https://borgbackup.readthedocs.io/en/stable/usage/notes.html#append-only-mode-forbid-compaction">append-only mode</a> which allows for some delay in deletion of older files.</p>
-<p><strong>Note</strong>: in the above I've used <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> for managing my secrets (SSH key and encryption key). I plan on writing a future post about this topic.</p>
+<p><strong>Note</strong>: in the above I've used <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> for managing my secrets (SSH key and encryption key). I've written a post on configuring it <a href="/encrypting-secrets-nixos">here</a></p>
 <p><strong>Note</strong>: You'll likely have to run an initial SSH connection to the Borg repo to add its keys to <code>known_hosts</code>:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">ssh</span><span> -i /var/run/agenix/borgSSHKey o6h6zl22@o6h6zl22.repo.borgbase.com
 </span></code></pre>
