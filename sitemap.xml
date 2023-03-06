@@ -103,4 +103,11 @@
     <url>
         <loc>https://micha.elmurphy.com/tags/ubuntu/</loc>
     </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/zfs/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/zfs-useful-references/</loc>
+        <lastmod>2023-03-06</lastmod>
+    </url>
 </urlset>
