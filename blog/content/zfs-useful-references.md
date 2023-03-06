@@ -6,7 +6,7 @@ date = 2023-03-06
 tags = ["zfs""]
 +++
 
-I've been looking to upgrade my existing homelab (which is currently a 2012 Mac Mini I had lying around). I plan to use ZFS when I do upgrade, as it has a lot of great features for data integrity, redundancy and backups.
+I've been looking to upgrade my existing homelab (currently a 2012 Mac Mini which I had lying around). I plan to use ZFS when I do upgrade, as it has a lot of great features for data integrity, redundancy and backups.
 
 I've found a number of useful references in the process, which I thought to include here:
 
@@ -22,4 +22,4 @@ I've found a number of useful references in the process, which I thought to incl
 
 - [ZFS 101 - Understanding ZFS Storage & Performance](https://arstechnica.com/information-technology/2020/05/zfs-101-understanding-zfs-storage-and-performance/): great write up explaining what ZFS is and how it works, this article goes into a good level of depth too
 - [ZFS: You Should User Mirror VDEVs, Not RAIDZ](https://jrs-s.net/2015/02/06/zfs-you-should-use-mirror-vdevs-not-raidz/): recommendations on how to structure ZFS pools - spoiler alert mirroring is a great option
-- [ZFS Metadata Special Device](https://forum.level1techs.com/t/zfs-metadata-special-device-z/159954): explains how to add a metadata device in order to speed up a ZFS pool
+- [ZFS Metadata Special Device](https://forum.level1techs.com/t/zfs-metadata-special-device-z/159954): explains how to add a metadata device in order to increase random read performance on a ZFS pool
