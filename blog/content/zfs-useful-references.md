@@ -3,7 +3,7 @@ title = "Useful References for Understanding ZFS"
 date = 2023-03-06
 
 [taxonomies]
-tags = ["zfs""]
+tags = ["zfs"]
 +++
 
 I've been looking to upgrade my existing homelab (currently a 2012 Mac Mini which I had lying around). I plan to use ZFS when I do upgrade, as it has a lot of great features for data integrity, redundancy and backups.
