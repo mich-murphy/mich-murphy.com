@@ -18,6 +18,10 @@
         <lastmod>2023-02-21</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/dev-containers-vscode/</loc>
+        <lastmod>2023-04-11</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/encrypting-secrets-nixos/</loc>
         <lastmod>2023-02-22</lastmod>
     </url>
@@ -68,6 +72,9 @@
         <loc>https://micha.elmurphy.com/tags/cron/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/tags/docker/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/duplicati/</loc>
     </url>
     <url>
@@ -78,6 +85,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/impermanence/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/neovim/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nextcloud/</loc>
@@ -102,6 +112,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/ubuntu/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/vscode/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/zfs/</loc>

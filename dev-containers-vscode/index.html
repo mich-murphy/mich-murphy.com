@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/dev-containers-vscode/">Using Dev Containers to Standardise Development Environments</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-04-11
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/vscode/">#vscode</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/docker/">#docker</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/neovim/">#neovim</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>After running my own homelab for a while, I've become pretty familiar with using containers - mostly via Docker, though I may have to make the switch to podman after a <a rel="noopener" target="_blank" href="https://www.servethehome.com/docker-abruptly-starts-charging-many-users-for-docker-desktop/">recent announcement</a>. One thing I wasn't aware of was the ability to run containers for the specific purpose of creating a development environment.</p>
+<span id="continue-reading"></span><h2 id="configuring-a-dev-container">Configuring a Dev Container</h2>
+<p>I first came across this feature in Visual Studio Code (I try to avoid it, but sometimes its a necessary evil :P), there is a lot of great <a rel="noopener" target="_blank" href="https://code.visualstudio.com/docs/devcontainers/containers">documentation</a> which covers the topic in far more detail than I plan to.</p>
+<p>The pre-requisites for setting up a Dev Container are Visual Studio Code (VSCode) and the <a rel="noopener" target="_blank" href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers">Dev Containers</a> plugin.</p>
+<p>The basic idea is that you create a <code>Dockerfile</code> or <code>docker-compose</code> file, which sets up a container, you can then specify a <code>devcontainer.json</code> file which lets you configure additional settings unique to VSCode e.g. plugins that you want installed inside of the container, and/or VSCode settings you want active whilst in the container. </p>
+<p>VSCode will even walk you through the process of creating the container itself if you don't have a <code>Dockerfile</code> already on hand: <code>Ctrl + Shift + P</code> -&gt; <code>Dev Containers: New Dev Container...</code> will get you started.</p>
+<p><a rel="noopener" target="_blank" href="https://containers.dev/implementors/spec/#devcontainerjson">Follow this link</a> for a list of all the options available when configuring <code>devcontainer.json</code>.</p>
+<p>Here is an example of a quick setup I configured:</p>
+<pre data-lang="json" style="background-color:#2e3440;color:#d8dee9;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  </span><span style="color:#a3be8c;">&quot;name&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Python 3&quot;</span><span style="color:#eceff4;">,
+</span><span>  </span><span style="color:#616e88;">// Base image provided by Microsoft or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+</span><span>  </span><span style="color:#a3be8c;">&quot;image&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;mcr.microsoft.com/devcontainers/python:0-3.9&quot;</span><span style="color:#eceff4;">,
+</span><span>  </span><span style="color:#616e88;">// Install pre-configured features into the container - in this case the fish shell
+</span><span>  </span><span style="color:#a3be8c;">&quot;features&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>    </span><span style="color:#a3be8c;">&quot;ghcr.io/meaningful-ooo/devcontainer-features/fish:1&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>      </span><span style="color:#a3be8c;">&quot;fisher&quot;</span><span style="color:#eceff4;">: </span><span style="color:#81a1c1;">true
+</span><span>    }
+</span><span>  }</span><span style="color:#eceff4;">,
+</span><span>  </span><span style="color:#616e88;">// Specify extensions which should be made available inside of the container
+</span><span>  </span><span style="color:#a3be8c;">&quot;customizations&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>    </span><span style="color:#a3be8c;">&quot;vscode&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>      </span><span style="color:#a3be8c;">&quot;extensions&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;vscodevim.vim&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;ms-python.python&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;ms-python.pylance&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;ms-python.black&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;ms-python.flake8&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;ms-python.isort&quot;
+</span><span>      ]</span><span style="color:#eceff4;">,
+</span><span>      </span><span style="color:#a3be8c;">&quot;settings&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>        </span><span style="color:#a3be8c;">&quot;python.linting.flake8Enabled&quot;</span><span style="color:#eceff4;">: </span><span style="color:#81a1c1;">true</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;python.linting.flake8Path&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/usr/local/bin/flake8&quot;</span><span>}</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;python.formatting.blackPath&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/usr/local/bin/black&quot;
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre>
+<h2 id="adding-dotfiles">Adding Dotfiles</h2>
+<p>One feature which I thought was really handy is the ability to specify a repository containing <code>dotfiles</code> (linux personalised configuration settings, <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/dwm-dotfiles">here is an example</a>), which can be <a rel="noopener" target="_blank" href="https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories">cloned and configured</a> once the Dev Container is up and running.</p>
+<p>This means you can create a Dev Contianer and share it across a team, so that everyone has a standardised development environment. Then you can add your own configuration after the container has been started by using the dotfiles functionality - no one is subjected to your strange configuration (e.g. running the vim extension).</p>
+<h2 id="use-of-dev-containers-in-neovim">Use of Dev Containers in Neovim</h2>
+<p>Naturally the first thing I did after discovering this feature in VSCode was to explore whether it is also available in Neovim (my editor of choice) - sure enough <a rel="noopener" target="_blank" href="https://github.com/esensar/nvim-dev-container">I found a plugin</a>. I need to play around with this more to get it configured, but I'm glad to know the option is there.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/zfs-useful-references/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Useful References for Understanding ZFS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>
