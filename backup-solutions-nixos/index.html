@@ -153,6 +153,9 @@
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">mkdir</span><span> mount
 </span><span style="color:#88c0d0;">borg-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span> mount o6h6zl22@o6h6zl22.repo.borgbase.com:repo ./mount
 </span></code></pre>
+<p>By default borg looks for any ssh keys in the location and format of <code>~/.ssh/id_*</code>, if you need to pass in an alternate ssh key you can use the following format:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">borg-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span> mount --rsh </span><span style="color:#a3be8c;">&#39;ssh -i /var/run/agenix/borgSSHKey&#39;</span><span> o6h6zl22@o6h6zl22.repo.borgbase.com:repo ./mount
+</span></code></pre>
 <p>We are then presented with a list of snapshot dates to choose from, and can select the time period at which we wish to restore. Copy across files as normal e.g. using the <code>cp</code> command</p>
 <p>When everything has been restored we can unmount with the below command:</p>
 <pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">borg-job-</span><span style="color:#81a1c1;">&lt;</span><span>name-of-job</span><span style="color:#81a1c1;">&gt;</span><span> umount /mount
