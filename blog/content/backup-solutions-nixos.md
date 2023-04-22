@@ -111,6 +111,12 @@ mkdir mount
 borg-job-<name-of-job> mount o6h6zl22@o6h6zl22.repo.borgbase.com:repo ./mount
 ```
 
+By default borg looks for any ssh keys in the location and format of `~/.ssh/id_*`, if you need to pass in an alternate ssh key you can use the following format:
+
+```bash
+borg-job-<name-of-job> mount --rsh 'ssh -i /var/run/agenix/borgSSHKey' o6h6zl22@o6h6zl22.repo.borgbase.com:repo ./mount
+```
+
 We are then presented with a list of snapshot dates to choose from, and can select the time period at which we wish to restore. Copy across files as normal e.g. using the `cp` command
 
 When everything has been restored we can unmount with the below command:
