@@ -7,7 +7,16 @@
         <generator>Zola</generator>
         <language>en</language>
         <atom:link href="https://micha.elmurphy.com/rss.xml" rel="self" type="application/rss+xml"/>
-        <lastBuildDate>Tue, 11 Apr 2023 00:00:00 +0000</lastBuildDate>
+        <lastBuildDate>Mon, 08 May 2023 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Useful References for Understanding Nix&#x2F;NixOS</title>
+            <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/nix-useful-references/</link>
+            <guid>https://micha.elmurphy.com/nix-useful-references/</guid>
+            <description>&lt;p&gt;I recently used Nix to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&quot;&gt;configure my M2 Macbook Air&lt;&#x2F;a&gt;, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m currently building out a similar solution for my homelab, and thought to document a list of useful references here.&lt;&#x2F;p&gt;
+</description>
+        </item>
         <item>
             <title>Using Dev Containers to Standardise Development Environments</title>
             <pubDate>Tue, 11 Apr 2023 00:00:00 +0000</pubDate>
@@ -87,15 +96,6 @@
             <link>https://micha.elmurphy.com/s3-object-storage-nixos/</link>
             <guid>https://micha.elmurphy.com/s3-object-storage-nixos/</guid>
             <description>&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
-</description>
-        </item>
-        <item>
-            <title>Useful References for Understanding Nix&#x2F;NixOS</title>
-            <pubDate>Wed, 07 Dec 2022 00:00:00 +0000</pubDate>
-            <link>https://micha.elmurphy.com/nix-useful-references/</link>
-            <guid>https://micha.elmurphy.com/nix-useful-references/</guid>
-            <description>&lt;p&gt;I recently used Nix to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&quot;&gt;configure my M2 Macbook Air&lt;&#x2F;a&gt;, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.&lt;&#x2F;p&gt;
-&lt;p&gt;I&#x27;m currently building out a similar solution for my homelab, and thought to document a list of useful references here.&lt;&#x2F;p&gt;
 </description>
         </item>
         <item>
