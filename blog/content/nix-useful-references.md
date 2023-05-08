@@ -1,6 +1,6 @@
 +++
 title = "Useful References for Understanding Nix/NixOS"
-date = 2022-12-07
+date = 2023-05-08
 
 [taxonomies]
 tags = ["nix", "nixos", "flakes"]
@@ -19,6 +19,8 @@ I'm currently building out a similar solution for my homelab, and thought to doc
 - [NixOS Manual](https://nixos.org/manual/nixos/stable/index.html#nixos-manual)
 - [Home Manager Manual](https://nix-community.github.io/home-manager/options.html)
 - [Nix Darwin Manual](https://daiderd.com/nix-darwin/manual/index.html#sec-options)
+- [Devenv Developer Environments](https://devenv.sh/getting-started)
+- [Determinate Systems Zero to Nix](https://zero-to-nix.com)
 
 ## Useful Posts
 
