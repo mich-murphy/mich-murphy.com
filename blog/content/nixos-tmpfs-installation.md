@@ -66,7 +66,7 @@ nixos-generate-config --root /mnt
 Before completing the final install we need to make some changes to the generated configuration:
 
 ```nix
-# /etc/nixos/hardware-configuration.nix
+# /mnt/etc/nixos/hardware-configuration.nix
 
 {
   fileSystems."/" = {
@@ -89,12 +89,23 @@ Before completing the final install we need to make some changes to the generate
 }
 ```
 
-You will also need to edit `/etc/nixos/configuration.nix`, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via [deploy-rs](https://github.com/serokell/deploy-rs):
+You will also need to edit `/mnt/etc/nixos/configuration.nix`, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via [deploy-rs](https://github.com/serokell/deploy-rs):
 
 ```nix
-# /etc/nixos/configuration.nix
+# /mnt/etc/nixos/configuration.nix
+
+{ config, pkgs, ... }:
 
 {
+  imports = [ ./hardware-configuration.nix ];
+
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.grub.device = "/dev/sda";
+
+  # Enable SSH
+  services.openssh.enable = true;
+
   # Configure user with sudo access and SSH key authentication
   users.mutableUsers = false; # prevents any changes to users outside of config file
   users.users.mm = {
@@ -104,7 +115,7 @@ You will also need to edit `/etc/nixos/configuration.nix`, how you go about this
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMne13aa88i97xAUqU33dk2FNz+w8OIMGi8LH4BCRFaN"
     ];
   };
-  
+
   # Persist host ssh keys to enable decrycption of agenix secrets (see below)
   environment.etc."ssh/ssh_host_rsa_key".source
     = "/nix/persist/etc/ssh/ssh_host_rsa_key";
@@ -122,6 +133,9 @@ You will also need to edit `/etc/nixos/configuration.nix`, how you go about this
 
   # allow for deployment without entering password
   security.sudo.wheelNeedsPassword = false;
+
+  system.stateVersion = "22.11";
+
 }
 ```
 
@@ -139,4 +153,8 @@ nixos-install --no-root-passwd
 
 This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've written about it [here](/encrypting-secrets-nixos)).
 
-To ensure the host has the correct SSH keys to allow for decryption of secrets I edit `/etc/ssh/ssh_host_ed25519_key` and `/etc/ssh/ssh_host_ed25516_key.pub`, replacing the existing keys with those I have to configured in agenix.
+To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update `secrets.nix` with the new host key `/etc/ssh/ssh_host_ed25516_key.pub`. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:
+
+```bash
+nix run github:ryantm/agenix -- --rekey -i /path/to/original/ssh/key
+```
