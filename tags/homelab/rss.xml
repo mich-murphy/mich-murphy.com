@@ -7,7 +7,15 @@
         <generator>Zola</generator>
         <language>en</language>
         <atom:link href="https://micha.elmurphy.com/tags/homelab/rss.xml" rel="self" type="application/rss+xml"/>
-        <lastBuildDate>Wed, 22 Feb 2023 00:00:00 +0000</lastBuildDate>
+        <lastBuildDate>Tue, 18 Jul 2023 00:00:00 +0000</lastBuildDate>
+        <item>
+            <title>Troubleshooting Proxmox Installation</title>
+            <pubDate>Tue, 18 Jul 2023 00:00:00 +0000</pubDate>
+            <link>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</link>
+            <guid>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</guid>
+            <description>&lt;p&gt;I encountered some issues when installing Proxmox on a new homelab. One method of solving these would have been to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Install_Proxmox_VE_on_Debian_11_Bullseye&quot;&gt;install Debian and then Proxmox&lt;&#x2F;a&gt; from there. I decided to try my hand at troubleshooting the issues instead.&lt;&#x2F;p&gt;
+</description>
+        </item>
         <item>
             <title>Encrypting Secrets in NixOS With Agenix</title>
             <pubDate>Wed, 22 Feb 2023 00:00:00 +0000</pubDate>

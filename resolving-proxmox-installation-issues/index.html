@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://micha.elmurphy.com/rss.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    </head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/resolving-proxmox-installation-issues/">Troubleshooting Proxmox Installation</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2023-07-18
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/proxmox/">#proxmox</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/homelab/">#homelab</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>I encountered some issues when installing Proxmox on a new homelab. One method of solving these would have been to <a rel="noopener" target="_blank" href="https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_11_Bullseye">install Debian and then Proxmox</a> from there. I decided to try my hand at troubleshooting the issues instead.</p>
+<span id="continue-reading"></span><h2 id="why-proxmox">Why Proxmox</h2>
+<p>Before describing the issues I faced and how I resolved them, I though I should explain why I'm using Proxmox in the first place - why persevere through the pain?</p>
+<p>The end state for my homelab is to have a number of different Virtual Machines (VMs) running segregated services. There are a few reasons I want to run multiple VMs:</p>
+<ol>
+<li>To segment any data used for services to the specific VM I'm running it in</li>
+<li>Most VMs will be running NixOS - I want to manage them remotely and become more familiar with tools like <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">deploy-rs</a> and <a rel="noopener" target="_blank" href="https://github.com/numtide/nixos-anywhere/">nixos-anywhere</a></li>
+<li>I want to be able to use VMs from any machine to easily experiment with new Linux distributions</li>
+</ol>
+<p>I mostly want to use VMs over containers as currently <a rel="noopener" target="_blank" href="https://nixos.wiki/wiki/Proxmox_Linux_Container">NixOS doesn't work so well with LXC</a>, it's possible, but I haven't been thrilled with the result. I will use LXC for running some services like [Home Assistant].</p>
+<h2 id="initial-boot">Initial Boot</h2>
+<p>The first issue I had was getting the Proxmox install step to boot from USB. I kept getting an error saying: <code>/dev fully populated</code></p>
+<p>I managed to find a <a rel="noopener" target="_blank" href="https://forum.proxmox.com/threads/solved-fresh-proxmox-install-with-dev-to-be-fully-populated-error.20211/">post on the Proxmox forum</a> which suggested changing the boot flags to resolve the error:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># e at boot menu add nomodeset
+</span><span>GRUB_CMDLINE_LINUX_DEFAULT</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;quiet nomodeset&quot; 
+</span></code></pre>
+<p>This let me proceed to the install step for Proxmox.</p>
+<h2 id="booting-after-install">Booting After Install</h2>
+<p>After installing Proxmox I rebooted my machine and found I hit a similar error again - adding the aforementioned <code>nomodeset</code> didn't work as I found Proxmox was using systemd-boot rather than grub.</p>
+<p>This was resolved by the following thanks to a <a rel="noopener" target="_blank" href="https://www.reddit.com/r/Proxmox/comments/is00kp/any_way_to_set_the_proxmox_installer_to_use_safe/">post on Reddit</a>:</p>
+<pre data-lang="text" style="background-color:#2e3440;color:#d8dee9;" class="language-text "><code class="language-text" data-lang="text"><span>for EFI boot (systemd-boot) add `nomodeset` to /etc/kernel/cmdline after installation; run `pve-efiboot-tool refresh` to update
+</span></code></pre>
+<h2 id="setting-safe-mode-to-boot-from-intel-graphics">Setting Safe Mode to Boot from Intel Graphics</h2>
+<p>I thought I was finally done and ready to start setting up some VMs - but no, I hit a fatal server error, which required me to change my vga settings. I found a <a rel="noopener" target="_blank" href="https://www.youtube.com/watch?v=-6fRTpmmuHs">YouTube video which explained the changes</a>:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">lspci </span><span style="color:#81a1c1;">| </span><span style="color:#88c0d0;">grep</span><span> -i vga
+</span><span style="color:#88c0d0;">mkdir</span><span> -p /usr/share/X11/xorg.conf.d
+</span><span style="color:#88c0d0;">vi</span><span> /usr/share/X11/xorg.conf.d/10-fbdev.conf
+</span></code></pre>
+<p>Enter the following text in <code>10-fbdev.conf</code></p>
+<pre data-lang="text" style="background-color:#2e3440;color:#d8dee9;" class="language-text "><code class="language-text" data-lang="text"><span>Section &quot;Device&quot;
+</span><span>    Identifier &quot;Card0&quot;
+</span><span>    Driver &quot;fbdev&quot;
+</span><span>    BusID &quot;pci0:2:0:0&quot;
+</span><span>EndSection
+</span></code></pre>
+<p>Finally the system booted and I was able to start setting up Proxmox.</p>
+<h2 id="bonus-tip-gpu-passthrough">Bonus Tip - GPU Passthrough</h2>
+<p>Finally I wanted to leave some references I found helpful for configuring GPU passthrough for a VM in Proxmox. I needed to do this for my Jellyfin service, so I could take advantage of Intel QuickSync. For further reference on setting up and testing hardware transcoding checkout the <a rel="noopener" target="_blank" href="https://wiki.archlinux.org/title/Hardware_video_acceleration#Configuring_VA-API">Jellyfin documentation</a>.</p>
+<p>You can pass through an Intel GPU via PCI passthrough, as detailed in <a rel="noopener" target="_blank" href="https://pve.proxmox.com/wiki/PCI_Passthrough">Proxmox documentation</a></p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/nix-useful-references/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Useful References for Understanding Nix&#x2F;NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2023
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

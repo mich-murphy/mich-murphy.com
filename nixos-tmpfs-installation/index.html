@@ -122,7 +122,7 @@
 </span></code></pre>
 <h2 id="editing-configuration-files">Editing Configuration Files</h2>
 <p>Before completing the final install we need to make some changes to the generated configuration:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/hardware-configuration.nix
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /mnt/etc/nixos/hardware-configuration.nix
 </span><span>
 </span><span>{
 </span><span>  </span><span style="color:#8fbcbb;">fileSystems</span><span>.</span><span style="color:#a3be8c;">&quot;/&quot; </span><span style="color:#81a1c1;">= </span><span>{
@@ -144,10 +144,21 @@
 </span><span>  }</span><span style="color:#eceff4;">;
 </span><span>}
 </span></code></pre>
-<p>You will also need to edit <code>/etc/nixos/configuration.nix</code>, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">deploy-rs</a>:</p>
-<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /etc/nixos/configuration.nix
+<p>You will also need to edit <code>/mnt/etc/nixos/configuration.nix</code>, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via <a rel="noopener" target="_blank" href="https://github.com/serokell/deploy-rs">deploy-rs</a>:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># /mnt/etc/nixos/configuration.nix
+</span><span>
+</span><span>{ config</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
 </span><span>
 </span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">imports </span><span style="color:#81a1c1;">= </span><span>[ </span><span style="color:#a3be8c;">./hardware-configuration.nix </span><span>]</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">boot</span><span>.</span><span style="color:#8fbcbb;">loader</span><span>.</span><span style="color:#8fbcbb;">grub</span><span>.</span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">boot</span><span>.</span><span style="color:#8fbcbb;">loader</span><span>.</span><span style="color:#8fbcbb;">grub</span><span>.</span><span style="color:#8fbcbb;">version </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">2</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">boot</span><span>.</span><span style="color:#8fbcbb;">loader</span><span>.</span><span style="color:#8fbcbb;">grub</span><span>.</span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/sda&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#616e88;"># Enable SSH
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">openssh</span><span>.</span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>
 </span><span>  </span><span style="color:#616e88;"># Configure user with sudo access and SSH key authentication
 </span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">mutableUsers </span><span style="color:#81a1c1;">= false</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># prevents any changes to users outside of config file
 </span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">mm </span><span style="color:#81a1c1;">= </span><span>{
@@ -157,7 +168,7 @@
 </span><span>      </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMne13aa88i97xAUqU33dk2FNz+w8OIMGi8LH4BCRFaN&quot;
 </span><span>    ]</span><span style="color:#eceff4;">;
 </span><span>  }</span><span style="color:#eceff4;">;
-</span><span>  
+</span><span>
 </span><span>  </span><span style="color:#616e88;"># Persist host ssh keys to enable decrycption of agenix secrets (see below)
 </span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">etc</span><span>.</span><span style="color:#a3be8c;">&quot;ssh/ssh_host_rsa_key&quot;</span><span>.</span><span style="color:#8fbcbb;">source
 </span><span>    </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/nix/persist/etc/ssh/ssh_host_rsa_key&quot;</span><span style="color:#eceff4;">;
@@ -175,6 +186,9 @@
 </span><span>
 </span><span>  </span><span style="color:#616e88;"># allow for deployment without entering password
 </span><span>  </span><span style="color:#8fbcbb;">security</span><span>.</span><span style="color:#8fbcbb;">sudo</span><span>.</span><span style="color:#8fbcbb;">wheelNeedsPassword </span><span style="color:#81a1c1;">= false</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">system</span><span>.</span><span style="color:#8fbcbb;">stateVersion </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;22.11&quot;</span><span style="color:#eceff4;">;
+</span><span>
 </span><span>}
 </span></code></pre>
 <p>If you plan on using <code>/etc/nixos/ocnfiguration.nix</code> for configuration, then you will want to ensure your created user also has a password. You may also want to edit the timezone, network settings, hostname and bootloader.</p>
@@ -184,7 +198,17 @@
 </span></code></pre>
 <h3 id="deploy-rs-agenix-preparation">Deploy-rs &amp; Agenix Preparation</h3>
 <p>This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix">Agenix</a> encrypts any secrets used in the flakes using SSH keys (I've written about it <a href="/encrypting-secrets-nixos">here</a>).</p>
-<p>To ensure the host has the correct SSH keys to allow for decryption of secrets I edit <code>/etc/ssh/ssh_host_ed25519_key</code> and <code>/etc/ssh/ssh_host_ed25516_key.pub</code>, replacing the existing keys with those I have to configured in agenix.</p>
+<p>To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update <code>secrets.nix</code> with the new host key <code>/etc/ssh/ssh_host_ed25516_key.pub</code>. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:</p>
+<ul>
+<li>To find out the new host key</li>
+</ul>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">ssh-keyscan</span><span> -t ssh-ed25519 hostname
+</span></code></pre>
+<ul>
+<li>To rekey Agenix secrets</li>
+</ul>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nix</span><span> run github:ryantm/agenix</span><span style="color:#81a1c1;"> --</span><span> --rekey -i /path/to/original/ssh/key
+</span></code></pre>
 
         </div>
 
