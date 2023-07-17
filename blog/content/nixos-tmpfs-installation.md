@@ -155,6 +155,13 @@ This final section is likely irrelevant to most users. I plan on writing about t
 
 To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update `secrets.nix` with the new host key `/etc/ssh/ssh_host_ed25516_key.pub`. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:
 
+- To find out the new host key
+```bash
+ssh-keyscan -t ssh-ed25519 hostname
+```
+
+- To rekey Agenix secrets
+
 ```bash
 nix run github:ryantm/agenix -- --rekey -i /path/to/original/ssh/key
 ```
