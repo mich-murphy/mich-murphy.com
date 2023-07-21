@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Michael Murphy - Blog - flakes</title>
+	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
+	<link href="https://micha.elmurphy.com/tags/flakes/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://micha.elmurphy.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2023-05-08T00:00:00+00:00</updated>
+	<id>https://micha.elmurphy.com/tags/flakes/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Useful References for Understanding Nix&#x2F;NixOS</title>
+		<published>2023-05-08T00:00:00+00:00</published>
+		<updated>2023-05-08T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/nix-useful-references/" type="text/html"/>
+		<id>https://micha.elmurphy.com/nix-useful-references/</id>
+		<content type="html">&lt;p&gt;I recently used Nix to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&quot;&gt;configure my M2 Macbook Air&lt;&#x2F;a&gt;, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m currently building out a similar solution for my homelab, and thought to document a list of useful references here.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;references&quot;&gt;References&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nix.dev&#x2F;&quot;&gt;Nix Dev&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;manual&#x2F;nix&#x2F;unstable&#x2F;introduction.html&quot;&gt;Nix Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;manual&#x2F;nixos&#x2F;stable&#x2F;index.html#nixos-manual&quot;&gt;NixOS Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nix-community.github.io&#x2F;home-manager&#x2F;options.html&quot;&gt;Home Manager Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;daiderd.com&#x2F;nix-darwin&#x2F;manual&#x2F;index.html#sec-options&quot;&gt;Nix Darwin Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;devenv.sh&#x2F;getting-started&quot;&gt;Devenv Developer Environments&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;zero-to-nix.com&quot;&gt;Determinate Systems Zero to Nix&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;useful-posts&quot;&gt;Useful Posts&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;MatthiasBenaets&#x2F;nixos-config&quot;&gt;Matthias Benaet&#x27;s Dotfiles&lt;&#x2F;a&gt;: this is where I first began, Matthias has a really good video series introduction as well, you can find the details in the linked repo&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jdisaacs.com&#x2F;blog&#x2F;nixos-config&#x2F;&quot;&gt;Jordan Isaac on Nix Flakes&lt;&#x2F;a&gt;: comprehensive introduction into creating a Flake in Nix&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;serokell.io&#x2F;blog&#x2F;practical-nix-flakes&quot;&gt;Alexander Bantyev on Nix Flakes&lt;&#x2F;a&gt;: great beginner friendly guide&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;bobvanderlinden.me&#x2F;customizing-packages-in-nix&#x2F;&quot;&gt;Bob Vanderlinden on Customising Nix Packages&lt;&#x2F;a&gt;: as you get deeper into the rabbit hole of Nix, you will likely need to customise Nix packages, this post clearly explains the different ways you can accomplish this, and why you would use one over another&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;Xe Iaso on Securing NixOS&lt;&#x2F;a&gt;: details how to create a more secure NixOS when running a production server&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-aws-2021-08-11&quot;&gt;Xe Iaso on Creating a Secure AWS NixOS Image&lt;&#x2F;a&gt;: detailed walk through of code to create a secure NixOS image in AWS&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;grahamc.com&#x2F;blog&#x2F;erase-your-darlings&quot;&gt;Graham Christensen on Impermanence in NixOS&lt;&#x2F;a&gt;: explains how to setup a NixOS system that erases at boot, and why the approach is useful - also checkout the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nix-community&#x2F;impermanence&quot;&gt;nix-community impermanence repo&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;Elis Hirwing on tmpfs as root&lt;&#x2F;a&gt;: alternative method of impermanence on NixOS&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+</feed>

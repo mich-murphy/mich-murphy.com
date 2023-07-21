@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Michael Murphy - Blog</title>
+	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
+	<link href="https://micha.elmurphy.com/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://micha.elmurphy.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2023-07-18T00:00:00+00:00</updated>
+	<id>https://micha.elmurphy.com/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Troubleshooting Proxmox Installation</title>
+		<published>2023-07-18T00:00:00+00:00</published>
+		<updated>2023-07-18T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/resolving-proxmox-installation-issues/" type="text/html"/>
+		<id>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</id>
+		<content type="html">&lt;p&gt;I encountered some issues when installing Proxmox on a new homelab. One method of solving these would have been to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Install_Proxmox_VE_on_Debian_11_Bullseye&quot;&gt;install Debian and then Proxmox&lt;&#x2F;a&gt; from there. I decided to try my hand at troubleshooting the issues instead.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;why-proxmox&quot;&gt;Why Proxmox&lt;&#x2F;h2&gt;
+&lt;p&gt;Before describing the issues I faced and how I resolved them, I though I should explain why I&#x27;m using Proxmox in the first place - why persevere through the pain?&lt;&#x2F;p&gt;
+&lt;p&gt;The end state for my homelab is to have a number of different Virtual Machines (VMs) running segregated services. There are a few reasons I want to run multiple VMs:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;To segment any data used for services to the specific VM I&#x27;m running it in&lt;&#x2F;li&gt;
+&lt;li&gt;Most VMs will be running NixOS - I want to manage them remotely and become more familiar with tools like &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;deploy-rs&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;numtide&#x2F;nixos-anywhere&#x2F;&quot;&gt;nixos-anywhere&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;I want to be able to use VMs from any machine to easily experiment with new Linux distributions&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;I mostly want to use VMs over containers as currently &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Proxmox_Linux_Container&quot;&gt;NixOS doesn&#x27;t work so well with LXC&lt;&#x2F;a&gt;, it&#x27;s possible, but I haven&#x27;t been thrilled with the result. I will use LXC for running some services like [Home Assistant].&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;initial-boot&quot;&gt;Initial Boot&lt;&#x2F;h2&gt;
+&lt;p&gt;The first issue I had was getting the Proxmox install step to boot from USB. I kept getting an error saying: &lt;code&gt;&#x2F;dev fully populated&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I managed to find a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;forum.proxmox.com&#x2F;threads&#x2F;solved-fresh-proxmox-install-with-dev-to-be-fully-populated-error.20211&#x2F;&quot;&gt;post on the Proxmox forum&lt;&#x2F;a&gt; which suggested changing the boot flags to resolve the error:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# e at boot menu add nomodeset
+&lt;&#x2F;span&gt;&lt;span&gt;GRUB_CMDLINE_LINUX_DEFAULT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;quiet nomodeset&amp;quot; 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This let me proceed to the install step for Proxmox.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;booting-after-install&quot;&gt;Booting After Install&lt;&#x2F;h2&gt;
+&lt;p&gt;After installing Proxmox I rebooted my machine and found I hit a similar error again - adding the aforementioned &lt;code&gt;nomodeset&lt;&#x2F;code&gt; didn&#x27;t work as I found Proxmox was using systemd-boot rather than grub.&lt;&#x2F;p&gt;
+&lt;p&gt;This was resolved by the following thanks to a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;Proxmox&#x2F;comments&#x2F;is00kp&#x2F;any_way_to_set_the_proxmox_installer_to_use_safe&#x2F;&quot;&gt;post on Reddit&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;text&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-text &quot;&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;for EFI boot (systemd-boot) add `nomodeset` to &#x2F;etc&#x2F;kernel&#x2F;cmdline after installation; run `pve-efiboot-tool refresh` to update
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;setting-safe-mode-to-boot-from-intel-graphics&quot;&gt;Setting Safe Mode to Boot from Intel Graphics&lt;&#x2F;h2&gt;
+&lt;p&gt;I thought I was finally done and ready to start setting up some VMs - but no, I hit a fatal server error, which required me to change my vga settings. I found a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=-6fRTpmmuHs&quot;&gt;YouTube video which explained the changes&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;lspci &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt; -i vga
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; -p &#x2F;usr&#x2F;share&#x2F;X11&#x2F;xorg.conf.d
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;vi&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;share&#x2F;X11&#x2F;xorg.conf.d&#x2F;10-fbdev.conf
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Enter the following text in &lt;code&gt;10-fbdev.conf&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;text&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-text &quot;&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;Section &amp;quot;Device&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    Identifier &amp;quot;Card0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    Driver &amp;quot;fbdev&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    BusID &amp;quot;pci0:2:0:0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;EndSection
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Finally the system booted and I was able to start setting up Proxmox.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bonus-tip-gpu-passthrough&quot;&gt;Bonus Tip - GPU Passthrough&lt;&#x2F;h2&gt;
+&lt;p&gt;Finally I wanted to leave some references I found helpful for configuring GPU passthrough for a VM in Proxmox. I needed to do this for my Jellyfin service, so I could take advantage of Intel QuickSync. For further reference on setting up and testing hardware transcoding checkout the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;Hardware_video_acceleration#Configuring_VA-API&quot;&gt;Jellyfin documentation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;You can pass through an Intel GPU via PCI passthrough, as detailed in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;PCI_Passthrough&quot;&gt;Proxmox documentation&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Useful References for Understanding Nix&#x2F;NixOS</title>
+		<published>2023-05-08T00:00:00+00:00</published>
+		<updated>2023-05-08T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/nix-useful-references/" type="text/html"/>
+		<id>https://micha.elmurphy.com/nix-useful-references/</id>
+		<content type="html">&lt;p&gt;I recently used Nix to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&quot;&gt;configure my M2 Macbook Air&lt;&#x2F;a&gt;, and manage all of my dotfiles. In the process I found a lot of useful references, detailing the ins and outs of Nix and NixOS.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m currently building out a similar solution for my homelab, and thought to document a list of useful references here.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;references&quot;&gt;References&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nix.dev&#x2F;&quot;&gt;Nix Dev&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;manual&#x2F;nix&#x2F;unstable&#x2F;introduction.html&quot;&gt;Nix Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;manual&#x2F;nixos&#x2F;stable&#x2F;index.html#nixos-manual&quot;&gt;NixOS Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nix-community.github.io&#x2F;home-manager&#x2F;options.html&quot;&gt;Home Manager Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;daiderd.com&#x2F;nix-darwin&#x2F;manual&#x2F;index.html#sec-options&quot;&gt;Nix Darwin Manual&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;devenv.sh&#x2F;getting-started&quot;&gt;Devenv Developer Environments&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;zero-to-nix.com&quot;&gt;Determinate Systems Zero to Nix&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;useful-posts&quot;&gt;Useful Posts&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;MatthiasBenaets&#x2F;nixos-config&quot;&gt;Matthias Benaet&#x27;s Dotfiles&lt;&#x2F;a&gt;: this is where I first began, Matthias has a really good video series introduction as well, you can find the details in the linked repo&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jdisaacs.com&#x2F;blog&#x2F;nixos-config&#x2F;&quot;&gt;Jordan Isaac on Nix Flakes&lt;&#x2F;a&gt;: comprehensive introduction into creating a Flake in Nix&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;serokell.io&#x2F;blog&#x2F;practical-nix-flakes&quot;&gt;Alexander Bantyev on Nix Flakes&lt;&#x2F;a&gt;: great beginner friendly guide&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;bobvanderlinden.me&#x2F;customizing-packages-in-nix&#x2F;&quot;&gt;Bob Vanderlinden on Customising Nix Packages&lt;&#x2F;a&gt;: as you get deeper into the rabbit hole of Nix, you will likely need to customise Nix packages, this post clearly explains the different ways you can accomplish this, and why you would use one over another&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;Xe Iaso on Securing NixOS&lt;&#x2F;a&gt;: details how to create a more secure NixOS when running a production server&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-aws-2021-08-11&quot;&gt;Xe Iaso on Creating a Secure AWS NixOS Image&lt;&#x2F;a&gt;: detailed walk through of code to create a secure NixOS image in AWS&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;grahamc.com&#x2F;blog&#x2F;erase-your-darlings&quot;&gt;Graham Christensen on Impermanence in NixOS&lt;&#x2F;a&gt;: explains how to setup a NixOS system that erases at boot, and why the approach is useful - also checkout the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nix-community&#x2F;impermanence&quot;&gt;nix-community impermanence repo&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;Elis Hirwing on tmpfs as root&lt;&#x2F;a&gt;: alternative method of impermanence on NixOS&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Using Dev Containers to Standardise Development Environments</title>
+		<published>2023-04-11T00:00:00+00:00</published>
+		<updated>2023-04-11T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/dev-containers-vscode/" type="text/html"/>
+		<id>https://micha.elmurphy.com/dev-containers-vscode/</id>
+		<content type="html">&lt;p&gt;After running my own homelab for a while, I&#x27;ve become pretty familiar with using containers - mostly via Docker, though I may have to make the switch to podman after a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.servethehome.com&#x2F;docker-abruptly-starts-charging-many-users-for-docker-desktop&#x2F;&quot;&gt;recent announcement&lt;&#x2F;a&gt;. One thing I wasn&#x27;t aware of was the ability to run containers for the specific purpose of creating a development environment.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;configuring-a-dev-container&quot;&gt;Configuring a Dev Container&lt;&#x2F;h2&gt;
+&lt;p&gt;I first came across this feature in Visual Studio Code (I try to avoid it, but sometimes its a necessary evil :P), there is a lot of great &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;devcontainers&#x2F;containers&quot;&gt;documentation&lt;&#x2F;a&gt; which covers the topic in far more detail than I plan to.&lt;&#x2F;p&gt;
+&lt;p&gt;The pre-requisites for setting up a Dev Container are Visual Studio Code (VSCode) and the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=ms-vscode-remote.remote-containers&quot;&gt;Dev Containers&lt;&#x2F;a&gt; plugin.&lt;&#x2F;p&gt;
+&lt;p&gt;The basic idea is that you create a &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; or &lt;code&gt;docker-compose&lt;&#x2F;code&gt; file, which sets up a container, you can then specify a &lt;code&gt;devcontainer.json&lt;&#x2F;code&gt; file which lets you configure additional settings unique to VSCode e.g. plugins that you want installed inside of the container, and&#x2F;or VSCode settings you want active whilst in the container. &lt;&#x2F;p&gt;
+&lt;p&gt;VSCode will even walk you through the process of creating the container itself if you don&#x27;t have a &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; already on hand: &lt;code&gt;Ctrl + Shift + P&lt;&#x2F;code&gt; -&amp;gt; &lt;code&gt;Dev Containers: New Dev Container...&lt;&#x2F;code&gt; will get you started.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;containers.dev&#x2F;implementors&#x2F;spec&#x2F;#devcontainerjson&quot;&gt;Follow this link&lt;&#x2F;a&gt; for a list of all the options available when configuring &lt;code&gt;devcontainer.json&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is an example of a quick setup I configured:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;name&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;Python 3&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Base image provided by Microsoft or use a Dockerfile or Docker Compose file. More info: https:&#x2F;&#x2F;containers.dev&#x2F;guide&#x2F;dockerfile
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;image&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;mcr.microsoft.com&#x2F;devcontainers&#x2F;python:0-3.9&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Install pre-configured features into the container - in this case the fish shell
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;features&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ghcr.io&#x2F;meaningful-ooo&#x2F;devcontainer-features&#x2F;fish:1&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;fisher&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Specify extensions which should be made available inside of the container
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;customizations&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;vscode&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;extensions&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;vscodevim.vim&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.python&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.pylance&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.black&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.flake8&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.isort&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;settings&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.linting.flake8Enabled&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.linting.flake8Path&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;flake8&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.formatting.blackPath&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;black&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;adding-dotfiles&quot;&gt;Adding Dotfiles&lt;&#x2F;h2&gt;
+&lt;p&gt;One feature which I thought was really handy is the ability to specify a repository containing &lt;code&gt;dotfiles&lt;&#x2F;code&gt; (linux personalised configuration settings, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;dwm-dotfiles&quot;&gt;here is an example&lt;&#x2F;a&gt;), which can be &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;devcontainers&#x2F;containers#_personalizing-with-dotfile-repositories&quot;&gt;cloned and configured&lt;&#x2F;a&gt; once the Dev Container is up and running.&lt;&#x2F;p&gt;
+&lt;p&gt;This means you can create a Dev Contianer and share it across a team, so that everyone has a standardised development environment. Then you can add your own configuration after the container has been started by using the dotfiles functionality - no one is subjected to your strange configuration (e.g. running the vim extension).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;use-of-dev-containers-in-neovim&quot;&gt;Use of Dev Containers in Neovim&lt;&#x2F;h2&gt;
+&lt;p&gt;Naturally the first thing I did after discovering this feature in VSCode was to explore whether it is also available in Neovim (my editor of choice) - sure enough &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;esensar&#x2F;nvim-dev-container&quot;&gt;I found a plugin&lt;&#x2F;a&gt;. I need to play around with this more to get it configured, but I&#x27;m glad to know the option is there.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Useful References for Understanding ZFS</title>
+		<published>2023-03-06T00:00:00+00:00</published>
+		<updated>2023-03-06T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/zfs-useful-references/" type="text/html"/>
+		<id>https://micha.elmurphy.com/zfs-useful-references/</id>
+		<content type="html">&lt;p&gt;I&#x27;ve been looking to upgrade my existing homelab (currently a 2012 Mac Mini which I had lying around). I plan to use ZFS when I do upgrade, as it has a lot of great features for data integrity, redundancy and backups.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve found a number of useful references in the process, which I thought to include here:&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;references&quot;&gt;References&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.amazon.com&#x2F;FreeBSD-Mastery-ZFS-7&#x2F;dp&#x2F;1642350001&quot;&gt;FreeBSD Mastery: ZFS&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.amazon.com&#x2F;FreeBSD-Mastery-Advanced-ZFS&#x2F;dp&#x2F;164235001X&#x2F;ref=d_pd_sbs_sccl_2_1&#x2F;136-3988813-2250128?pd_rd_w=iJSYf&amp;amp;content-id=amzn1.sym.3676f086-9496-4fd7-8490-77cf7f43f846&amp;amp;pf_rd_p=3676f086-9496-4fd7-8490-77cf7f43f846&amp;amp;pf_rd_r=F6P3A70FCX3JWKZ8FAKN&amp;amp;pd_rd_wg=fJtXN&amp;amp;pd_rd_r=1c62b972-1d2f-4b21-9b74-4149b0a66303&amp;amp;pd_rd_i=164235001X&amp;amp;psc=1&quot;&gt;FreeBSD Mastery: Advanced ZFS&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;openzfs.github.io&#x2F;openzfs-docs&#x2F;&quot;&gt;OpenZFS Documentation&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;useful-posts&quot;&gt;Useful Posts&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;arstechnica.com&#x2F;information-technology&#x2F;2020&#x2F;05&#x2F;zfs-101-understanding-zfs-storage-and-performance&#x2F;&quot;&gt;ZFS 101 - Understanding ZFS Storage &amp;amp; Performance&lt;&#x2F;a&gt;: great write up explaining what ZFS is and how it works, this article goes into a good level of depth too&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jrs-s.net&#x2F;2015&#x2F;02&#x2F;06&#x2F;zfs-you-should-use-mirror-vdevs-not-raidz&#x2F;&quot;&gt;ZFS: You Should User Mirror VDEVs, Not RAIDZ&lt;&#x2F;a&gt;: recommendations on how to structure ZFS pools - spoiler alert mirroring is a great option&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;forum.level1techs.com&#x2F;t&#x2F;zfs-metadata-special-device-z&#x2F;159954&quot;&gt;ZFS Metadata Special Device&lt;&#x2F;a&gt;: explains how to add a metadata device in order to increase random read performance on a ZFS pool&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Encrypting Secrets in NixOS With Agenix</title>
+		<published>2023-02-22T00:00:00+00:00</published>
+		<updated>2023-02-22T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/encrypting-secrets-nixos/" type="text/html"/>
+		<id>https://micha.elmurphy.com/encrypting-secrets-nixos/</id>
+		<content type="html">&lt;p&gt;After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;issues&#x2F;24288&quot;&gt;world readable Nix store&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;There are a number of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Comparison_of_secret_managing_schemes&quot;&gt;solutions available&lt;&#x2F;a&gt; to encrypt secrets in NixOS, I landed on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;Agenix&lt;&#x2F;a&gt;, as it&#x27;s relatively easy to configure and works with my deployment tool of choice - &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;Deploy-rs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-agenix-works&quot;&gt;How Agenix Works&lt;&#x2F;h2&gt;
+&lt;p&gt;Agenix uses pre-existing SSH keys to encrypt secrets using the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;FiloSottile&#x2F;age&quot;&gt;Age&lt;&#x2F;a&gt; encryption tool. These secrets are then decrypted using the &lt;em&gt;private&lt;&#x2F;em&gt; SSH &lt;em&gt;host&lt;&#x2F;em&gt; key on the target system.&lt;&#x2F;p&gt;
+&lt;p&gt;There are a couple of points worth considering when using Agenix:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Agenix doesn&#x27;t officially have support for Home Manager - though an alternative is &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;jordanisaacs&#x2F;homeage&quot;&gt;available&lt;&#x2F;a&gt; (I haven&#x27;t tried this)&lt;&#x2F;li&gt;
+&lt;li&gt;Agenix provides a secret file, rather than a string. This means that if there is no option in an existing module to pass a filepath for a secret, we need to have the service read the clear text file path at runtime&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;using-agenix&quot;&gt;Using Agenix&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;ll run through a simple example here, should you want more detail I recommend reading through the Agenix &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;readme&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;agenix-configuration&quot;&gt;Agenix Configuration&lt;&#x2F;h3&gt;
+&lt;p&gt;Create a directory for secrets and secret config - this should be somewhere that makes sense e.g. &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;secrets&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Next we need to create a secret configuration file &lt;code&gt;secrets.nix&lt;&#x2F;code&gt;. This tells Agenix which SSH keys to use when encrypting secrets, which secrets are available, and which systems&#x2F;users should have access to each secret.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; -p &#x2F;etc&#x2F;nixos&#x2F;secrets
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;vim&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;nixos&#x2F;secrets&#x2F;secrets.nix
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The contents of the file should look something like this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;secrets&#x2F;secrets.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;system &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0idNvgGiucWgup&#x2F;mP78zyC23uFjYq0evcWdjGQUaBH&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;secretpassword.age&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;publicKeys &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ system ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;creating-a-secret&quot;&gt;Creating a Secret&lt;&#x2F;h3&gt;
+&lt;p&gt;We are now ready to create out first secret &lt;code&gt;secretpassword&lt;&#x2F;code&gt;. This next part will differ depending on how you have installed Agenix.&lt;&#x2F;p&gt;
+&lt;p&gt;Given I&#x27;m using Nix Flakes, I can simply run:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nix&lt;&#x2F;span&gt;&lt;span&gt; run github:ryantm&#x2F;agenix&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; -e secretpassword.age
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above assumes my SSH keys have been added to &lt;code&gt;~&#x2F;.ssh&#x2F;&lt;&#x2F;code&gt;. If this is not the case we can specify which SSH keys to use:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nix&lt;&#x2F;span&gt;&lt;span&gt; run github:ryantm&#x2F;agenix&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; -e secretpassword.age -i &#x2F;path&#x2F;to&#x2F;ssh&#x2F;key
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;adding-secret-to-nixos&quot;&gt;Adding Secret to NixOS&lt;&#x2F;h3&gt;
+&lt;p&gt;Once the above has been completed you can now add secrets to your NixOS configurations like so:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;captainsecure &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;isNormalUser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;home &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;home&#x2F;captainsecure&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;passwordFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;secretpassword&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secretpassword&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;secretpassword.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;secrets-folder-structure&quot;&gt;Secrets Folder Structure&lt;&#x2F;h3&gt;
+&lt;p&gt;I discovered an interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;git.chvp.be&#x2F;chvp&#x2F;nixos-config&#x2F;-&#x2F;tree&#x2F;main&#x2F;secrets&quot;&gt;dotfiles&lt;&#x2F;a&gt;. I didn&#x27;t see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;secrets
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span&gt; secrets.nix
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span&gt; passwords
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span&gt;   └── secretpassword.age
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When we need to refer to these nested secrets in our Nix configuration, we specify the path to each age file e.g.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;captainsecure &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;isNormalUser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;home &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;home&#x2F;captainsecure&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;passwordFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;passwords&#x2F;secretpassword&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;passwords&#x2F;secretpassword&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;passwords&#x2F;secretpassword.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>How to Configure Nextcloud on NixOS</title>
+		<published>2023-02-21T00:00:00+00:00</published>
+		<updated>2023-02-21T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/configure-nextcloud-nixos/" type="text/html"/>
+		<id>https://micha.elmurphy.com/configure-nextcloud-nixos/</id>
+		<content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;Jacob Neplokh wrote an incredibly helpful &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jacobneplokh.com&#x2F;how-to-setup-nextcloud-on-nixos&#x2F;&quot;&gt;blog post&lt;&#x2F;a&gt; which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nextcloud&quot;&gt;NixOS Wiki&lt;&#x2F;a&gt; also had some very helpful information.&lt;&#x2F;p&gt;
+&lt;p&gt;There are several services that need to be configured to setup Nextcloud:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Nextcloud&lt;&#x2F;li&gt;
+&lt;li&gt;Postgresql (optional but recommended)&lt;&#x2F;li&gt;
+&lt;li&gt;Redis (optional)&lt;&#x2F;li&gt;
+&lt;li&gt;Nginx&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;nextcloud-setup&quot;&gt;Nextcloud Setup&lt;&#x2F;h2&gt;
+&lt;p&gt;Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=22.11&amp;amp;from=0&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=services.nextcloud&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is a look at my config - you&#x27;ll note that secrets are managed with Agenix, which I&#x27;ve written about &lt;a href=&quot;&#x2F;encrypting-secrets-nixos&quot;&gt;here&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nextcloud &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specify either a domain you own or localhost
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;hostName &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud.yourdomain.com&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;autoUpdateApps&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;https &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# only specify caching if using redis or alternative service
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;caching&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;redis &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;config &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# only specify dbtype if using postgresql db
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dbtype &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;pgsql&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dbname &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dbuser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# default directory for postgresql, ensures automatic setup of db
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dbhost &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;run&#x2F;postgresql&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;adminuser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;admin&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specified using agenix, provide path to file as alternative
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;adminpassFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nextcloudPass&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# error thrown unless specified
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;defaultPhoneRegion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;AU&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specify only if you want redis caching
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;extraOptions &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;redis &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;host &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;port &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;31638&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dbindex &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;timeout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;    
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# only needed if using agenix for secret encryption
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nextcloudPass &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;nextcloudPass.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# allow default nextcloud user access to secret
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;owner &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;postgresql-setup&quot;&gt;Postgresql Setup&lt;&#x2F;h2&gt;
+&lt;p&gt;It&#x27;s highly recommended that you replace the default Sqlite database with Postgresql, here are the steps involved in making the change:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nix&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;postgresql &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ensureDatabases &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ensureUsers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ensurePermissions&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;DATABASE nextcloud&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ALL PRIVILEGES&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# optional backup for postgresql db
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;postgresqlBackup &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;location &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&#x2F;backup&#x2F;nextclouddb&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;databases &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# time to start backup in systemd.time format
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;startAt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;*-*-* 23:15:00&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# ensure postgresql db is started with nextcloud
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;systemd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud-setup&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;requires &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;postgresql.service&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;after &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;postgresql.service&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;As mentioned in the comments above, I&#x27;ve included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to using &lt;a href=&quot;&#x2F;backup-solutions-nixos&#x2F;&quot;&gt;BorgBackup&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;redis-caching&quot;&gt;Redis Caching&lt;&#x2F;h2&gt;
+&lt;p&gt;This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy user experience. Here&#x27;s my configuration:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;redis&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;servers&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nextcloud &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;port &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;31638&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;bind &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;nginx-configuration&quot;&gt;Nginx Configuration&lt;&#x2F;h2&gt;
+&lt;p&gt;In order to login once Nextcloud is configured, HTTPS must be setup. My Nextcloud service is run behind a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;&quot;&gt;Tailscale&lt;&#x2F;a&gt; VPN, so I had a couple of different options for &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;kb&#x2F;1153&#x2F;enabling-https&#x2F;&quot;&gt;configuring HTTPS&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Having Tailscale do it with &lt;code&gt;tailscale cert&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Creating an A record to point an existing domain to my Tailscale IP, using my DNS provider, and configuring HTTPS via ACME&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. NixOS has builtin tooling using a service called &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;go-acme&#x2F;lego&quot;&gt;lego&lt;&#x2F;a&gt; behind the scenes to create certificates. Here&#x27;s my config:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nginx &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;recommendedGzipSettings &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;recommendedOptimisation &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;recommendedProxySettings &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;recommendedTlsSettings &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# pulls in the hostname we set for nextcloud above (nextcloud.yourdomain.com)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;virtualHosts&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;${config&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;hostName} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enableACME &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;acmeRoot &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= null&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;addSSL &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# directs traffic to the appropriate port for nextcloud
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;locations&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;proxyPass &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;http:&#x2F;&#x2F;localhost:8080&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;proxyWebsockets &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;security&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;acme &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;acceptTerms &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;preliminarySelfsigned &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= false&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;defaults &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;email &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;acme@yourdomain.com&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;dnsProvider &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;cloudflare&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# API for authentication to DNA provider e.g.
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# CF_API_KEY=&amp;lt;insert-global-key&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# CF_API_EMAIL=&amp;lt;insert-dns-account-email&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specify file if not using agenix
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;credentialsFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;acmeCredentials&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# allow nginx to configure acme
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nginx&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;extraGroups &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;acme&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# if providing credentialsFile via agenix
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;acmeCredentials&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;acmeCredentials.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I pieced together this setup thanks to the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;manual&#x2F;nixos&#x2F;stable&#x2F;index.html#module-security-acme-config-dns-with-vhosts&quot;&gt;documentation in the NixOS Manual&lt;&#x2F;a&gt;, I recommend giving it a read to understand what&#x27;s going on here.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;&#x2F;h2&gt;
+&lt;p&gt;As you can see above, there are a few steps involved in properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.&lt;&#x2F;p&gt;
+&lt;p&gt;I ended up putting all of the above config into its own module, for reference you can view it &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;common&#x2F;nixos&#x2F;nextcloud.nix&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Configuring Backup Solutions in NixOS</title>
+		<published>2023-02-13T00:00:00+00:00</published>
+		<updated>2023-02-13T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/backup-solutions-nixos/" type="text/html"/>
+		<id>https://micha.elmurphy.com/backup-solutions-nixos/</id>
+		<content type="html">&lt;p&gt;One of my first consideration in setting up a homelab has been about a backup strategy - it&#x27;s difficult to have trust in a self-hosted instance of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; when I don&#x27;t know whether data will exist after a hardware fault. One common backup strategy is the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.seagate.com&#x2F;au&#x2F;en&#x2F;blog&#x2F;what-is-a-3-2-1-backup-strategy&#x2F;&quot;&gt;3-2-1 approach&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;ul&gt;
+&lt;li&gt;3 copies of the data being backup up&lt;&#x2F;li&gt;
+&lt;li&gt;2 different media types for storage&lt;&#x2F;li&gt;
+&lt;li&gt;1 off-site backup&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This post details 2 methods of creating encrypted off-site backups in NixOS using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.duplicati.com&#x2F;&quot;&gt;Duplicati&lt;&#x2F;a&gt; or &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.borgbackup.org&#x2F;&quot;&gt;BorgBackup&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;duplicati&quot;&gt;Duplicati&lt;&#x2F;h2&gt;
+&lt;p&gt;NixOS provides a fairly bare bones &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=22.11&amp;amp;from=0&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=services.duplicati&quot;&gt;module&lt;&#x2F;a&gt; for setting up Duplicati. Here&#x27;s how I configured it:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;duplicati &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Allow web access for machines other than localhost
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;interface &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;0.0.0.0&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You can optionally specify a different user, group, port and data directory should you wish. &lt;&#x2F;p&gt;
+&lt;p&gt;After running &lt;code&gt;nixos-rebuild switch&lt;&#x2F;code&gt; you can manually configure backups via the web interface at &lt;code&gt;&amp;lt;serverip&amp;gt;:8200&lt;&#x2F;code&gt;. Duplicati has many options for configuring backups, I decided to backup to an S3 object store. Backups can be scheduled, and rules can be set to delete old backups at the target location. Duplicati will also capture logs and display warnings if it encounters any problems during the backup. The only issue I encountered was initially with access rights to the directories I wanted to backup. You can also set encryption keys for backups, with options for different encryption methods.&lt;&#x2F;p&gt;
+&lt;p&gt;I found Duplicati worked quite well, and I did have to test a restore in the brief time I used it. There was one major factor that made me continue looking for a different solution: I wanted to avoid the need for manual configuration, rather having Nix manage as much as possible for me declaratively.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;borgbackup&quot;&gt;BorgBackup&lt;&#x2F;h2&gt;
+&lt;p&gt;Thanks to an episode of the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.jupiterbroadcasting.com&#x2F;show&#x2F;linux-unplugged&#x2F;494&#x2F;&quot;&gt;Linux Unplugged Podcast&lt;&#x2F;a&gt; I came across BorgBackup. I found that the NixOS &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=22.11&amp;amp;from=0&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=services.borgbackup.jobs&quot;&gt;module&lt;&#x2F;a&gt; was pretty extensive, and I learnt that a number of cloud hosting options existed for storing these backups, and they seemed to be pretty competitively priced (&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.borgbase.com&#x2F;&quot;&gt;BorgBase&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;rsync.net&#x2F;&quot;&gt;Rsync.net&lt;&#x2F;a&gt;). &lt;&#x2F;p&gt;
+&lt;p&gt;After doing some further digging I came across a very helpful &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;borg-backup-2021-01-09&quot;&gt;blog post&lt;&#x2F;a&gt; which detailed all the steps in configuring BorgBackup on NixOS. After looking through the modules and reading the blog post I ended up with the following configuration:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;borgbackup&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;jobs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;media&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;paths &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&#x2F;media&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&#x2F;backup&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;var&#x2F;lib&#x2F;nextcloud&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Note: you will need to edit the SSH url provided by BorgBase to match the below format
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;repo &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;o6h6zl22@o6h6zl22.repo.borgbase.com:repo&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;encryption &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mode &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;repokey-blake2&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;passCommand &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;cat &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mediaBorgPass&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;BORG_RSH &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh -i &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;borgSSHKey&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;compression &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;auto,lzma&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;startAt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;daily&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;   
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mediaBorgPass&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;mediaBorgPass.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;age&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;borgSSHKey&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;..&#x2F;..&#x2F;secrets&#x2F;borgSSHKey.age&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above configures a backup to my BorgBase repo which runs daily at midnight, backing up the specified directories. The backup is encrypted and compressed, and the repo requires an authorized SSH key for access. This continually monitors and updates a single backup, however you can optionally configure BorgBackup for &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;borgbackup.readthedocs.io&#x2F;en&#x2F;stable&#x2F;usage&#x2F;notes.html#append-only-mode-forbid-compaction&quot;&gt;append-only mode&lt;&#x2F;a&gt; which allows for some delay in deletion of older files.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: in the above I&#x27;ve used &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;Agenix&lt;&#x2F;a&gt; for managing my secrets (SSH key and encryption key). I&#x27;ve written a post on configuring it &lt;a href=&quot;&#x2F;encrypting-secrets-nixos&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: You&#x27;ll likely have to run an initial SSH connection to the Borg repo to add its keys to &lt;code&gt;known_hosts&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;ssh&lt;&#x2F;span&gt;&lt;span&gt; -i &#x2F;var&#x2F;run&#x2F;agenix&#x2F;borgSSHKey o6h6zl22@o6h6zl22.repo.borgbase.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;monitoring-initial-borgbackup&quot;&gt;Monitoring Initial BorgBackup&lt;&#x2F;h3&gt;
+&lt;p&gt;I thought to add some additional notes on how to monitor the initial backup, as this process is not as straight forward as when using a tool such as Duplicati. Credit for the commands in this and the next section go to the blog post listed earlier.&lt;&#x2F;p&gt;
+&lt;p&gt;After adding the above configuration and running &lt;code&gt;nixos-rebuild switch&lt;&#x2F;code&gt; a Systemd service is configured to connect to the BorgBase repo and begin a backup. You can manually start the backup by running:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;systemctl&lt;&#x2F;span&gt;&lt;span&gt; start borgbackup-job-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;name-of-job&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You can then keep an eye on the backup by monitoring it via &lt;code&gt;journalctl&lt;&#x2F;code&gt; (keep in mind the backup will take a long time initially, subsequent backups are incremental and much faster):&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;journalctl&lt;&#x2F;span&gt;&lt;span&gt; -fu borgbackup-job-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;name-of-job&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;All being well you should see a successful connection being established and a successful disconnection once the backup has completed.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;restoring-from-borgbackup&quot;&gt;Restoring From BorgBackup&lt;&#x2F;h3&gt;
+&lt;p&gt;We first need to create a directory and mount the Borg repo inside:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; mount
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;borg-job-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;name-of-job&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; mount o6h6zl22@o6h6zl22.repo.borgbase.com:repo .&#x2F;mount
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;By default borg looks for any ssh keys in the location and format of &lt;code&gt;~&#x2F;.ssh&#x2F;id_*&lt;&#x2F;code&gt;, if you need to pass in an alternate ssh key you can use the following format:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;borg-job-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;name-of-job&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; mount --rsh &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;#39;ssh -i &#x2F;var&#x2F;run&#x2F;agenix&#x2F;borgSSHKey&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt; o6h6zl22@o6h6zl22.repo.borgbase.com:repo .&#x2F;mount
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We are then presented with a list of snapshot dates to choose from, and can select the time period at which we wish to restore. Copy across files as normal e.g. using the &lt;code&gt;cp&lt;&#x2F;code&gt; command&lt;&#x2F;p&gt;
+&lt;p&gt;When everything has been restored we can unmount with the below command:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;borg-job-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;name-of-job&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; umount &#x2F;mount
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;final-thoughts&quot;&gt;Final Thoughts&lt;&#x2F;h2&gt;
+&lt;p&gt;I ended up using BorgBackup as it meant I could configure almost everything once in my NixOS configuration and not have to think about it again. I setup email alerts in BorgBase to notify me if no backups are completed after a certain period of time, so that I don&#x27;t have to constantly monitor them. Another benefit of BorgBackup was that with my configuration the backups are performed as root, so I didn&#x27;t have to worry about file permissions when backing up e.g. &lt;code&gt;&#x2F;var&#x2F;lib&#x2F;nextcloud&lt;&#x2F;code&gt; (obviously you need to decide whether this is the appropriate approach for you).&lt;&#x2F;p&gt;
+&lt;p&gt;If you want an intuitive UI, without the fuss of the initial configuration then Duplicati is also a great solution. It also has the advantage of providing a much larger choice for the backup targets, with BorgBackup you need to store everything in a Borg repo (which you have the option of self hosting).&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Installing NixOS on a Temporary File System</title>
+		<published>2023-02-06T00:00:00+00:00</published>
+		<updated>2023-02-06T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/nixos-tmpfs-installation/" type="text/html"/>
+		<id>https://micha.elmurphy.com/nixos-tmpfs-installation/</id>
+		<content type="html">&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;micha.elmurphy.com&#x2F;nixos-impermanence&#x2F;&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;useful-references-notes&quot;&gt;Useful References &amp;amp; Notes&lt;&#x2F;h2&gt;
+&lt;p&gt;The following is summarised from a combination of 2 different blog posts: one detailing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;configure a tmpfs on NixOS&lt;&#x2F;a&gt; and another showing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;harden the NixOS install&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. &lt;strong&gt;Note&lt;&#x2F;strong&gt;: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.&lt;&#x2F;p&gt;
+&lt;p&gt;Before proceeding you will need a copy of the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;download.html#nix-more&quot;&gt;NixOS Minimal ISO&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;partitioning-labelling-drives&quot;&gt;Partitioning &amp;amp; Labelling Drives&lt;&#x2F;h2&gt;
+&lt;p&gt;If unsure first check which drives are available, and confirm which to install on with &lt;code&gt;lsblk&lt;&#x2F;code&gt;. I will be installing on &lt;code&gt;&#x2F;dev&#x2F;sda&lt;&#x2F;code&gt;, replace this with the relevant drive if it&#x27;s different.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create legacy boot partition of 512MB
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; mklabel msdos
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; mkpart primary ext4 1M 512M
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; set 1 boot on
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create root partition on remaining storage
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; mkpart primary ext4 512MiB 100&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;%
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Label both partitions
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkfs.ext4&lt;&#x2F;span&gt;&lt;span&gt; -L boot &#x2F;dev&#x2F;sda1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkfs.ext4&lt;&#x2F;span&gt;&lt;span&gt; -L nix &#x2F;dev&#x2F;sda2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;mount-drive-create-folders&quot;&gt;Mount Drive &amp;amp; Create Folders&lt;&#x2F;h2&gt;
+&lt;p&gt;We need to setup the following folder structure on the drive we prepared before starting a NixOS install.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create root mount with tmpfs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mount&lt;&#x2F;span&gt;&lt;span&gt; -t tmpfs none &#x2F;mnt
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create folder structure to persist in &#x2F;nix&#x2F;persist - srv is optional, used as home directory for services
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; -p &#x2F;mnt&#x2F;{boot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;nix&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;etc&#x2F;{nixos&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;ssh}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;var&#x2F;{lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;log}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;srv}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Mount relevant partitions to each folder
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mount&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda1 &#x2F;mnt&#x2F;boot
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mount&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;sda2 &#x2F;mnt&#x2F;nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create matching folders in &#x2F;mnt&#x2F;nix&#x2F;persist
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; -p &#x2F;mnt&#x2F;nix&#x2F;persist&#x2F;{etc&#x2F;{nixos&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;ssh}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;var&#x2F;{lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;log}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;srv}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Create temporary bind mounts (later replaced with impermanence - refer to post linked above)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mount&lt;&#x2F;span&gt;&lt;span&gt; -o bind &#x2F;mnt&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;nixos &#x2F;mnt&#x2F;etc&#x2F;nixos
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mount&lt;&#x2F;span&gt;&lt;span&gt; -o bind &#x2F;mnt&#x2F;nix&#x2F;persist&#x2F;var&#x2F;log &#x2F;mnt&#x2F;var&#x2F;log
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Generate a base config
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nixos-generate-config&lt;&#x2F;span&gt;&lt;span&gt; --root &#x2F;mnt
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;editing-configuration-files&quot;&gt;Editing Configuration Files&lt;&#x2F;h2&gt;
+&lt;p&gt;Before completing the final install we need to make some changes to the generated configuration:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;mnt&#x2F;etc&#x2F;nixos&#x2F;hardware-configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fileSystems&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;device &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;none&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fsType &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;tmpfs&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# add the line below - limits root storage to 2G maximum
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;options &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;defaults&amp;quot; &amp;quot;size=2G&amp;quot; &amp;quot;mode=755&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Update both &#x2F;boot and &#x2F;nix to use labels rather than UUID
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fileSystems&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;boot&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;device &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;dev&#x2F;disk&#x2F;by-label&#x2F;boot&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fsType &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ext4&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fileSystems&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;device &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;dev&#x2F;disk&#x2F;by-label&#x2F;nix&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fsType &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ext4&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You will also need to edit &lt;code&gt;&#x2F;mnt&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;, how you go about this depends on your needs. Personally I only need to prepare the configuration for deployment via &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;deploy-rs&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;mnt&#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{ config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;imports &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;hardware-configuration.nix &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;boot&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;loader&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;grub&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;boot&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;loader&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;grub&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;boot&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;loader&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;grub&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;device &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;dev&#x2F;sda&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Enable SSH
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;openssh&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Configure user with sudo access and SSH key authentication
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mutableUsers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= false&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# prevents any changes to users outside of config file
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mm &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;isNormalUser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;extraGroups &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;wheel&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;openssh&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;authorizedKeys&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;keys &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMne13aa88i97xAUqU33dk2FNz+w8OIMGi8LH4BCRFaN&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Persist host ssh keys to enable decrycption of agenix secrets (see below)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;etc&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_rsa_key&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;etc&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_rsa_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;etc&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_ed25519_key&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_ed25519_key&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;etc&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_ed25519_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_ed25519_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# enable nix flakes
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nix&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;extraOptions &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    experimental-features = nix-command flakes
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;  &amp;#39;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# allow for deployment without entering password
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;security&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;wheelNeedsPassword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= false&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;stateVersion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;22.11&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you plan on using &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;ocnfiguration.nix&lt;&#x2F;code&gt; for configuration, then you will want to ensure your created user also has a password. You may also want to edit the timezone, network settings, hostname and bootloader.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;complete-nixos-install&quot;&gt;Complete NixOS Install&lt;&#x2F;h2&gt;
+&lt;p&gt;Finally we run the following to install NixOS:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nixos-install&lt;&#x2F;span&gt;&lt;span&gt; --no-root-passwd
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;deploy-rs-agenix-preparation&quot;&gt;Deploy-rs &amp;amp; Agenix Preparation&lt;&#x2F;h3&gt;
+&lt;p&gt;This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;Agenix&lt;&#x2F;a&gt; encrypts any secrets used in the flakes using SSH keys (I&#x27;ve written about it &lt;a href=&quot;&#x2F;encrypting-secrets-nixos&quot;&gt;here&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update &lt;code&gt;secrets.nix&lt;&#x2F;code&gt; with the new host key &lt;code&gt;&#x2F;etc&#x2F;ssh&#x2F;ssh_host_ed25516_key.pub&lt;&#x2F;code&gt;. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;To find out the new host key&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;ssh-keyscan&lt;&#x2F;span&gt;&lt;span&gt; -t ssh-ed25519 hostname
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;To rekey Agenix secrets&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nix&lt;&#x2F;span&gt;&lt;span&gt; run github:ryantm&#x2F;agenix&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; --rekey -i &#x2F;path&#x2F;to&#x2F;original&#x2F;ssh&#x2F;key
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Configuring NixOS for Impermanence</title>
+		<published>2023-01-18T00:00:00+00:00</published>
+		<updated>2023-01-18T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/nixos-impermanence/" type="text/html"/>
+		<id>https://micha.elmurphy.com/nixos-impermanence/</id>
+		<content type="html">&lt;p&gt;After reading posts from both &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;grahamc.com&#x2F;blog&#x2F;erase-your-darlings&quot;&gt;Graham Christensen&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;Elis Hirwing&lt;&#x2F;a&gt; about the idea of impermanence in NixOS I decided to try setting it up on my homelab. The basic idea is that we configure the system to use a temporary file system, where everything is wiped after a reboot, unless specified otherwise.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;One of the major benefits of this kind of setup is that it forces you to properly declare the configuration, as everything will break after a reboot otherwise.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;initial-setup&quot;&gt;Initial Setup&lt;&#x2F;h2&gt;
+&lt;p&gt;For the initial installation of NixOS I followed Elis&#x27; walk through (linked above) and configured root using a temporary file system. Once this was complete I added the nix community tool &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nix-community&#x2F;impermanence&quot;&gt;impermanence&lt;&#x2F;a&gt; to &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt; to allow for a declarative configuration going forward. &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;impermanence &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= builtins.&lt;&#x2F;span&gt;&lt;span&gt;fetchTarball {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;https:&#x2F;&#x2F;github.com&#x2F;nix-community&#x2F;impermanence&#x2F;archive&#x2F;master.tar.gz&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;in
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;imports &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;hardware-configuration.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# should be present by default
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;impermanence&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;nixos.nix&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;configuring-persistence&quot;&gt;Configuring Persistence&lt;&#x2F;h2&gt;
+&lt;p&gt;With the above complete I was able to configure directories I needed to persist from within &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;persistence&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;directories &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;etc&#x2F;nixos&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# configuration files
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;srv&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# service data
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;var&#x2F;log&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# where journald dumps logs
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;var&#x2F;lib&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# system service persistant data
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# where I store local media
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;files &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;etc&#x2F;machine-id&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# ensures logs are retained after reboot
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;users&#x2F;admin&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# directory where I store passwordFile for user
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;etc &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# ensures SSH keys can be correctly generated
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_rsa_key&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_rsa_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_ed25519_key&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_ed25519_key&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh&#x2F;ssh_host_ed25519_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;etc&#x2F;ssh&#x2F;ssh_host_ed25519_key.pub&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Initially I ran into issues configuring &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;&quot;&gt;Tailscale&lt;&#x2F;a&gt; as I would be logged out after each reboot, I found persisting &lt;code&gt;&#x2F;var&#x2F;lib&lt;&#x2F;code&gt; fixed the issue as it ensures the Tailscale state, located at &lt;code&gt;&#x2F;var&#x2F;lib&#x2F;tailscale&#x2F;tailscale.state&lt;&#x2F;code&gt;, is always available.&lt;&#x2F;p&gt;
+&lt;p&gt;I setup &lt;code&gt;&#x2F;srv&lt;&#x2F;code&gt; as the directory I keep data relating to other services I run on the machine, for services which allow me to specify it.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;managing-users&quot;&gt;Managing Users&lt;&#x2F;h2&gt;
+&lt;p&gt;You may have noticed in the configuration above I also persist &lt;code&gt;&#x2F;users&#x2F;admin&lt;&#x2F;code&gt;, this allows me to store a hashed password for the user inside of the directory, which is read from within &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;. The alternative is to either include a password directly, which would then be available for everyone to see in the nix store, or to add a temporary password and change it on each reboot:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{}
+&lt;&#x2F;span&gt;&lt;span&gt;users &lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#d8dee9;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mutableUsers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= false&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;admin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;isNormalUser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;home &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;home&#x2F;admin&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# generate with: nix-shell --run &amp;#39;mkpasswd -m SHA-512 -s&amp;#39; -p mkpasswd
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;passwordFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;nix&#x2F;persist&#x2F;users&#x2F;admin&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;extraGroups &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;wheel&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#d8dee9;&quot;&gt;;&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>How To Configure Systemd Services and Timers in Nixos</title>
+		<published>2023-01-12T00:00:00+00:00</published>
+		<updated>2023-01-12T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/systemd-services-and-timers-nixos/" type="text/html"/>
+		<id>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</id>
+		<content type="html">&lt;p&gt;Whilst migrating my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server. After doing a bit of research I discovered that rather than using a cron job, the preferred method is to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;paperless.blog&#x2F;systemd-services-and-timers-in-nixos&quot;&gt;create a systemd service&lt;&#x2F;a&gt; and schedule it using a systemd timer. The major benefits of doing so are:&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;ol&gt;
+&lt;li&gt;Jobs can be isolated to specific users&lt;&#x2F;li&gt;
+&lt;li&gt;Environment variables and paths can be explicitly declared&lt;&#x2F;li&gt;
+&lt;li&gt;Logging is easily viewed by &lt;code&gt;systemctl start example&lt;&#x2F;code&gt; followed by &lt;code&gt;journalctl --unit=example&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Timers let you know when the service will next run &lt;code&gt;systemctl status example.timer&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;initial-setup&quot;&gt;Initial Setup&lt;&#x2F;h2&gt;
+&lt;p&gt;The first step is to create a dedicated user and group which we can use to isolate the service to, I edited my &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt; to look like this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;groups&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-sync &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;users &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-sync &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;group &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;server-sync&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;isSystemUser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;createHome &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;home &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;srv&#x2F;server-sync&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: I store all relevant files for my services in &lt;code&gt;&#x2F;srv&lt;&#x2F;code&gt;, this is how I like to organise my system.&lt;&#x2F;p&gt;
+&lt;p&gt;I also created a directory to store all of my media &lt;code&gt;mkdir -p &#x2F;data&#x2F;media&#x2F;music&lt;&#x2F;code&gt;, and one to store my backups (for roon-server at this point) &lt;code&gt;mkdir -p &#x2F;data&#x2F;backups&#x2F;roon-server&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;Finally correct ownership of the new directories to be as follows:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;chown root:root &#x2F;data&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;chown -R server-sync:server-sync &#x2F;data&#x2F;media&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;chown -R roon-server:roon-server &#x2F;data&#x2F;backups&#x2F;roon-server&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;creating-service-timer&quot;&gt;Creating Service &amp;amp; Timer&lt;&#x2F;h2&gt;
+&lt;p&gt;I then add the following to &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;, which defines the service and the timer:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;systemd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-sync &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specify all packages required by the script being scheduled
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;rsync
+&lt;&#x2F;span&gt;&lt;span&gt;        pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;openssh
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;serviceConfig &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;Type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;oneshot&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specify the user and group we setup earlier
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;User &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;server-sync&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;Group &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;server-sync&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# security settings to prevent service from having too many priviliges
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ProtectSystem &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;full&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ProtectHome &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;NoNewPriviliges &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ReadWritePaths &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&#x2F;media&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# the action taken when the service runs
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;script &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= builtins.&lt;&#x2F;span&gt;&lt;span&gt;readFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;server-sync.bash&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;timers&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-sync &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;wantedBy &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;timers.target&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;timerConfig &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# frequency of the service
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;OnCalendar &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;hourly&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# the service to associate the timer with
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;Unit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;server-sync.service&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If it makes sense for your use case, you may simply want to add the script to be run inside of &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;If you want to read more about the systemd security settings above you can find a high level explanation &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;here&lt;&#x2F;a&gt; and details of each individual setting at &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;man7.org&#x2F;linux&#x2F;man-pages&#x2F;man5&#x2F;systemd.exec.5.html&quot;&gt;systemd.exec(5)&lt;&#x2F;a&gt;. A helpful command you can run to being reviewing security of services is &lt;code&gt;systemd-analyze security example.service&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;separating-service-script&quot;&gt;Separating Service Script&lt;&#x2F;h2&gt;
+&lt;p&gt;In case it&#x27;s helpful I thought to detail what I have inside of the script being read into the service.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m using &lt;code&gt;rsync&lt;&#x2F;code&gt; to pull my music from a remote server to my homelab. I specify the path to an SSH key for authentication to the server by &lt;code&gt;-e &amp;quot;ssh -i &#x2F;srv&#x2F;server-sync&#x2F;.ssh&#x2F;server&amp;quot;&lt;&#x2F;code&gt; and then the folders which should be kept in sync.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;rsync&lt;&#x2F;span&gt;&lt;span&gt; -nat -e &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ssh -i &#x2F;srv&#x2F;server-sync&#x2F;.ssh&#x2F;server&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt; user@hostname:&#x2F;home&#x2F;mm&#x2F;music&#x2F; &#x2F;data&#x2F;media&#x2F;music&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you run into any errors with SSH, its likely due to incorrect permissions being set for &lt;code&gt;&#x2F;srv&#x2F;server-sync&lt;&#x2F;code&gt;. Working permissions are as follows:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;chmod 700 &#x2F;srv&#x2F;server-sync&#x2F;.ssh&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;chmod 644 &#x2F;srv&#x2F;server-sync&#x2F;.ssh&#x2F;server.pub&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;chmod 600 &#x2F;srv&#x2F;server-sync&#x2F;.ssh&#x2F;server&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;chmod 755 &#x2F;srv&#x2F;server-sync&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Configure Proxmox Package Repositories</title>
+		<published>2022-12-22T00:00:00+00:00</published>
+		<updated>2022-12-22T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/proxmox-package-repositories/" type="text/html"/>
+		<id>https://micha.elmurphy.com/proxmox-package-repositories/</id>
+		<content type="html">&lt;p&gt;I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt; to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don&#x27;t always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;thehomelab.show&#x2F;2022&#x2F;11&#x2F;30&#x2F;the-homelab-show-ep-79-virtualization-vs-containers&#x2F;&quot;&gt;this podcast&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;failed-update-error&quot;&gt;Failed Update Error&lt;&#x2F;h2&gt;
+&lt;p&gt;I recently opened up Proxmox to begin configuring a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;Nixos&lt;&#x2F;a&gt; VM, and noticed I had a bunch of errors when updating the package database &lt;code&gt;Error: command apt-get update failed: exit code 100&lt;&#x2F;code&gt;. I SSH&#x27;d into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a repo requiring a Proxmox subscription (which I don&#x27;t have, as I use it for personal use).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;updating-source-list&quot;&gt;Updating Source List&lt;&#x2F;h2&gt;
+&lt;p&gt;I managed to find a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Package_Repositories&quot;&gt;Proxmox wiki page&lt;&#x2F;a&gt; which provided some clarity. In summary I fixed the issue by commenting out the following repository inside of &lt;code&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;pve-enterprise.list&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# deb https:&#x2F;&#x2F;enterprise.proxmox.com&#x2F;debian&#x2F;pve bullseye pve-enterprise
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I then edited &lt;code&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list&lt;&#x2F;code&gt; to look like the following, adding the pve-no-subscription repo:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;ftp.debian.org&#x2F;debian bullseye main contrib
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;ftp.debian.org&#x2F;debian bullseye-updates main contrib
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# PVE pve-no-subscription repository provided by proxmox.com,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# NOT recommended for production use
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;download.proxmox.com&#x2F;debian&#x2F;pve bullseye pve-no-subscription
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# security updates
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;security.debian.org&#x2F;debian-security bullseye-security main contrib
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;After the above changes I ran &lt;code&gt;apt update&lt;&#x2F;code&gt; and &lt;code&gt;apt dist-upgrade&lt;&#x2F;code&gt;, everything updated without issue.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: Proxmox highlight in the linked wiki that the pve-no-subscription repo isn&#x27;t tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;automated-script&quot;&gt;Automated Script&lt;&#x2F;h2&gt;
+&lt;p&gt;Tteck has provided a number of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&quot;&gt;useful Proxmox scripts&lt;&#x2F;a&gt;, one of them completes the above automatically, as well as removing subscription notices and optionally adding beta repositories. Have a read through &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&#x2F;blob&#x2F;main&#x2F;misc&#x2F;post-pve-install.sh&quot;&gt;here&lt;&#x2F;a&gt; before running:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;bash&lt;&#x2F;span&gt;&lt;span&gt; -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;wget&lt;&#x2F;span&gt;&lt;span&gt; -qLO&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; - https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&#x2F;raw&#x2F;main&#x2F;misc&#x2F;post-pve-install.sh)&amp;quot; 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>How To Mount S3 Object Storage in NixOS</title>
+		<published>2022-12-14T00:00:00+00:00</published>
+		<updated>2022-12-14T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage-nixos/" type="text/html"/>
+		<id>https://micha.elmurphy.com/s3-object-storage-nixos/</id>
+		<content type="html">&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;updating-nixos-configuration&quot;&gt;Updating NixOS Configuration&lt;&#x2F;h2&gt;
+&lt;p&gt;Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.&lt;&#x2F;p&gt;
+&lt;p&gt;After a default install of NixOS the configuration file is available to edit at &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt;, to mount an s3 bucket we will expand on the &lt;code&gt;configuration.nix&lt;&#x2F;code&gt; by adding a new &lt;code&gt;module&lt;&#x2F;code&gt;, called &lt;code&gt;s3fs&lt;&#x2F;code&gt;. We will do this by importing a separate &lt;code&gt;s3fs.nix&lt;&#x2F;code&gt; file, which we will create shortly, for now edit &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;configuration.nix&lt;&#x2F;code&gt; and add the following:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;configuration.nix
+&lt;&#x2F;span&gt;&lt;span&gt;{ config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;imports &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;hardware-configuration.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# should be present by default
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;modules&#x2F;s3fs.nix
+&lt;&#x2F;span&gt;&lt;span&gt;  ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;s3fs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;add-modules-directory&quot;&gt;Add Modules Directory&lt;&#x2F;h2&gt;
+&lt;p&gt;Next we need to create the modules folder and create the &lt;code&gt;s3fs.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; mkdir &#x2F;etc&#x2F;nixos&#x2F;modules &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; touch s3fs.nix
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;add-s3fs-module&quot;&gt;Add s3fs Module&lt;&#x2F;h2&gt;
+&lt;p&gt;Finally we can edit &lt;code&gt;&#x2F;etc&#x2F;nixos&#x2F;modules&#x2F;s3fs.nix&lt;&#x2F;code&gt; and add the following:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# &#x2F;etc&#x2F;nixos&#x2F;modules&#x2F;s3fs.nix
+&lt;&#x2F;span&gt;&lt;span&gt;{ config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;lib;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;cfg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;services&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;s3fs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;options&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;s3fs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkEnableOption &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;Mounts s3 object storage using s3fs&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;keyPath &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkOption {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;etc&#x2F;passwd-s3fs&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mountPath &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkOption {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;data&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;bucket &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkOption {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;data&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkOption {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;types&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;https:&#x2F;&#x2F;ap-south-1.linodeobjects.com&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;config &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkIf cfg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;enable {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;systemd&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;s3fs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;description &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;Linode object storage s3fs&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;wantedBy &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;multi-user.target&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;serviceConfig &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ExecStartPre &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;coreutils&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;mkdir -m 777 -pv &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mountPath&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;e2fsprogs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;chattr +i &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mountPath&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# stop files being written to unmounted dir
+&lt;&#x2F;span&gt;&lt;span&gt;        ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ExecStart &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= let
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;options &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;passwd_file=&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;keyPath&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;use_path_request_style&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;allow_other&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;url=&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;url&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;umask=0000&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;          ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;in
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;s3fs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;s3fs &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;bucket&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;} ${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mountPath&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; -f &amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;concatMapStringsSep &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot; &amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;(opt: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;-o &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;opt&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;) options&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ExecStopPost &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;-&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;fuse&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;fusermount -u &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mountPath&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;KillMode &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;process&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;Restart &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;on-failure&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above sets up a module for &lt;code&gt;services.s3fs&lt;&#x2F;code&gt;, allowing us to enable&#x2F;disable the service as well as edit the default settings. When enabled a &lt;code&gt;systemd&lt;&#x2F;code&gt; service is created which mounts the s3 bucket, making it available at the specified path (&lt;code&gt;&#x2F;mnt&#x2F;data&lt;&#x2F;code&gt; by default).&lt;&#x2F;p&gt;
+&lt;p&gt;The service will look for a file containing an access and API key by default in &lt;code&gt;&#x2F;etc&#x2F;passwd-s3fs&lt;&#x2F;code&gt;, before running the service you will need to run the following to configure authentication details:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ACCESS_KEY:SECRET_KEY&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;passwd-s3fs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; chmod 600 &#x2F;etc&#x2F;passwd-s3fs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: I recently ran into an issue when setting this up and had to comment out &lt;code&gt;&amp;quot;${pkgs.e2fsprogs}&#x2F;bin&#x2F;chattr +i ${cfg.mountPath}&amp;quot;&lt;&#x2F;code&gt; to resolve the issue. I&#x27;ll update if I figure out a solution. For now everything is working without it.&lt;&#x2F;p&gt;
+&lt;p&gt;Much of the credit for this post goes to a forum post on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;discourse.nixos.org&#x2F;t&#x2F;how-to-setup-s3fs-mount&#x2F;6283&quot;&gt;NixOS Discourse&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>How To Mount S3 Compatible Object Storage in Ubuntu</title>
+		<published>2022-11-29T00:00:00+00:00</published>
+		<updated>2022-11-29T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage/" type="text/html"/>
+		<id>https://micha.elmurphy.com/s3-object-storage/</id>
+		<content type="html">&lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
+&lt;p&gt;For streaming music and managing metadata I&#x27;m using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;roonlabs.com&#x2F;&quot;&gt;Roon Server&lt;&#x2F;a&gt;, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt;. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;My end goal is to build a dedicated homelab with a large amount of storage, either as &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;arstechnica.com&#x2F;information-technology&#x2F;2020&#x2F;05&#x2F;zfs-101-understanding-zfs-storage-and-performance&#x2F;&quot;&gt;ZFS&lt;&#x2F;a&gt; or a combination of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;perfectmediaserver.com&#x2F;tech-stack&#x2F;mergerfs&#x2F;&quot;&gt;MergerFS&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;perfectmediaserver.com&#x2F;tech-stack&#x2F;snapraid&#x2F;&quot;&gt;SnapRAID&lt;&#x2F;a&gt;. Unfortunately building a dedicated homelab requires a significant financial contribution. I needed to find an interim solution - that&#x27;s where S3 compatible object storage comes in.&lt;&#x2F;p&gt;
+&lt;p&gt;I hadn&#x27;t previously used object storage, but had heard it worked well for storing files that don&#x27;t change frequently e.g. media files and music. After doing some quick research I discovered that I could mount an object store to a computer running Linux, macOS or FreeBSD using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;s3fs-fuse&#x2F;s3fs-fuse&quot;&gt;s3fs-fuse&lt;&#x2F;a&gt;. I decided to test how well this worked by mounting the object store, adding some music to it and then pointing Roon Server to the object store. The steps I followed to mount the object store are detailed in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;upcloud.com&#x2F;resources&#x2F;tutorials&#x2F;mount-object-storage-cloud-server-s3fs-fuse&quot;&gt;this guide&lt;&#x2F;a&gt;, my own summarised version is below.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mounting-storage&quot;&gt;Mounting Storage&lt;&#x2F;h2&gt;
+&lt;p&gt;The steps may vary depending on the provider you are using for object storage, for reference I am using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.linode.com&#x2F;&quot;&gt;Linode&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;install-s3fs-fuse&quot;&gt;Install s3fs-fuse&lt;&#x2F;h3&gt;
+&lt;p&gt;On Ubuntu this is nice and easy, the package name will likely vary depending on your Linux distro:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install s3fs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;authentication&quot;&gt;Authentication&lt;&#x2F;h3&gt;
+&lt;p&gt;After creating an object store you will also need to create access keys. These should be a combination of:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;An &lt;code&gt;ACCESS_KEY&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;A &lt;code&gt;SECRET_KEY&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;We need to store the access key on the machine we plan to mount the object store to, as it will be needed to authenticate the connection:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ACCESS_KEY:SECRET_KEY&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;passwd-s3fs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; chmod 600 &#x2F;etc&#x2F;passwd-s3fs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;mounting&quot;&gt;Mounting&lt;&#x2F;h3&gt;
+&lt;p&gt;First we need to create the directory the object store will be mounted to:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;mnt&#x2F;my-object-storage
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then we can mount the storage at the directory created above, filling in the placeholders with the appropriate values:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; s3fs {bucketname} {&#x2F;mnt&#x2F;my-object-storage} -o passwd_file=&#x2F;etc&#x2F;passwd-s3fs -o allow_other -o url=https:&#x2F;&#x2F;{private-network-endpoint}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;{bucketname}&lt;&#x2F;code&gt; = the name of the bucket you wish to mount&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;{&#x2F;mnt&#x2F;my-object-storage}&lt;&#x2F;code&gt; = directory to mount to the object store to (created earlier)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;{private-network-endpoint}&lt;&#x2F;code&gt; = the url given by your provider to the object store e.g. https:&#x2F;&#x2F;ap-south-1.linodeobjects.com&lt;&#x2F;li&gt;
+&lt;li&gt;the &lt;code&gt;allow_other&lt;&#x2F;code&gt; flag allows users other than root to have access to the bucket&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;testing&quot;&gt;Testing&lt;&#x2F;h3&gt;
+&lt;p&gt;Assuming you didn&#x27;t run into any errors after following the above instructions, you can now test the storage. I did this by opening a web browser and viewing the object store within my account dashboard at Linode, and copying some new files in to the object store on my homelab. If the file match between the web browser and your local machine then its a good sign that things are working. If this isn&#x27;t the case unmount the storage and try again, double checking the values provided when making the connection.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;persisting-after-reboot&quot;&gt;Persisting After Reboot&lt;&#x2F;h3&gt;
+&lt;p&gt;Now that everything has been mounted properly we can setup an entry within &lt;code&gt;&#x2F;etc&#x2F;fstab&lt;&#x2F;code&gt;, so that the object store is mounted whenever the local machine reboots.&lt;&#x2F;p&gt;
+&lt;p&gt;First we need to unmount:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; umount &#x2F;etc&#x2F;my-object-storage
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then we can edit &lt;code&gt;&#x2F;etc&#x2F;fstab&lt;&#x2F;code&gt; in whichever editor you are most comfortable with (&lt;code&gt;vim&lt;&#x2F;code&gt; is the correct answer), and add the following entry on a new line:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;s3fs#bucketname&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;mnt&#x2F;my-object-storage fuse _netdev,allow_other,passwd_file=&#x2F;etc&#x2F;passwd-s3fs,url=https:&#x2F;&#x2F;ap-south-1.linodeobjects.com&#x2F; 0 0
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you want more details on what each of the options do then I recommend checking out the FAQs at the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;s3fs-fuse&#x2F;s3fs-fuse&#x2F;wiki&#x2F;FAQ&quot;&gt;s3fs GitHub repo&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;final-thoughts&quot;&gt;Final Thoughts&lt;&#x2F;h2&gt;
+&lt;p&gt;How well did this work for music streaming? I was able to point Roon to music on the object store, scan tracks and stream music, though there were some limitations in performance:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;When selecting music to play there was ~3-5 second delay before the track started, when streaming from local storage or Tidal this is pretty much instant&lt;&#x2F;li&gt;
+&lt;li&gt;Scanning tracks and collecting metadata with Roon took significantly longer - 1 album on the object store took longer than my entire library of ~1,500 tracks on local storage&lt;&#x2F;li&gt;
+&lt;li&gt;Copying data across to the object store took significantly longer than an &lt;code&gt;rsync&lt;&#x2F;code&gt; between machines, which I do between my local homelab and another server outside of my network&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The above thoughts seem to align with my initial research into object storage - it works well for reading data that doesn&#x27;t change frequently, once you start copying data across regularly then things slow down. If you are happy to accept a slight delay when first choosing music to play (this doesn&#x27;t seem to be an issue when moving on to play the next track in an album), then this solution could work well. Backups seem an obvious use case for object storage, I&#x27;m currently backing up my Roon settings and library to the object store, I schedule these backups at night and it is working well.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

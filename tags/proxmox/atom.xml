@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Michael Murphy - Blog - proxmox</title>
+	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
+	<link href="https://micha.elmurphy.com/tags/proxmox/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://micha.elmurphy.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2023-07-18T00:00:00+00:00</updated>
+	<id>https://micha.elmurphy.com/tags/proxmox/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Troubleshooting Proxmox Installation</title>
+		<published>2023-07-18T00:00:00+00:00</published>
+		<updated>2023-07-18T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/resolving-proxmox-installation-issues/" type="text/html"/>
+		<id>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</id>
+		<content type="html">&lt;p&gt;I encountered some issues when installing Proxmox on a new homelab. One method of solving these would have been to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Install_Proxmox_VE_on_Debian_11_Bullseye&quot;&gt;install Debian and then Proxmox&lt;&#x2F;a&gt; from there. I decided to try my hand at troubleshooting the issues instead.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;why-proxmox&quot;&gt;Why Proxmox&lt;&#x2F;h2&gt;
+&lt;p&gt;Before describing the issues I faced and how I resolved them, I though I should explain why I&#x27;m using Proxmox in the first place - why persevere through the pain?&lt;&#x2F;p&gt;
+&lt;p&gt;The end state for my homelab is to have a number of different Virtual Machines (VMs) running segregated services. There are a few reasons I want to run multiple VMs:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;To segment any data used for services to the specific VM I&#x27;m running it in&lt;&#x2F;li&gt;
+&lt;li&gt;Most VMs will be running NixOS - I want to manage them remotely and become more familiar with tools like &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;deploy-rs&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;numtide&#x2F;nixos-anywhere&#x2F;&quot;&gt;nixos-anywhere&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;I want to be able to use VMs from any machine to easily experiment with new Linux distributions&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;I mostly want to use VMs over containers as currently &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Proxmox_Linux_Container&quot;&gt;NixOS doesn&#x27;t work so well with LXC&lt;&#x2F;a&gt;, it&#x27;s possible, but I haven&#x27;t been thrilled with the result. I will use LXC for running some services like [Home Assistant].&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;initial-boot&quot;&gt;Initial Boot&lt;&#x2F;h2&gt;
+&lt;p&gt;The first issue I had was getting the Proxmox install step to boot from USB. I kept getting an error saying: &lt;code&gt;&#x2F;dev fully populated&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I managed to find a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;forum.proxmox.com&#x2F;threads&#x2F;solved-fresh-proxmox-install-with-dev-to-be-fully-populated-error.20211&#x2F;&quot;&gt;post on the Proxmox forum&lt;&#x2F;a&gt; which suggested changing the boot flags to resolve the error:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# e at boot menu add nomodeset
+&lt;&#x2F;span&gt;&lt;span&gt;GRUB_CMDLINE_LINUX_DEFAULT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;quiet nomodeset&amp;quot; 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This let me proceed to the install step for Proxmox.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;booting-after-install&quot;&gt;Booting After Install&lt;&#x2F;h2&gt;
+&lt;p&gt;After installing Proxmox I rebooted my machine and found I hit a similar error again - adding the aforementioned &lt;code&gt;nomodeset&lt;&#x2F;code&gt; didn&#x27;t work as I found Proxmox was using systemd-boot rather than grub.&lt;&#x2F;p&gt;
+&lt;p&gt;This was resolved by the following thanks to a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;Proxmox&#x2F;comments&#x2F;is00kp&#x2F;any_way_to_set_the_proxmox_installer_to_use_safe&#x2F;&quot;&gt;post on Reddit&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;text&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-text &quot;&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;for EFI boot (systemd-boot) add `nomodeset` to &#x2F;etc&#x2F;kernel&#x2F;cmdline after installation; run `pve-efiboot-tool refresh` to update
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;setting-safe-mode-to-boot-from-intel-graphics&quot;&gt;Setting Safe Mode to Boot from Intel Graphics&lt;&#x2F;h2&gt;
+&lt;p&gt;I thought I was finally done and ready to start setting up some VMs - but no, I hit a fatal server error, which required me to change my vga settings. I found a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=-6fRTpmmuHs&quot;&gt;YouTube video which explained the changes&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;lspci &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt; -i vga
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; -p &#x2F;usr&#x2F;share&#x2F;X11&#x2F;xorg.conf.d
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;vi&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;share&#x2F;X11&#x2F;xorg.conf.d&#x2F;10-fbdev.conf
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Enter the following text in &lt;code&gt;10-fbdev.conf&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;text&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-text &quot;&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;Section &amp;quot;Device&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    Identifier &amp;quot;Card0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    Driver &amp;quot;fbdev&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    BusID &amp;quot;pci0:2:0:0&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;EndSection
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Finally the system booted and I was able to start setting up Proxmox.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bonus-tip-gpu-passthrough&quot;&gt;Bonus Tip - GPU Passthrough&lt;&#x2F;h2&gt;
+&lt;p&gt;Finally I wanted to leave some references I found helpful for configuring GPU passthrough for a VM in Proxmox. I needed to do this for my Jellyfin service, so I could take advantage of Intel QuickSync. For further reference on setting up and testing hardware transcoding checkout the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;Hardware_video_acceleration#Configuring_VA-API&quot;&gt;Jellyfin documentation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;You can pass through an Intel GPU via PCI passthrough, as detailed in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;PCI_Passthrough&quot;&gt;Proxmox documentation&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Configure Proxmox Package Repositories</title>
+		<published>2022-12-22T00:00:00+00:00</published>
+		<updated>2022-12-22T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/proxmox-package-repositories/" type="text/html"/>
+		<id>https://micha.elmurphy.com/proxmox-package-repositories/</id>
+		<content type="html">&lt;p&gt;I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt; to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don&#x27;t always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;thehomelab.show&#x2F;2022&#x2F;11&#x2F;30&#x2F;the-homelab-show-ep-79-virtualization-vs-containers&#x2F;&quot;&gt;this podcast&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;failed-update-error&quot;&gt;Failed Update Error&lt;&#x2F;h2&gt;
+&lt;p&gt;I recently opened up Proxmox to begin configuring a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;Nixos&lt;&#x2F;a&gt; VM, and noticed I had a bunch of errors when updating the package database &lt;code&gt;Error: command apt-get update failed: exit code 100&lt;&#x2F;code&gt;. I SSH&#x27;d into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a repo requiring a Proxmox subscription (which I don&#x27;t have, as I use it for personal use).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;updating-source-list&quot;&gt;Updating Source List&lt;&#x2F;h2&gt;
+&lt;p&gt;I managed to find a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Package_Repositories&quot;&gt;Proxmox wiki page&lt;&#x2F;a&gt; which provided some clarity. In summary I fixed the issue by commenting out the following repository inside of &lt;code&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;pve-enterprise.list&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# deb https:&#x2F;&#x2F;enterprise.proxmox.com&#x2F;debian&#x2F;pve bullseye pve-enterprise
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I then edited &lt;code&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list&lt;&#x2F;code&gt; to look like the following, adding the pve-no-subscription repo:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;ftp.debian.org&#x2F;debian bullseye main contrib
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;ftp.debian.org&#x2F;debian bullseye-updates main contrib
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# PVE pve-no-subscription repository provided by proxmox.com,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# NOT recommended for production use
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;download.proxmox.com&#x2F;debian&#x2F;pve bullseye pve-no-subscription
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# security updates
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;deb&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;security.debian.org&#x2F;debian-security bullseye-security main contrib
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;After the above changes I ran &lt;code&gt;apt update&lt;&#x2F;code&gt; and &lt;code&gt;apt dist-upgrade&lt;&#x2F;code&gt;, everything updated without issue.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: Proxmox highlight in the linked wiki that the pve-no-subscription repo isn&#x27;t tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;automated-script&quot;&gt;Automated Script&lt;&#x2F;h2&gt;
+&lt;p&gt;Tteck has provided a number of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&quot;&gt;useful Proxmox scripts&lt;&#x2F;a&gt;, one of them completes the above automatically, as well as removing subscription notices and optionally adding beta repositories. Have a read through &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&#x2F;blob&#x2F;main&#x2F;misc&#x2F;post-pve-install.sh&quot;&gt;here&lt;&#x2F;a&gt; before running:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;bash&lt;&#x2F;span&gt;&lt;span&gt; -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;wget&lt;&#x2F;span&gt;&lt;span&gt; -qLO&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; - https:&#x2F;&#x2F;github.com&#x2F;tteck&#x2F;Proxmox&#x2F;raw&#x2F;main&#x2F;misc&#x2F;post-pve-install.sh)&amp;quot; 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+	</entry>
+</feed>

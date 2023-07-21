@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Michael Murphy - Blog - docker</title>
+	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
+	<link href="https://micha.elmurphy.com/tags/docker/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://micha.elmurphy.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2023-04-11T00:00:00+00:00</updated>
+	<id>https://micha.elmurphy.com/tags/docker/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Using Dev Containers to Standardise Development Environments</title>
+		<published>2023-04-11T00:00:00+00:00</published>
+		<updated>2023-04-11T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/dev-containers-vscode/" type="text/html"/>
+		<id>https://micha.elmurphy.com/dev-containers-vscode/</id>
+		<content type="html">&lt;p&gt;After running my own homelab for a while, I&#x27;ve become pretty familiar with using containers - mostly via Docker, though I may have to make the switch to podman after a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.servethehome.com&#x2F;docker-abruptly-starts-charging-many-users-for-docker-desktop&#x2F;&quot;&gt;recent announcement&lt;&#x2F;a&gt;. One thing I wasn&#x27;t aware of was the ability to run containers for the specific purpose of creating a development environment.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;configuring-a-dev-container&quot;&gt;Configuring a Dev Container&lt;&#x2F;h2&gt;
+&lt;p&gt;I first came across this feature in Visual Studio Code (I try to avoid it, but sometimes its a necessary evil :P), there is a lot of great &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;devcontainers&#x2F;containers&quot;&gt;documentation&lt;&#x2F;a&gt; which covers the topic in far more detail than I plan to.&lt;&#x2F;p&gt;
+&lt;p&gt;The pre-requisites for setting up a Dev Container are Visual Studio Code (VSCode) and the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=ms-vscode-remote.remote-containers&quot;&gt;Dev Containers&lt;&#x2F;a&gt; plugin.&lt;&#x2F;p&gt;
+&lt;p&gt;The basic idea is that you create a &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; or &lt;code&gt;docker-compose&lt;&#x2F;code&gt; file, which sets up a container, you can then specify a &lt;code&gt;devcontainer.json&lt;&#x2F;code&gt; file which lets you configure additional settings unique to VSCode e.g. plugins that you want installed inside of the container, and&#x2F;or VSCode settings you want active whilst in the container. &lt;&#x2F;p&gt;
+&lt;p&gt;VSCode will even walk you through the process of creating the container itself if you don&#x27;t have a &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; already on hand: &lt;code&gt;Ctrl + Shift + P&lt;&#x2F;code&gt; -&amp;gt; &lt;code&gt;Dev Containers: New Dev Container...&lt;&#x2F;code&gt; will get you started.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;containers.dev&#x2F;implementors&#x2F;spec&#x2F;#devcontainerjson&quot;&gt;Follow this link&lt;&#x2F;a&gt; for a list of all the options available when configuring &lt;code&gt;devcontainer.json&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is an example of a quick setup I configured:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;name&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;Python 3&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Base image provided by Microsoft or use a Dockerfile or Docker Compose file. More info: https:&#x2F;&#x2F;containers.dev&#x2F;guide&#x2F;dockerfile
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;image&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;mcr.microsoft.com&#x2F;devcontainers&#x2F;python:0-3.9&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Install pre-configured features into the container - in this case the fish shell
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;features&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ghcr.io&#x2F;meaningful-ooo&#x2F;devcontainer-features&#x2F;fish:1&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;fisher&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;&#x2F;&#x2F; Specify extensions which should be made available inside of the container
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;customizations&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;vscode&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;extensions&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;vscodevim.vim&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.python&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.pylance&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.black&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.flake8&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;ms-python.isort&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;settings&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.linting.flake8Enabled&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.linting.flake8Path&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;flake8&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;python.formatting.blackPath&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;usr&#x2F;local&#x2F;bin&#x2F;black&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;adding-dotfiles&quot;&gt;Adding Dotfiles&lt;&#x2F;h2&gt;
+&lt;p&gt;One feature which I thought was really handy is the ability to specify a repository containing &lt;code&gt;dotfiles&lt;&#x2F;code&gt; (linux personalised configuration settings, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;dwm-dotfiles&quot;&gt;here is an example&lt;&#x2F;a&gt;), which can be &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;devcontainers&#x2F;containers#_personalizing-with-dotfile-repositories&quot;&gt;cloned and configured&lt;&#x2F;a&gt; once the Dev Container is up and running.&lt;&#x2F;p&gt;
+&lt;p&gt;This means you can create a Dev Contianer and share it across a team, so that everyone has a standardised development environment. Then you can add your own configuration after the container has been started by using the dotfiles functionality - no one is subjected to your strange configuration (e.g. running the vim extension).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;use-of-dev-containers-in-neovim&quot;&gt;Use of Dev Containers in Neovim&lt;&#x2F;h2&gt;
+&lt;p&gt;Naturally the first thing I did after discovering this feature in VSCode was to explore whether it is also available in Neovim (my editor of choice) - sure enough &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;esensar&#x2F;nvim-dev-container&quot;&gt;I found a plugin&lt;&#x2F;a&gt;. I need to play around with this more to get it configured, but I&#x27;m glad to know the option is there.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>
