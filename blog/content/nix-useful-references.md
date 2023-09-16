@@ -21,6 +21,7 @@ I'm currently building out a similar solution for my homelab, and thought to doc
 - [Nix Darwin Manual](https://daiderd.com/nix-darwin/manual/index.html#sec-options)
 - [Devenv Developer Environments](https://devenv.sh/getting-started)
 - [Determinate Systems Zero to Nix](https://zero-to-nix.com)
+- [The Nix Hour - YouTube Playlist](https://www.youtube.com/playlist?list=PLyzwHTVJlRc8yjlx4VR4LU5A5O44og9in)
 
 ## Useful Posts
 
