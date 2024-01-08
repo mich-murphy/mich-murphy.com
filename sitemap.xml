@@ -49,6 +49,10 @@
         <lastmod>2023-07-18</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/</loc>
+        <lastmod>2024-01-08</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/s3-object-storage-nixos/</loc>
         <lastmod>2022-12-14</lastmod>
     </url>
@@ -104,6 +108,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nixos/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/postgresql/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/proxmox/</loc>
