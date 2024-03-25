@@ -16,7 +16,7 @@
 		<content type="html">&lt;p&gt;Occasionally when self hosting I&#x27;ve found a need to backup and restore the Nextcloud
 database. I have a regularly scheduled Postgres backup thanks to the following
 nix config:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span&gt;{ lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span&gt;{ lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;{
 &lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;postgresqlBackup &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
