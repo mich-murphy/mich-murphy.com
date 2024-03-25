@@ -10,6 +10,8 @@ Occasionally when self hosting I've found a need to backup and restore the Nextc
 database. I have a regularly scheduled Postgres backup thanks to the following
 nix config:
 
+<!-- more -->
+
 ```nix
 { lib, pkgs, ... }:
 
