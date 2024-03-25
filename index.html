@@ -68,7 +68,7 @@
     <div class="post-meta-inline">
         
     <span class="post-date">
-            2024-01-08
+            2024-03-25
         </span>
 
     </div>
@@ -83,10 +83,56 @@
 
             
         <div class="post-content">
-            <p>https://nixos.wiki/wiki/Nextcloud#Nextcloudcmd
-https://nixos.wiki/wiki/PostgreSQL
-https://docs.nextcloud.com/server/latest/admin_manual/maintenance/restore.html#postgresql
-https://dba.stackexchange.com/questions/258910/how-to-do-a-restore-of-a-large-postgresql-database</p>
+            <p>Occasionally when self hosting I've found a need to backup and restore the Nextcloud
+database. I have a regularly scheduled Postgres backup thanks to the following
+nix config:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{ lib</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}:
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">postgresqlBackup </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># path where backup should be saved
+</span><span>    </span><span style="color:#8fbcbb;">location </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/data/backups/postgresql&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># specifying nextcloud as the database to backup
+</span><span>    </span><span style="color:#8fbcbb;">databases </span><span style="color:#81a1c1;">= </span><span>[</span><span style="color:#a3be8c;">&quot;nextcloud&quot;</span><span>]</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#616e88;"># cron schedule for backup to be performed
+</span><span>    </span><span style="color:#8fbcbb;">startAt </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;*-*-* 23:15:00&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>This post will detail the process I follow to do a restore from the backup
+created by the above config.</p>
+<h2 id="restoring-nextcloud-database">Restoring Nextcloud Database</h2>
+<p>The first thing to understand is how to execute database commands from within
+the NixOS environment. My Nextcloud instance in NixOS is managed by the <code>nextcloud</code>
+user, this same user is configured for the database as shown in my <a href="/configure-nextcloud-nixos.md">Nextcloud post</a>.</p>
+<p>I can execute <a rel="noopener" target="_blank" href="https://nixos.wiki/wiki/Nextcloud#Nextcloudcmd">commands against the database</a> (<a rel="noopener" target="_blank" href="https://nixos.wiki/wiki/PostgreSQL">PostgreSQL in my case</a>) like so:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> runuser -u nextcloud</span><span style="color:#81a1c1;"> --</span><span> psql -U nextcloud </span><span style="color:#81a1c1;">&lt;</span><span>options</span><span style="color:#81a1c1;">&gt;
+</span></code></pre>
+<p>Using the information above we can drop the old database which we are replacing
+and then create a new one, in which we will later restore data to. These steps
+are documented on the <a rel="noopener" target="_blank" href="https://docs.nextcloud.com/server/latest/admin_manual/maintenance/restore.html#postgresql">Nextcloud website</a>. The commands
+I used are below:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> runuser -u nextcloud</span><span style="color:#81a1c1;"> --</span><span> psql -U nextcloud -c </span><span style="color:#a3be8c;">&quot;DROP DATABASE </span><span style="color:#ebcb8b;">\&quot;</span><span style="color:#a3be8c;">nextcloud</span><span style="color:#ebcb8b;">\&quot;</span><span style="color:#a3be8c;">;&quot;
+</span><span style="color:#88c0d0;">sudo</span><span> runuser -u nextcloud</span><span style="color:#81a1c1;"> --</span><span> psql -U nextcloud -c </span><span style="color:#a3be8c;">&quot;CREATE DATABASE </span><span style="color:#ebcb8b;">\&quot;</span><span style="color:#a3be8c;">nextcloud</span><span style="color:#ebcb8b;">\&quot;</span><span style="color:#a3be8c;">;&quot;
+</span></code></pre>
+<p>You can then restore the backup into the newly created Nextcloud database with
+the following command:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> runuser -u nextcloud</span><span style="color:#81a1c1;"> --</span><span> psql -U nextcloud -d nextcloud -f nextcloud-sqlbkp.bak
+</span></code></pre>
+<p>I discovered the above command didn't work for me, as the scheduled backup
+utilizes <code>pg_dump</code>, which creates a <code>backup.sql.gz</code> file. After some searching
+I came across a <a rel="noopener" target="_blank" href="https://dba.stackexchange.com/questions/258910/how-to-do-a-restore-of-a-large-postgresql-database">Stack Exchange post</a> which lead me to the final solution:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> runuser -u nextcloud</span><span style="color:#81a1c1;"> --</span><span> pg_restore -U nextcloud -d nextcloud nextcloud.sql.gz
+</span></code></pre>
+<h2 id="post-restore-steps">Post Restore Steps</h2>
+<p>After the database has been restored head to the Nextcloud admin console:
+<code>https://nextcloud.example.com/settings/admin/overview</code> and see if the self
+check reveals any issues with the new database. Chances are you will need
+to resolve some issues with the database indices. The following command
+will add missing indices to the database:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">sudo</span><span> -i nextcloud-occ db:add-missing-indices
+</span></code></pre>
 
         </div>
 

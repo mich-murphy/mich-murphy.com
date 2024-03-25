@@ -5,18 +5,64 @@
 	<link href="https://micha.elmurphy.com/tags/nixos/atom.xml" rel="self" type="application/atom+xml"/>
   <link href="https://micha.elmurphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
-	<updated>2024-01-08T00:00:00+00:00</updated>
+	<updated>2024-03-25T00:00:00+00:00</updated>
 	<id>https://micha.elmurphy.com/tags/nixos/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Restoring Nextcloud From Backup on NixOS</title>
-		<published>2024-01-08T00:00:00+00:00</published>
-		<updated>2024-01-08T00:00:00+00:00</updated>
+		<published>2024-03-25T00:00:00+00:00</published>
+		<updated>2024-03-25T00:00:00+00:00</updated>
 		<link rel="alternate" href="https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/" type="text/html"/>
 		<id>https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/</id>
-		<content type="html">&lt;p&gt;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nextcloud#Nextcloudcmd
-https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;PostgreSQL
-https:&#x2F;&#x2F;docs.nextcloud.com&#x2F;server&#x2F;latest&#x2F;admin_manual&#x2F;maintenance&#x2F;restore.html#postgresql
-https:&#x2F;&#x2F;dba.stackexchange.com&#x2F;questions&#x2F;258910&#x2F;how-to-do-a-restore-of-a-large-postgresql-database&lt;&#x2F;p&gt;
+		<content type="html">&lt;p&gt;Occasionally when self hosting I&#x27;ve found a need to backup and restore the Nextcloud
+database. I have a regularly scheduled Postgres backup thanks to the following
+nix config:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span&gt;{ lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;postgresqlBackup &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# path where backup should be saved
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;location &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&#x2F;data&#x2F;backups&#x2F;postgresql&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# specifying nextcloud as the database to backup
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;databases &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;nextcloud&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# cron schedule for backup to be performed
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;startAt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;*-*-* 23:15:00&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This post will detail the process I follow to do a restore from the backup
+created by the above config.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;restoring-nextcloud-database&quot;&gt;Restoring Nextcloud Database&lt;&#x2F;h2&gt;
+&lt;p&gt;The first thing to understand is how to execute database commands from within
+the NixOS environment. My Nextcloud instance in NixOS is managed by the &lt;code&gt;nextcloud&lt;&#x2F;code&gt;
+user, this same user is configured for the database as shown in my &lt;a href=&quot;&#x2F;configure-nextcloud-nixos.md&quot;&gt;Nextcloud post&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I can execute &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nextcloud#Nextcloudcmd&quot;&gt;commands against the database&lt;&#x2F;a&gt; (&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;PostgreSQL&quot;&gt;PostgreSQL in my case&lt;&#x2F;a&gt;) like so:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; runuser -u nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; psql -U nextcloud &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt;options&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Using the information above we can drop the old database which we are replacing
+and then create a new one, in which we will later restore data to. These steps
+are documented on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.nextcloud.com&#x2F;server&#x2F;latest&#x2F;admin_manual&#x2F;maintenance&#x2F;restore.html#postgresql&quot;&gt;Nextcloud website&lt;&#x2F;a&gt;. The commands
+I used are below:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; runuser -u nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; psql -U nextcloud -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;DROP DATABASE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; runuser -u nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; psql -U nextcloud -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;CREATE DATABASE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You can then restore the backup into the newly created Nextcloud database with
+the following command:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; runuser -u nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; psql -U nextcloud -d nextcloud -f nextcloud-sqlbkp.bak
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I discovered the above command didn&#x27;t work for me, as the scheduled backup
+utilizes &lt;code&gt;pg_dump&lt;&#x2F;code&gt;, which creates a &lt;code&gt;backup.sql.gz&lt;&#x2F;code&gt; file. After some searching
+I came across a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;dba.stackexchange.com&#x2F;questions&#x2F;258910&#x2F;how-to-do-a-restore-of-a-large-postgresql-database&quot;&gt;Stack Exchange post&lt;&#x2F;a&gt; which lead me to the final solution:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; runuser -u nextcloud&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt; --&lt;&#x2F;span&gt;&lt;span&gt; pg_restore -U nextcloud -d nextcloud nextcloud.sql.gz
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;post-restore-steps&quot;&gt;Post Restore Steps&lt;&#x2F;h2&gt;
+&lt;p&gt;After the database has been restored head to the Nextcloud admin console:
+&lt;code&gt;https:&#x2F;&#x2F;nextcloud.example.com&#x2F;settings&#x2F;admin&#x2F;overview&lt;&#x2F;code&gt; and see if the self
+check reveals any issues with the new database. Chances are you will need
+to resolve some issues with the database indices. The following command
+will add missing indices to the database:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; -i nextcloud-occ db:add-missing-indices
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 </content>
 	</entry>
 	<entry xml:lang="en">
