@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Remote Deployment of NixOS Using Nixos-anywhere and Disko | Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+            
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://micha.elmurphy.com/atom.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <script async src="https://analytics.umami.is/script.js" data-website-id="e85605cb-e8e8-4ff8-8195-1e479b34ae31"></script>
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/nixos-anywhere-and-disko/">Remote Deployment of NixOS Using Nixos-anywhere and Disko</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-03-27
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/disko/">#disko</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos-anywhere/">#nixos-anywhere</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>Now that the use cases for my homelab are growing, I'm finding a need to separate different services into their own virtual machines. This has been a bit tedious in the past, as each time I've had to format disk and create a new NixOS configuration.</p>
+<p>Nixos-anywhere and Disko combine together to make this simple. This post explains how to use these tools.</p>
+<span id="continue-reading"></span><h2 id="nixos-anywhere-disko">NixOS Anywhere &amp; Disko</h2>
+<p><a rel="noopener" target="_blank" href="https://github.com/nix-community/nixos-anywhere">Nixos-anywhere</a> allows for remote deployment of NixOS via <code>kexec</code> on any Linux based operating system. This provides a quick method to convert any virtual machine to NixOS and build the new system according to a specified NixOS configuration.</p>
+<p>Nixos-anywhere utilises <a rel="noopener" target="_blank" href="https://github.com/nix-community/disko">Disko</a>, which allows for declarative disk preparation and formatting. This means we can deploy without the usual <code>fdisk/gparted</code> preparation.</p>
+<h3 id="disko-configuration">Disko Configuration</h3>
+<p>First start by specifying how you want Disko to configure your disks. You can find an example Disko config <a rel="noopener" target="_blank" href="https://github.com/nix-community/disko/blob/master/example/multi-device-no-deps.nix">here</a></p>
+<p>The following configuration is what I used to format an SSD drive, mounted at <code>/dev/sda</code>, creating partitions for EFI boot and operating system storage:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># hosts/services/disk-config.nix
+</span><span>
+</span><span>{</span><span style="color:#81a1c1;">...</span><span>}: {
+</span><span>  </span><span style="color:#8fbcbb;">disko</span><span>.</span><span style="color:#8fbcbb;">devices </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">disk </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>	    </span><span style="color:#616e88;"># To specify an additional drive, create another entry e.g. disk.data
+</span><span>      </span><span style="color:#8fbcbb;">main </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">device </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/dev/sda&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;disk&quot;</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">content </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>          </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;gpt&quot;</span><span style="color:#eceff4;">;
+</span><span>          </span><span style="color:#8fbcbb;">partitions </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>			      </span><span style="color:#616e88;"># Boot partition formatted for EFI
+</span><span>            </span><span style="color:#8fbcbb;">boot </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>              </span><span style="color:#8fbcbb;">size </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;1M&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;EF02&quot;</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># for grub MBR
+</span><span>            }</span><span style="color:#eceff4;">;
+</span><span>            </span><span style="color:#8fbcbb;">ESP </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>              </span><span style="color:#8fbcbb;">name </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ESP&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">size </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;512M&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;EF00&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">content </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>                </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;filesystem&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">format </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;vfat&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">mountpoint </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/boot&quot;</span><span style="color:#eceff4;">;
+</span><span>              }</span><span style="color:#eceff4;">;
+</span><span>            }</span><span style="color:#eceff4;">;
+</span><span>			      </span><span style="color:#616e88;"># Optional swap partition
+</span><span>            </span><span style="color:#8fbcbb;">swap </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>              </span><span style="color:#8fbcbb;">size </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;8G&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">content </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>                </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;swap&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">randomEncryption </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">resumeDevice </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># resume from hiberation from this device
+</span><span>              }</span><span style="color:#eceff4;">;
+</span><span>            }</span><span style="color:#eceff4;">;
+</span><span>			      </span><span style="color:#616e88;"># Root partition for operating system storage
+</span><span>            </span><span style="color:#8fbcbb;">root </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>              </span><span style="color:#8fbcbb;">size </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;100%&quot;</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">content </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>                </span><span style="color:#8fbcbb;">type </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;filesystem&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">format </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ext4&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">mountpoint </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/&quot;</span><span style="color:#eceff4;">;
+</span><span>              }</span><span style="color:#eceff4;">;
+</span><span>            }</span><span style="color:#eceff4;">;
+</span><span>          }</span><span style="color:#eceff4;">;
+</span><span>        }</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span><span>
+</span></code></pre>
+<h3 id="nixos-anywhere-configuration">Nixos Anywhere Configuration</h3>
+<p>With the Disko configuration complete, we now need to update our flake and add inputs for Disko. We also need to add the Disko module within our <code>nixosConfiguration</code>.</p>
+<p>Here is an example:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># flake.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">description </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;Nixos-anywhere deployed flake&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">inputs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:nixos/nixpkgs/nixos-unstable&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#8fbcbb;">disko</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:nix-community/disko&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">disko</span><span>.</span><span style="color:#8fbcbb;">inputs</span><span>.</span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">follows </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nixpkgs&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>	  </span><span style="color:#616e88;"># Optional: used for secret sharing
+</span><span>    </span><span style="color:#8fbcbb;">agenix</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:ryantm/agenix&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">agenix</span><span>.</span><span style="color:#8fbcbb;">inputs</span><span>.</span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">follows </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nixpkgs&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">agenix</span><span>.</span><span style="color:#8fbcbb;">inputs</span><span>.</span><span style="color:#8fbcbb;">home-manager</span><span>.</span><span style="color:#8fbcbb;">follows </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;home-manager&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>	  </span><span style="color:#616e88;"># Optional: used for deployment of multiple systems
+</span><span>    </span><span style="color:#8fbcbb;">deploy-rs</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:serokell/deploy-rs&quot;</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">deploy-rs</span><span>.</span><span style="color:#8fbcbb;">inputs</span><span>.</span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">follows </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;nixpkgs&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">outputs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    self</span><span style="color:#81a1c1;">,
+</span><span>    nixpkgs</span><span style="color:#81a1c1;">,
+</span><span>    disko</span><span style="color:#81a1c1;">,
+</span><span>	  </span><span style="color:#616e88;"># Optional: as above, these aren&#39;t required for nixos-anywhere
+</span><span>    agenix</span><span style="color:#81a1c1;">,
+</span><span>    deploy-rs</span><span style="color:#81a1c1;">,
+</span><span>    </span><span style="color:#81a1c1;">...
+</span><span style="color:#81a1c1;">  </span><span>} @ inputs: {
+</span><span>	  </span><span style="color:#616e88;"># Specify hostname e.g. services
+</span><span>    </span><span style="color:#8fbcbb;">nixosConfigurations</span><span>.</span><span style="color:#8fbcbb;">services </span><span style="color:#81a1c1;">= </span><span>nixpkgs</span><span style="color:#81a1c1;">.</span><span>lib</span><span style="color:#81a1c1;">.</span><span>nixosSystem {
+</span><span>	    </span><span style="color:#616e88;"># Allow inputs to be available from within module scope
+</span><span>      </span><span style="color:#8fbcbb;">specialArgs </span><span style="color:#81a1c1;">= </span><span>{</span><span style="color:#81a1c1;">inherit </span><span style="color:#8fbcbb;">inputs</span><span style="color:#eceff4;">;</span><span>}</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">modules </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>		    </span><span style="color:#616e88;"># Specify system configuration to load
+</span><span>        </span><span style="color:#a3be8c;">./hosts/services/configuration.nix
+</span><span>		    </span><span style="color:#616e88;"># Optional: import secret management module
+</span><span>        agenix</span><span style="color:#81a1c1;">.</span><span>nixosModules</span><span style="color:#81a1c1;">.</span><span>default
+</span><span>		    </span><span style="color:#616e88;"># Importing the disko module for formatting disks
+</span><span>        disko</span><span style="color:#81a1c1;">.</span><span>nixosModules</span><span style="color:#81a1c1;">.</span><span>disko
+</span><span>      ]</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>The most important part in the above is adding an input for <code>disko</code> and loading the disko module within the <code>nixosConfiguration</code>: <code>disko.nixosModules.disko</code>.</p>
+<p>Importantly we must also add additional details to the configuration file specified. In the case of the above we provided the path: <code>./hosts/services/configuration</code>.</p>
+<p>Here are the details we need to add:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># hosts/services/configuration.nix
+</span><span>
+</span><span>{ modulesPath</span><span style="color:#81a1c1;">, </span><span>config</span><span style="color:#81a1c1;">, </span><span>lib</span><span style="color:#81a1c1;">, </span><span>pkgs</span><span style="color:#81a1c1;">, ... </span><span>}: {
+</span><span>  </span><span style="color:#8fbcbb;">imports </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>    (modulesPath </span><span style="color:#81a1c1;">+ </span><span style="color:#a3be8c;">&quot;/installer/scan/not-detected.nix&quot;</span><span>)
+</span><span>	  </span><span style="color:#616e88;"># Specify qemu guest, relevant for virtual machines
+</span><span>    (modulesPath </span><span style="color:#81a1c1;">+ </span><span style="color:#a3be8c;">&quot;/profiles/qemu-guest.nix&quot;</span><span>)
+</span><span>	  </span><span style="color:#616e88;"># Import path to disko configuration, covered above
+</span><span>    </span><span style="color:#a3be8c;">./disk-config.nix
+</span><span>  ]</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">boot</span><span>.</span><span style="color:#8fbcbb;">loader</span><span>.</span><span style="color:#8fbcbb;">grub </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>	  </span><span style="color:#616e88;"># Specify boot devices, should match disko configuration
+</span><span>    </span><span style="color:#8fbcbb;">devices </span><span style="color:#81a1c1;">= </span><span>[</span><span style="color:#a3be8c;">&quot;/dev/sda&quot;</span><span>]</span><span style="color:#eceff4;">;
+</span><span>	  </span><span style="color:#616e88;"># Whether to support EFI boot
+</span><span>    </span><span style="color:#8fbcbb;">efiSupport </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">efiInstallAsRemovable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#616e88;"># Enable connection via SSH post nixos-anywhere deployment
+</span><span>  </span><span style="color:#8fbcbb;">services</span><span>.</span><span style="color:#8fbcbb;">openssh</span><span>.</span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">environment</span><span>.</span><span style="color:#8fbcbb;">systemPackages </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>	  </span><span style="color:#616e88;"># Specify any packages you want installed by default
+</span><span>    pkgs</span><span style="color:#81a1c1;">.</span><span>vim
+</span><span>  ]</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">users</span><span>.</span><span style="color:#8fbcbb;">root</span><span>.</span><span style="color:#8fbcbb;">openssh</span><span>.</span><span style="color:#8fbcbb;">authorizedKeys</span><span>.</span><span style="color:#8fbcbb;">keys </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>    </span><span style="color:#616e88;"># Specify SSH key for connection post nixos-anywhere deployment
+</span><span>    </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI4uJE5AAAAIEVyN0R5mTtfcbkmVXjicuvSRotJY4IuT7h3H&quot;
+</span><span>  ]</span><span style="color:#eceff4;">;
+</span><span>	
+</span><span>  </span><span style="color:#616e88;"># Default recommended with NixOS install
+</span><span>  </span><span style="color:#8fbcbb;">system</span><span>.</span><span style="color:#8fbcbb;">stateVersion </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;23.11&quot;</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>Here are references to a couple of example configurations I found useful: <a rel="noopener" target="_blank" href="https://github.com/nix-community/nixos-anywhere-examples/blob/main/flake.nix">nixos-anywhere example flake</a>, <a rel="noopener" target="_blank" href="https://github.com/nix-community/nixos-anywhere-examples/blob/main/configuration.nix">nixos-anywhere example config</a></p>
+<h3 id="deployment">Deployment</h3>
+<p>With all of the above configuration in place, it's time to deploy. I normally create a bare bones virtual machine on my homelab using a <a rel="noopener" target="_blank" href="https://nixos.org/download/">minimal nixos iso</a> - we don't have to use a NixOS iso here, we could use Debian, Ubuntu etc. After starting the virtual machine we can complete the following steps from within the console to prepare for deployment:</p>
+<ol>
+<li>We need to be able to run the nixos-anywhere command and connect via SSH to the new virtual machine. The NixOS iso sets up <code>openssh</code> by default, we just need to set the root password to authenticate a connection: <code>sudo passwd root</code> and follow the prompts</li>
+<li>Confirm the IP address of the virtual machine so that we can connect: <code>ip a</code> and look for the valid IP</li>
+</ol>
+<p>Now we can complete the deployment. From a machine with nix installed and flakes enable we can run the following command:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">nix</span><span> run github:nix-community/nixos-anywhere</span><span style="color:#81a1c1;"> --</span><span> --flake </span><span style="color:#81a1c1;">&lt;</span><span>path-to-flake</span><span style="color:#81a1c1;">&gt;</span><span>#</span><span style="color:#81a1c1;">&lt;</span><span>flake-name</span><span style="color:#81a1c1;">&gt;</span><span> root@</span><span style="color:#81a1c1;">&lt;</span><span>ip-address</span><span style="color:#81a1c1;">&gt;
+</span></code></pre>
+<p>Here's an example with details added - note you can optionally specify <code>--build-on-remote</code> if the host architecture is different on your target:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span>`</span><span style="color:#88c0d0;">nix</span><span> run github:nix-community/nixos-anywhere</span><span style="color:#81a1c1;"> --</span><span> --flake .#services root@192.168.1.254 --build-on-remote`
+</span></code></pre>
+<h3 id="agenix-post-deployment-setup">Agenix Post Deployment Setup</h3>
+<p>I've explained in <a href="/encrypting-secrets-nixos/">another post</a> how I use Agenix to manage secrets. Assuming you are doing this on your new NixOS host there are a couple of steps you need to take to configure Agenix.</p>
+<p>First is to find the <code>ssh host key</code> for your new NixOS host: <code>ssh-keyscan &lt;host-ip&gt;</code>. This will show each available ssh key on your host. You can use this information to add the new ssh key to your Agenix configuration:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># secrets/secrets.nix
+</span><span>
+</span><span style="color:#81a1c1;">let
+</span><span>  </span><span style="color:#616e88;"># Existing configuration
+</span><span>  </span><span style="color:#8fbcbb;">existing_system </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0idNvgGiucWgup/mP78zyC23uFjYq0evcWdjGQUaBH&quot;</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#616e88;"># Newly added SSH key discovered by ssh-keyscan
+</span><span>  </span><span style="color:#8fbcbb;">new_system </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILI6jSq53F/3hEmSs+oq9L4TwOo1PrDMAgcA1uo1CCV/&quot;</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#8fbcbb;">all_systems </span><span style="color:#81a1c1;">= </span><span>[ existing_system new_system ]</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">in
+</span><span>{
+</span><span>  </span><span style="color:#616e88;"># Configured secrets
+</span><span>  </span><span style="color:#a3be8c;">&quot;secret1.age&quot;</span><span>.</span><span style="color:#8fbcbb;">publicKeys </span><span style="color:#81a1c1;">= </span><span>all_systems</span><span style="color:#eceff4;">;
+</span><span>  </span><span style="color:#a3be8c;">&quot;secret2.age&quot;</span><span>.</span><span style="color:#8fbcbb;">publicKeys </span><span style="color:#81a1c1;">= </span><span>[ existing_system ]</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>Now that we have added a new SSH key to our <code>secrets.nix</code> file we must <a rel="noopener" target="_blank" href="https://github.com/ryantm/agenix?tab=readme-ov-file#rekeying">rekey</a> our existing secrets, and specify our existing ssh key: <code>nix run github:ryantm/agenix --rekey -i ~/.ssh/existing_key</code>.</p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Restoring Nextcloud From Backup on NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2024
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

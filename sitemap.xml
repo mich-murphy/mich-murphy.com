@@ -30,6 +30,10 @@
         <lastmod>2023-05-08</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/nixos-anywhere-and-disko/</loc>
+        <lastmod>2024-03-27</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/nixos-impermanence/</loc>
         <lastmod>2023-01-18</lastmod>
     </url>
@@ -80,6 +84,9 @@
         <loc>https://micha.elmurphy.com/tags/cron/</loc>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/tags/disko/</loc>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/tags/docker/</loc>
     </url>
     <url>
@@ -105,6 +112,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nix/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/nixos-anywhere/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/nixos/</loc>
