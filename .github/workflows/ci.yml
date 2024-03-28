@@ -2,25 +2,22 @@
 name: "Build and Deploy Site"
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-      - name: Build Zola site with Nix Flakes
-        uses: cachix/install-nix-action@v18
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/flake-checker-action@main
         with:
-          install_url: https://github.com/nix-community/nix-unstable-installer/releases/download/nix-2.12.0pre20221116_62960f3/install
-          extra_nix_config: |
-            experimental-features = nix-command flakes
+          send-statistics: false
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
       - run: nix flake check
       - run: nix build '.?submodules=1' --out-link build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
