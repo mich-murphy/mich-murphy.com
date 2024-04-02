@@ -6,15 +6,15 @@ date = 2024-04-02
 tags = ["minecraft", "nixos"]
 +++
 
-## NixOS Configuration - Minecraft
-
 Minecraft can be configured simply by using the provided [NixOS modules](https://search.nixos.org/options?channel=unstable&size=50&sort=relevance&type=packages&query=minecraft). Tailscale have published a [blog post](https://tailscale.com/kb/1096/nixos-minecraft) showing how to utilise this and get a working server.
 
 This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. [Nix-minecraft](https://github.com/Infinidoge/nix-minecraft) was developed for this purpose.
 
 <!-- more -->
 
-To use it, add the following to an existing `flake.nix`:
+## NixOS Minecraft Configuration With Mods
+
+To use Nix-minecraft, add the following to an existing `flake.nix`, or create a new one like so:
 
 ```nix
 # flake.nix
@@ -54,6 +54,8 @@ To use it, add the following to an existing `flake.nix`:
 }
 
 ```
+
+### Minecraft Configuration File
 
 Then create a new nix file for server configuration, the following shows an example of how to do this using a nix module format.
 
@@ -131,5 +133,7 @@ in {
 }
 
 ```
+
+### Additional Resources
 
 Another helpful reference was [Misterio77's NixOS Minecraft config](https://github.com/Misterio77/nix-config/tree/0ed82f3d63a366eafbacb8eee27985afe30b249a/hosts/celaeno/services/minecraft)
