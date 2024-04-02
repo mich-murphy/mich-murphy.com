@@ -5,8 +5,130 @@
 	<link href="https://micha.elmurphy.com/atom.xml" rel="self" type="application/atom+xml"/>
   <link href="https://micha.elmurphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
-	<updated>2024-03-27T00:00:00+00:00</updated>
+	<updated>2024-04-02T00:00:00+00:00</updated>
 	<id>https://micha.elmurphy.com/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Configuring a Minecraft Server Using NixOS</title>
+		<published>2024-04-02T00:00:00+00:00</published>
+		<updated>2024-04-02T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://micha.elmurphy.com/nixos-minecraft-server/" type="text/html"/>
+		<id>https://micha.elmurphy.com/nixos-minecraft-server/</id>
+		<content type="html">&lt;h2 id=&quot;nixos-configuration-minecraft&quot;&gt;NixOS Configuration - Minecraft&lt;&#x2F;h2&gt;
+&lt;p&gt;Minecraft can be configured simply by using the provided &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=unstable&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=minecraft&quot;&gt;NixOS modules&lt;&#x2F;a&gt;. Tailscale have published a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;kb&#x2F;1096&#x2F;nixos-minecraft&quot;&gt;blog post&lt;&#x2F;a&gt; showing how to utilise this and get a working server.&lt;&#x2F;p&gt;
+&lt;p&gt;This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Infinidoge&#x2F;nix-minecraft&quot;&gt;Nix-minecraft&lt;&#x2F;a&gt; was developed for this purpose.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;To use it, add the following to an existing &lt;code&gt;flake.nix&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# flake.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;description &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;NixOS Minecraft Server&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;inputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nixpkgs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;github:nixos&#x2F;nixpkgs&#x2F;nixos-unstable&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;		
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Add nix-minecraft input
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nix-minecraft&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;github:Infinidoge&#x2F;nix-minecraft&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;outputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    nixpkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Add nix-minecraft input
+&lt;&#x2F;span&gt;&lt;span&gt;    nix-minecraft&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span&gt;} @ inputs: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nixosConfigurations&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;media &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;nixpkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nixosSystem {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;specialArgs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;inherit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;inputs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;modules &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;minecraft.nix
+&lt;&#x2F;span&gt;&lt;span&gt;        agenix&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nixosModules&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;default
+&lt;&#x2F;span&gt;&lt;span&gt;        {
+&lt;&#x2F;span&gt;&lt;span&gt;			
+&lt;&#x2F;span&gt;&lt;span&gt;				  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Add overlay for nix-minecraft
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;nixpkgs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;overlays &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;            nix-minecraft&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;overlay
+&lt;&#x2F;span&gt;&lt;span&gt;          ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then create a new nix file for server configuration, the following shows an example of how to do this using a nix module format.&lt;&#x2F;p&gt;
+&lt;p&gt;Available mods for install can be found at &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;modrinth.com&#x2F;&quot;&gt;Modrinth&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Nix-minecraft provides a helper scrip to identify the &lt;code&gt;fetchurl&lt;&#x2F;code&gt; and &lt;code&gt;sha512&lt;&#x2F;code&gt; hash needed to install a mod. To use it, find a mod on Modrinth and click on the version you want. In the displayed information, there is a Version ID string. Click on it to copy the version ID. Then run the following on a system with nix flakes enabled, replacing with the copied version ID: &lt;code&gt;nix run github:Infinidoge&#x2F;nix-minecraft#nix-modrinth-prefetch -- versionid&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Once you&#x27;ve got the details for mods to be install, you can finalise server configuration like so:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# minecraft.nix
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Used to import nix-minecraft
+&lt;&#x2F;span&gt;&lt;span&gt;  inputs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;}:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;lib; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;cfg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;common&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;minecraft&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Target minecraft version
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mcVersion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;1.20.1&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Version of toolchain (fabric in this case)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;fabricVersion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;0.15.7&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Format minecraft version, replacing . with _
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;serverVersion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;lib&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;replaceStrings [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;.&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;] [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;_&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;fabric-&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;mcVersion&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Import nix-minecraft to provide path to mod toolchain packages
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;imports &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[
+&lt;&#x2F;span&gt;&lt;span&gt;    inputs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nix-minecraft&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;nixosModules&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;minecraft-servers
+&lt;&#x2F;span&gt;&lt;span&gt;  ]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;options&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;common&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;minecraft &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkEnableOption &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;Enable Minecraft Server&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;config &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;mkIf cfg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;enable {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Server configuration module options
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;minecraft-servers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;eula &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# accepting EULA is required for server to run
+&lt;&#x2F;span&gt;&lt;span&gt;			  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Rename and clear out &#x2F;srv&#x2F;minecraft to setup new server
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;servers&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;fabricServers&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#d8dee9;&quot;&gt;${serverVersion}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;override {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;loaderVersion &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;fabricVersion&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;serverProperties &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Adjust server properties to fit needs
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;server-port &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;25565&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;gamemode &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;peaceful&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;motd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;NixOS Pokemon&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Server name
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;max-players &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;level-seed &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;10292758&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Seed for level generation
+&lt;&#x2F;span&gt;&lt;span&gt;          }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;symlinks &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;				    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# List all mods to be installed
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;mods &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;linkFarmFromDrvs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;mods&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;builtins.&lt;&#x2F;span&gt;&lt;span&gt;attrValues {
+&lt;&#x2F;span&gt;&lt;span&gt;							&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# Example values returned by nix run command
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;FabricApi &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;fetchurl {
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;https:&#x2F;&#x2F;cdn.modrinth.com&#x2F;data&#x2F;P7dR8mSH&#x2F;versions&#x2F;YG53rBmj&#x2F;fabric-api-0.92.0%2B1.20.1.jar&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;sha512 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;53ce4cb2bb5579cef37154c928837731f3ae0a3821dd2fb4c4401d22d411f8605855e8854a03e65ea4f949dfa0e500ac1661a2e69219883770c6099b0b28e4fa&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;              }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;Pokemon &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;fetchurl {
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;https:&#x2F;&#x2F;cdn.modrinth.com&#x2F;data&#x2F;MdwFAVRL&#x2F;versions&#x2F;uWAkNUxZ&#x2F;Cobblemon-fabric-1.4.1%2B1.20.1.jar&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;sha512 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#81a1c1;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;6955c8ad187d727cbfc51761312258600c5480878983cfe710623070c90eb437e419c140ff3c77e5066164876ecfe1e31b87f58f5ef175f0758efcff246b85a8&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;              }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            })&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;          }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Another helpful reference was &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Misterio77&#x2F;nix-config&#x2F;tree&#x2F;0ed82f3d63a366eafbacb8eee27985afe30b249a&#x2F;hosts&#x2F;celaeno&#x2F;services&#x2F;minecraft&quot;&gt;Misterio77&#x27;s NixOS Minecraft config&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
 	<entry xml:lang="en">
 		<title>Remote Deployment of NixOS Using Nixos-anywhere and Disko</title>
 		<published>2024-03-27T00:00:00+00:00</published>

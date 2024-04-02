@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Configuring a Minecraft Server Using NixOS | Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://micha.elmurphy.com/style.css">
+    <link rel="stylesheet" href="https://micha.elmurphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://micha.elmurphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://micha.elmurphy.com/font-jetbrainsmono.css">
+    
+            
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://micha.elmurphy.com/atom.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <script async src="https://analytics.umami.is/script.js" data-website-id="e85605cb-e8e8-4ff8-8195-1e479b34ae31"></script>
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://micha.elmurphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://micha.elmurphy.com">blog</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/tags">tags</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/archive">archive</a></li>
+            
+                <li><a href="https://micha.elmurphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://micha.elmurphy.com/nixos-minecraft-server/">Configuring a Minecraft Server Using NixOS</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-04-02
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/minecraft/">#minecraft</a>&nbsp;
+                <a class="post-tag" href="https://micha.elmurphy.com/tags/nixos/">#nixos</a></span>
+    
+
+        
+        <div class="post-content">
+            <h2 id="nixos-configuration-minecraft">NixOS Configuration - Minecraft</h2>
+<p>Minecraft can be configured simply by using the provided <a rel="noopener" target="_blank" href="https://search.nixos.org/options?channel=unstable&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=minecraft">NixOS modules</a>. Tailscale have published a <a rel="noopener" target="_blank" href="https://tailscale.com/kb/1096/nixos-minecraft">blog post</a> showing how to utilise this and get a working server.</p>
+<p>This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. <a rel="noopener" target="_blank" href="https://github.com/Infinidoge/nix-minecraft">Nix-minecraft</a> was developed for this purpose.</p>
+<span id="continue-reading"></span>
+<p>To use it, add the following to an existing <code>flake.nix</code>:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># flake.nix
+</span><span>
+</span><span>{
+</span><span>  </span><span style="color:#8fbcbb;">description </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;NixOS Minecraft Server&quot;</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">inputs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:nixos/nixpkgs/nixos-unstable&quot;</span><span style="color:#eceff4;">;
+</span><span>		
+</span><span>		</span><span style="color:#616e88;"># Add nix-minecraft input
+</span><span>    </span><span style="color:#8fbcbb;">nix-minecraft</span><span>.</span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;github:Infinidoge/nix-minecraft&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">outputs </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    self</span><span style="color:#81a1c1;">,
+</span><span>    nixpkgs</span><span style="color:#81a1c1;">,
+</span><span>		
+</span><span>		</span><span style="color:#616e88;"># Add nix-minecraft input
+</span><span>    nix-minecraft</span><span style="color:#81a1c1;">,
+</span><span>    </span><span style="color:#81a1c1;">...
+</span><span style="color:#81a1c1;">  </span><span>} @ inputs: {
+</span><span>    </span><span style="color:#8fbcbb;">nixosConfigurations</span><span>.</span><span style="color:#8fbcbb;">media </span><span style="color:#81a1c1;">= </span><span>nixpkgs</span><span style="color:#81a1c1;">.</span><span>lib</span><span style="color:#81a1c1;">.</span><span>nixosSystem {
+</span><span>      </span><span style="color:#8fbcbb;">specialArgs </span><span style="color:#81a1c1;">= </span><span>{</span><span style="color:#81a1c1;">inherit </span><span style="color:#8fbcbb;">inputs</span><span style="color:#eceff4;">;</span><span>}</span><span style="color:#eceff4;">;
+</span><span>      </span><span style="color:#8fbcbb;">modules </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">./minecraft.nix
+</span><span>        agenix</span><span style="color:#81a1c1;">.</span><span>nixosModules</span><span style="color:#81a1c1;">.</span><span>default
+</span><span>        {
+</span><span>			
+</span><span>				  </span><span style="color:#616e88;"># Add overlay for nix-minecraft
+</span><span>          </span><span style="color:#8fbcbb;">nixpkgs</span><span>.</span><span style="color:#8fbcbb;">overlays </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>            nix-minecraft</span><span style="color:#81a1c1;">.</span><span>overlay
+</span><span>          ]</span><span style="color:#eceff4;">;
+</span><span>        }
+</span><span>      ]</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>Then create a new nix file for server configuration, the following shows an example of how to do this using a nix module format.</p>
+<p>Available mods for install can be found at <a rel="noopener" target="_blank" href="https://modrinth.com/">Modrinth</a>.</p>
+<p>Nix-minecraft provides a helper scrip to identify the <code>fetchurl</code> and <code>sha512</code> hash needed to install a mod. To use it, find a mod on Modrinth and click on the version you want. In the displayed information, there is a Version ID string. Click on it to copy the version ID. Then run the following on a system with nix flakes enabled, replacing with the copied version ID: <code>nix run github:Infinidoge/nix-minecraft#nix-modrinth-prefetch -- versionid</code></p>
+<p>Once you've got the details for mods to be install, you can finalise server configuration like so:</p>
+<pre data-lang="nix" style="background-color:#2e3440;color:#d8dee9;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#616e88;"># minecraft.nix
+</span><span>
+</span><span>{
+</span><span>  lib</span><span style="color:#81a1c1;">,
+</span><span>  config</span><span style="color:#81a1c1;">,
+</span><span>  pkgs</span><span style="color:#81a1c1;">,
+</span><span>	</span><span style="color:#616e88;"># Used to import nix-minecraft
+</span><span>  inputs</span><span style="color:#81a1c1;">,
+</span><span>  </span><span style="color:#81a1c1;">...
+</span><span>}:
+</span><span style="color:#81a1c1;">with </span><span>lib; </span><span style="color:#81a1c1;">let
+</span><span>  </span><span style="color:#8fbcbb;">cfg </span><span style="color:#81a1c1;">= </span><span>config</span><span style="color:#81a1c1;">.</span><span>common</span><span style="color:#81a1c1;">.</span><span>minecraft</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#616e88;"># Target minecraft version
+</span><span>  </span><span style="color:#8fbcbb;">mcVersion </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;1.20.1&quot;</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#616e88;"># Version of toolchain (fabric in this case)
+</span><span>  </span><span style="color:#8fbcbb;">fabricVersion </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;0.15.7&quot;</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#616e88;"># Format minecraft version, replacing . with _
+</span><span>  </span><span style="color:#8fbcbb;">serverVersion </span><span style="color:#81a1c1;">= </span><span>lib</span><span style="color:#81a1c1;">.</span><span>replaceStrings [</span><span style="color:#a3be8c;">&quot;.&quot;</span><span>] [</span><span style="color:#a3be8c;">&quot;_&quot;</span><span>] </span><span style="color:#a3be8c;">&quot;fabric-</span><span style="font-style:italic;color:#a3be8c;">${</span><span style="font-style:italic;color:#d8dee9;">mcVersion</span><span style="font-style:italic;color:#a3be8c;">}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">in </span><span>{
+</span><span>	</span><span style="color:#616e88;"># Import nix-minecraft to provide path to mod toolchain packages
+</span><span>  </span><span style="color:#8fbcbb;">imports </span><span style="color:#81a1c1;">= </span><span>[
+</span><span>    inputs</span><span style="color:#81a1c1;">.</span><span>nix-minecraft</span><span style="color:#81a1c1;">.</span><span>nixosModules</span><span style="color:#81a1c1;">.</span><span>minecraft-servers
+</span><span>  ]</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">options</span><span>.</span><span style="color:#8fbcbb;">common</span><span>.</span><span style="color:#8fbcbb;">minecraft </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>    </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= </span><span>mkEnableOption </span><span style="color:#a3be8c;">&quot;Enable Minecraft Server&quot;</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>  </span><span style="color:#8fbcbb;">config </span><span style="color:#81a1c1;">= </span><span>mkIf cfg</span><span style="color:#81a1c1;">.</span><span>enable {
+</span><span>    </span><span style="color:#8fbcbb;">services </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>		  </span><span style="color:#616e88;"># Server configuration module options
+</span><span>      </span><span style="color:#8fbcbb;">minecraft-servers </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>        </span><span style="color:#8fbcbb;">eula </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># accepting EULA is required for server to run
+</span><span>			  </span><span style="color:#616e88;"># Rename and clear out /srv/minecraft to setup new server
+</span><span>        </span><span style="color:#8fbcbb;">servers</span><span>.</span><span style="color:#8fbcbb;">server-name </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>          </span><span style="color:#8fbcbb;">enable </span><span style="color:#81a1c1;">= true</span><span style="color:#eceff4;">;
+</span><span>          </span><span style="color:#8fbcbb;">package </span><span style="color:#81a1c1;">= </span><span>pkgs</span><span style="color:#81a1c1;">.</span><span>fabricServers</span><span style="color:#81a1c1;">.</span><span style="font-style:italic;color:#d8dee9;">${serverVersion}</span><span style="color:#81a1c1;">.</span><span>override {</span><span style="color:#8fbcbb;">loaderVersion </span><span style="color:#81a1c1;">= </span><span>fabricVersion</span><span style="color:#eceff4;">;</span><span>}</span><span style="color:#eceff4;">;
+</span><span>          </span><span style="color:#8fbcbb;">serverProperties </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>            </span><span style="color:#616e88;"># Adjust server properties to fit needs
+</span><span>            </span><span style="color:#8fbcbb;">server-port </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">25565</span><span style="color:#eceff4;">;
+</span><span>            </span><span style="color:#8fbcbb;">gamemode </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;peaceful&quot;</span><span style="color:#eceff4;">;
+</span><span>            </span><span style="color:#8fbcbb;">motd </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;NixOS Pokemon&quot;</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># Server name
+</span><span>            </span><span style="color:#8fbcbb;">max-players </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">2</span><span style="color:#eceff4;">;
+</span><span>            </span><span style="color:#8fbcbb;">level-seed </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;10292758&quot;</span><span style="color:#eceff4;">; </span><span style="color:#616e88;"># Seed for level generation
+</span><span>          }</span><span style="color:#eceff4;">;
+</span><span>          </span><span style="color:#8fbcbb;">symlinks </span><span style="color:#81a1c1;">= </span><span>{
+</span><span>				    </span><span style="color:#616e88;"># List all mods to be installed
+</span><span>            </span><span style="color:#8fbcbb;">mods </span><span style="color:#81a1c1;">= </span><span>pkgs</span><span style="color:#81a1c1;">.</span><span>linkFarmFromDrvs </span><span style="color:#a3be8c;">&quot;mods&quot; </span><span>(</span><span style="color:#81a1c1;">builtins.</span><span>attrValues {
+</span><span>							</span><span style="color:#616e88;"># Example values returned by nix run command
+</span><span>              </span><span style="color:#8fbcbb;">FabricApi </span><span style="color:#81a1c1;">= </span><span>pkgs</span><span style="color:#81a1c1;">.</span><span>fetchurl {
+</span><span>                </span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;https://cdn.modrinth.com/data/P7dR8mSH/versions/YG53rBmj/fabric-api-0.92.0%2B1.20.1.jar&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">sha512 </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;53ce4cb2bb5579cef37154c928837731f3ae0a3821dd2fb4c4401d22d411f8605855e8854a03e65ea4f949dfa0e500ac1661a2e69219883770c6099b0b28e4fa&quot;</span><span style="color:#eceff4;">;
+</span><span>              }</span><span style="color:#eceff4;">;
+</span><span>              </span><span style="color:#8fbcbb;">Pokemon </span><span style="color:#81a1c1;">= </span><span>pkgs</span><span style="color:#81a1c1;">.</span><span>fetchurl {
+</span><span>                </span><span style="color:#8fbcbb;">url </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;https://cdn.modrinth.com/data/MdwFAVRL/versions/uWAkNUxZ/Cobblemon-fabric-1.4.1%2B1.20.1.jar&quot;</span><span style="color:#eceff4;">;
+</span><span>                </span><span style="color:#8fbcbb;">sha512 </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;6955c8ad187d727cbfc51761312258600c5480878983cfe710623070c90eb437e419c140ff3c77e5066164876ecfe1e31b87f58f5ef175f0758efcff246b85a8&quot;</span><span style="color:#eceff4;">;
+</span><span>              }</span><span style="color:#eceff4;">;
+</span><span>            })</span><span style="color:#eceff4;">;
+</span><span>          }</span><span style="color:#eceff4;">;
+</span><span>        }</span><span style="color:#eceff4;">;
+</span><span>      }</span><span style="color:#eceff4;">;
+</span><span>    }</span><span style="color:#eceff4;">;
+</span><span>  }</span><span style="color:#eceff4;">;
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>Another helpful reference was <a rel="noopener" target="_blank" href="https://github.com/Misterio77/nix-config/tree/0ed82f3d63a366eafbacb8eee27985afe30b249a/hosts/celaeno/services/minecraft">Misterio77's NixOS Minecraft config</a></p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://micha.elmurphy.com/nixos-anywhere-and-disko/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Remote Deployment of NixOS Using Nixos-anywhere and Disko</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2024
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

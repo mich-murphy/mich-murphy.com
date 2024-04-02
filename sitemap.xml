@@ -38,11 +38,18 @@
         <lastmod>2023-01-18</lastmod>
     </url>
     <url>
+        <loc>https://micha.elmurphy.com/nixos-minecraft-server/</loc>
+        <lastmod>2024-04-02</lastmod>
+    </url>
+    <url>
         <loc>https://micha.elmurphy.com/nixos-tmpfs-installation/</loc>
         <lastmod>2023-02-06</lastmod>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/page/2/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/proxmox-package-repositories/</loc>
@@ -100,6 +107,9 @@
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/impermanence/</loc>
+    </url>
+    <url>
+        <loc>https://micha.elmurphy.com/tags/minecraft/</loc>
     </url>
     <url>
         <loc>https://micha.elmurphy.com/tags/neovim/</loc>
