@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 Allow: /
-Sitemap: https://micha.elmurphy.com/sitemap.xml
+Sitemap: https://mich-murphy.com/sitemap.xml

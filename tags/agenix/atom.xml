@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - agenix</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/agenix/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/agenix/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2023-02-22T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/agenix/atom.xml</id>
+	<id>https://mich-murphy.com/tags/agenix/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Encrypting Secrets in NixOS With Agenix</title>
 		<published>2023-02-22T00:00:00+00:00</published>
 		<updated>2023-02-22T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/encrypting-secrets-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/encrypting-secrets-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/encrypting-secrets-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/encrypting-secrets-nixos/</id>
 		<content type="html">&lt;p&gt;After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;issues&#x2F;24288&quot;&gt;world readable Nix store&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;There are a number of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Comparison_of_secret_managing_schemes&quot;&gt;solutions available&lt;&#x2F;a&gt; to encrypt secrets in NixOS, I landed on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;Agenix&lt;&#x2F;a&gt;, as it&#x27;s relatively easy to configure and works with my deployment tool of choice - &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;Deploy-rs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;

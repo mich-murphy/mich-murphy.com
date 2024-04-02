@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - docker</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/docker/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/docker/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2023-04-11T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/docker/atom.xml</id>
+	<id>https://mich-murphy.com/tags/docker/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Using Dev Containers to Standardise Development Environments</title>
 		<published>2023-04-11T00:00:00+00:00</published>
 		<updated>2023-04-11T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/dev-containers-vscode/" type="text/html"/>
-		<id>https://micha.elmurphy.com/dev-containers-vscode/</id>
+		<link rel="alternate" href="https://mich-murphy.com/dev-containers-vscode/" type="text/html"/>
+		<id>https://mich-murphy.com/dev-containers-vscode/</id>
 		<content type="html">&lt;p&gt;After running my own homelab for a while, I&#x27;ve become pretty familiar with using containers - mostly via Docker, though I may have to make the switch to podman after a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.servethehome.com&#x2F;docker-abruptly-starts-charging-many-users-for-docker-desktop&#x2F;&quot;&gt;recent announcement&lt;&#x2F;a&gt;. One thing I wasn&#x27;t aware of was the ability to run containers for the specific purpose of creating a development environment.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;configuring-a-dev-container&quot;&gt;Configuring a Dev Container&lt;&#x2F;h2&gt;
 &lt;p&gt;I first came across this feature in Visual Studio Code (I try to avoid it, but sometimes its a necessary evil :P), there is a lot of great &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;devcontainers&#x2F;containers&quot;&gt;documentation&lt;&#x2F;a&gt; which covers the topic in far more detail than I plan to.&lt;&#x2F;p&gt;

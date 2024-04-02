@@ -2,18 +2,18 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - impermanence</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/impermanence/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/impermanence/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2023-02-06T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/impermanence/atom.xml</id>
+	<id>https://mich-murphy.com/tags/impermanence/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Installing NixOS on a Temporary File System</title>
 		<published>2023-02-06T00:00:00+00:00</published>
 		<updated>2023-02-06T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-tmpfs-installation/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-tmpfs-installation/</id>
-		<content type="html">&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;micha.elmurphy.com&#x2F;nixos-impermanence&#x2F;&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
+		<link rel="alternate" href="https://mich-murphy.com/nixos-tmpfs-installation/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-tmpfs-installation/</id>
+		<content type="html">&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a href=&quot;.&#x2F;nixos-impermanence.md&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;useful-references-notes&quot;&gt;Useful References &amp;amp; Notes&lt;&#x2F;h2&gt;
 &lt;p&gt;The following is summarised from a combination of 2 different blog posts: one detailing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;configure a tmpfs on NixOS&lt;&#x2F;a&gt; and another showing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;harden the NixOS install&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. &lt;strong&gt;Note&lt;&#x2F;strong&gt;: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.&lt;&#x2F;p&gt;
@@ -149,8 +149,8 @@
 		<title>Configuring NixOS for Impermanence</title>
 		<published>2023-01-18T00:00:00+00:00</published>
 		<updated>2023-01-18T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-impermanence/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-impermanence/</id>
+		<link rel="alternate" href="https://mich-murphy.com/nixos-impermanence/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-impermanence/</id>
 		<content type="html">&lt;p&gt;After reading posts from both &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;grahamc.com&#x2F;blog&#x2F;erase-your-darlings&quot;&gt;Graham Christensen&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;Elis Hirwing&lt;&#x2F;a&gt; about the idea of impermanence in NixOS I decided to try setting it up on my homelab. The basic idea is that we configure the system to use a temporary file system, where everything is wiped after a reboot, unless specified otherwise.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;One of the major benefits of this kind of setup is that it forces you to properly declare the configuration, as everything will break after a reboot otherwise.&lt;&#x2F;p&gt;

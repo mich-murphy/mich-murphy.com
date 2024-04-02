@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - minecraft</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/minecraft/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/minecraft/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2024-04-02T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/minecraft/atom.xml</id>
+	<id>https://mich-murphy.com/tags/minecraft/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Configuring a Minecraft Server Using NixOS</title>
 		<published>2024-04-02T00:00:00+00:00</published>
 		<updated>2024-04-02T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-minecraft-server/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-minecraft-server/</id>
+		<link rel="alternate" href="https://mich-murphy.com/nixos-minecraft-server/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-minecraft-server/</id>
 		<content type="html">&lt;h2 id=&quot;nixos-configuration-minecraft&quot;&gt;NixOS Configuration - Minecraft&lt;&#x2F;h2&gt;
 &lt;p&gt;Minecraft can be configured simply by using the provided &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=unstable&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=minecraft&quot;&gt;NixOS modules&lt;&#x2F;a&gt;. Tailscale have published a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;kb&#x2F;1096&#x2F;nixos-minecraft&quot;&gt;blog post&lt;&#x2F;a&gt; showing how to utilise this and get a working server.&lt;&#x2F;p&gt;
 &lt;p&gt;This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Infinidoge&#x2F;nix-minecraft&quot;&gt;Nix-minecraft&lt;&#x2F;a&gt; was developed for this purpose.&lt;&#x2F;p&gt;

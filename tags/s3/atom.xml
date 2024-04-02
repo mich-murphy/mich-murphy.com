@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - s3</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/s3/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/s3/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2022-12-14T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/s3/atom.xml</id>
+	<id>https://mich-murphy.com/tags/s3/atom.xml</id>
 	<entry xml:lang="en">
 		<title>How To Mount S3 Object Storage in NixOS</title>
 		<published>2022-12-14T00:00:00+00:00</published>
 		<updated>2022-12-14T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/s3-object-storage-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/s3-object-storage-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/s3-object-storage-nixos/</id>
 		<content type="html">&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;updating-nixos-configuration&quot;&gt;Updating NixOS Configuration&lt;&#x2F;h2&gt;
 &lt;p&gt;Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.&lt;&#x2F;p&gt;
@@ -104,8 +104,8 @@
 		<title>How To Mount S3 Compatible Object Storage in Ubuntu</title>
 		<published>2022-11-29T00:00:00+00:00</published>
 		<updated>2022-11-29T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage/" type="text/html"/>
-		<id>https://micha.elmurphy.com/s3-object-storage/</id>
+		<link rel="alternate" href="https://mich-murphy.com/s3-object-storage/" type="text/html"/>
+		<id>https://mich-murphy.com/s3-object-storage/</id>
 		<content type="html">&lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
 &lt;p&gt;For streaming music and managing metadata I&#x27;m using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;roonlabs.com&#x2F;&quot;&gt;Roon Server&lt;&#x2F;a&gt;, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt;. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;

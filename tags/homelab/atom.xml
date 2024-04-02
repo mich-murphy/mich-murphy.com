@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - homelab</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/homelab/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/homelab/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2024-03-25T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/homelab/atom.xml</id>
+	<id>https://mich-murphy.com/tags/homelab/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Restoring Nextcloud From Backup on NixOS</title>
 		<published>2024-03-25T00:00:00+00:00</published>
 		<updated>2024-03-25T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/restore-nextcloud-from-backup-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/restore-nextcloud-from-backup-nixos/</id>
 		<content type="html">&lt;p&gt;Occasionally when self hosting I&#x27;ve found a need to backup and restore the Nextcloud
 database. I have a regularly scheduled Postgres backup thanks to the following
 nix config:&lt;&#x2F;p&gt;
@@ -69,8 +69,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Troubleshooting Proxmox Installation</title>
 		<published>2023-07-18T00:00:00+00:00</published>
 		<updated>2023-07-18T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/resolving-proxmox-installation-issues/" type="text/html"/>
-		<id>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</id>
+		<link rel="alternate" href="https://mich-murphy.com/resolving-proxmox-installation-issues/" type="text/html"/>
+		<id>https://mich-murphy.com/resolving-proxmox-installation-issues/</id>
 		<content type="html">&lt;p&gt;I encountered some issues when installing Proxmox on a new homelab. One method of solving these would have been to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;pve.proxmox.com&#x2F;wiki&#x2F;Install_Proxmox_VE_on_Debian_11_Bullseye&quot;&gt;install Debian and then Proxmox&lt;&#x2F;a&gt; from there. I decided to try my hand at troubleshooting the issues instead.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;why-proxmox&quot;&gt;Why Proxmox&lt;&#x2F;h2&gt;
 &lt;p&gt;Before describing the issues I faced and how I resolved them, I though I should explain why I&#x27;m using Proxmox in the first place - why persevere through the pain?&lt;&#x2F;p&gt;
@@ -116,8 +116,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Encrypting Secrets in NixOS With Agenix</title>
 		<published>2023-02-22T00:00:00+00:00</published>
 		<updated>2023-02-22T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/encrypting-secrets-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/encrypting-secrets-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/encrypting-secrets-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/encrypting-secrets-nixos/</id>
 		<content type="html">&lt;p&gt;After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;issues&#x2F;24288&quot;&gt;world readable Nix store&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;There are a number of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Comparison_of_secret_managing_schemes&quot;&gt;solutions available&lt;&#x2F;a&gt; to encrypt secrets in NixOS, I landed on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ryantm&#x2F;agenix&quot;&gt;Agenix&lt;&#x2F;a&gt;, as it&#x27;s relatively easy to configure and works with my deployment tool of choice - &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;serokell&#x2F;deploy-rs&quot;&gt;Deploy-rs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
@@ -195,8 +195,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>How to Configure Nextcloud on NixOS</title>
 		<published>2023-02-21T00:00:00+00:00</published>
 		<updated>2023-02-21T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/configure-nextcloud-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/configure-nextcloud-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/configure-nextcloud-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/configure-nextcloud-nixos/</id>
 		<content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;Jacob Neplokh wrote an incredibly helpful &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jacobneplokh.com&#x2F;how-to-setup-nextcloud-on-nixos&#x2F;&quot;&gt;blog post&lt;&#x2F;a&gt; which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nextcloud&quot;&gt;NixOS Wiki&lt;&#x2F;a&gt; also had some very helpful information.&lt;&#x2F;p&gt;
@@ -363,8 +363,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Configuring Backup Solutions in NixOS</title>
 		<published>2023-02-13T00:00:00+00:00</published>
 		<updated>2023-02-13T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/backup-solutions-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/backup-solutions-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/backup-solutions-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/backup-solutions-nixos/</id>
 		<content type="html">&lt;p&gt;One of my first consideration in setting up a homelab has been about a backup strategy - it&#x27;s difficult to have trust in a self-hosted instance of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; when I don&#x27;t know whether data will exist after a hardware fault. One common backup strategy is the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.seagate.com&#x2F;au&#x2F;en&#x2F;blog&#x2F;what-is-a-3-2-1-backup-strategy&#x2F;&quot;&gt;3-2-1 approach&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;ul&gt;
@@ -454,9 +454,9 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Installing NixOS on a Temporary File System</title>
 		<published>2023-02-06T00:00:00+00:00</published>
 		<updated>2023-02-06T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-tmpfs-installation/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-tmpfs-installation/</id>
-		<content type="html">&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;micha.elmurphy.com&#x2F;nixos-impermanence&#x2F;&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
+		<link rel="alternate" href="https://mich-murphy.com/nixos-tmpfs-installation/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-tmpfs-installation/</id>
+		<content type="html">&lt;p&gt;In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about &lt;a href=&quot;.&#x2F;nixos-impermanence.md&quot;&gt;configuring NixOS for impermanence&lt;&#x2F;a&gt;, and walks through the installation.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;useful-references-notes&quot;&gt;Useful References &amp;amp; Notes&lt;&#x2F;h2&gt;
 &lt;p&gt;The following is summarised from a combination of 2 different blog posts: one detailing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;configure a tmpfs on NixOS&lt;&#x2F;a&gt; and another showing how to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;xeiaso.net&#x2F;blog&#x2F;paranoid-nixos-2021-07-18&quot;&gt;harden the NixOS install&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. &lt;strong&gt;Note&lt;&#x2F;strong&gt;: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.&lt;&#x2F;p&gt;
@@ -592,8 +592,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Configuring NixOS for Impermanence</title>
 		<published>2023-01-18T00:00:00+00:00</published>
 		<updated>2023-01-18T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-impermanence/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-impermanence/</id>
+		<link rel="alternate" href="https://mich-murphy.com/nixos-impermanence/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-impermanence/</id>
 		<content type="html">&lt;p&gt;After reading posts from both &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;grahamc.com&#x2F;blog&#x2F;erase-your-darlings&quot;&gt;Graham Christensen&lt;&#x2F;a&gt; and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elis.nu&#x2F;blog&#x2F;2020&#x2F;05&#x2F;nixos-tmpfs-as-root&#x2F;&quot;&gt;Elis Hirwing&lt;&#x2F;a&gt; about the idea of impermanence in NixOS I decided to try setting it up on my homelab. The basic idea is that we configure the system to use a temporary file system, where everything is wiped after a reboot, unless specified otherwise.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;One of the major benefits of this kind of setup is that it forces you to properly declare the configuration, as everything will break after a reboot otherwise.&lt;&#x2F;p&gt;
@@ -671,8 +671,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>Configure Proxmox Package Repositories</title>
 		<published>2022-12-22T00:00:00+00:00</published>
 		<updated>2022-12-22T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/proxmox-package-repositories/" type="text/html"/>
-		<id>https://micha.elmurphy.com/proxmox-package-repositories/</id>
+		<link rel="alternate" href="https://mich-murphy.com/proxmox-package-repositories/" type="text/html"/>
+		<id>https://mich-murphy.com/proxmox-package-repositories/</id>
 		<content type="html">&lt;p&gt;I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt; to create and manage VMs on my existing homelab (2012 Mac Mini). I use a combination of both VMs and containers for running applications and services, as I don&#x27;t always like to force everything to run in a container. For a deeper discussion on this topic I recommend listening to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;thehomelab.show&#x2F;2022&#x2F;11&#x2F;30&#x2F;the-homelab-show-ep-79-virtualization-vs-containers&#x2F;&quot;&gt;this podcast&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;failed-update-error&quot;&gt;Failed Update Error&lt;&#x2F;h2&gt;
 &lt;p&gt;I recently opened up Proxmox to begin configuring a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;Nixos&lt;&#x2F;a&gt; VM, and noticed I had a bunch of errors when updating the package database &lt;code&gt;Error: command apt-get update failed: exit code 100&lt;&#x2F;code&gt;. I SSH&#x27;d into the machine and tried to update manually, this provided a more detailed output, it appeared I was trying to pull updates from a repo requiring a Proxmox subscription (which I don&#x27;t have, as I use it for personal use).&lt;&#x2F;p&gt;
@@ -703,8 +703,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>How To Mount S3 Object Storage in NixOS</title>
 		<published>2022-12-14T00:00:00+00:00</published>
 		<updated>2022-12-14T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/s3-object-storage-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/s3-object-storage-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/s3-object-storage-nixos/</id>
 		<content type="html">&lt;p&gt;I previously wrote about how I mounted s3 object storage to my &lt;a href=&quot;&#x2F;s3-object-storage.md&quot;&gt;homelab running Ubuntu&lt;&#x2F;a&gt;. I&#x27;ve since been configuring my &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;master&#x2F;hosts&#x2F;homelab&#x2F;configuration.nix&quot;&gt;homelab&lt;&#x2F;a&gt; to run using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;. NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;updating-nixos-configuration&quot;&gt;Updating NixOS Configuration&lt;&#x2F;h2&gt;
 &lt;p&gt;Whilst you could in theory install the required tools and manually mount an s3 object store in NixOS, a better approach is to specify mount instruction in the NixOS configuration file.&lt;&#x2F;p&gt;
@@ -796,8 +796,8 @@ will add missing indices to the database:&lt;&#x2F;p&gt;
 		<title>How To Mount S3 Compatible Object Storage in Ubuntu</title>
 		<published>2022-11-29T00:00:00+00:00</published>
 		<updated>2022-11-29T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/s3-object-storage/" type="text/html"/>
-		<id>https://micha.elmurphy.com/s3-object-storage/</id>
+		<link rel="alternate" href="https://mich-murphy.com/s3-object-storage/" type="text/html"/>
+		<id>https://mich-murphy.com/s3-object-storage/</id>
 		<content type="html">&lt;p&gt;I&#x27;m currently in the process of setting up a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;linuxhandbook.com&#x2F;homelab&#x2F;&quot;&gt;homelab&lt;&#x2F;a&gt;, one of the major tasks I want to manage is storage and streaming of music.&lt;&#x2F;p&gt;
 &lt;p&gt;For streaming music and managing metadata I&#x27;m using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;roonlabs.com&#x2F;&quot;&gt;Roon Server&lt;&#x2F;a&gt;, this may change in the future as I explore other options. I store my music on a 2012 Mac Mini (the only computer I had lying around) which is running Ubuntu 20.04 as a VM in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.proxmox.com&#x2F;en&#x2F;&quot;&gt;Proxmox&lt;&#x2F;a&gt;. My Mac Mini has 2 x 250GB SSD storage, which has been quickly filling up as my music collection grows.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;

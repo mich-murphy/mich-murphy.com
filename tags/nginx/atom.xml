@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - nginx</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/nginx/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/nginx/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2023-02-21T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/nginx/atom.xml</id>
+	<id>https://mich-murphy.com/tags/nginx/atom.xml</id>
 	<entry xml:lang="en">
 		<title>How to Configure Nextcloud on NixOS</title>
 		<published>2023-02-21T00:00:00+00:00</published>
 		<updated>2023-02-21T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/configure-nextcloud-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/configure-nextcloud-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/configure-nextcloud-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/configure-nextcloud-nixos/</id>
 		<content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nextcloud.com&#x2F;&quot;&gt;Nextcloud&lt;&#x2F;a&gt; provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
 &lt;p&gt;Jacob Neplokh wrote an incredibly helpful &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jacobneplokh.com&#x2F;how-to-setup-nextcloud-on-nixos&#x2F;&quot;&gt;blog post&lt;&#x2F;a&gt; which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nextcloud&quot;&gt;NixOS Wiki&lt;&#x2F;a&gt; also had some very helpful information.&lt;&#x2F;p&gt;

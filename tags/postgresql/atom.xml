@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - postgresql</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/postgresql/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/postgresql/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2024-03-25T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/postgresql/atom.xml</id>
+	<id>https://mich-murphy.com/tags/postgresql/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Restoring Nextcloud From Backup on NixOS</title>
 		<published>2024-03-25T00:00:00+00:00</published>
 		<updated>2024-03-25T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/" type="text/html"/>
-		<id>https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/</id>
+		<link rel="alternate" href="https://mich-murphy.com/restore-nextcloud-from-backup-nixos/" type="text/html"/>
+		<id>https://mich-murphy.com/restore-nextcloud-from-backup-nixos/</id>
 		<content type="html">&lt;p&gt;Occasionally when self hosting I&#x27;ve found a need to backup and restore the Nextcloud
 database. I have a regularly scheduled Postgres backup thanks to the following
 nix config:&lt;&#x2F;p&gt;

@@ -1,157 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://micha.elmurphy.com/</loc>
+        <loc>https://mich-murphy.com/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/about/</loc>
+        <loc>https://mich-murphy.com/about/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/archive/</loc>
+        <loc>https://mich-murphy.com/archive/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/backup-solutions-nixos/</loc>
+        <loc>https://mich-murphy.com/backup-solutions-nixos/</loc>
         <lastmod>2023-02-13</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/configure-nextcloud-nixos/</loc>
+        <loc>https://mich-murphy.com/configure-nextcloud-nixos/</loc>
         <lastmod>2023-02-21</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/dev-containers-vscode/</loc>
+        <loc>https://mich-murphy.com/dev-containers-vscode/</loc>
         <lastmod>2023-04-11</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/encrypting-secrets-nixos/</loc>
+        <loc>https://mich-murphy.com/encrypting-secrets-nixos/</loc>
         <lastmod>2023-02-22</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/nix-useful-references/</loc>
+        <loc>https://mich-murphy.com/nix-useful-references/</loc>
         <lastmod>2023-05-08</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/nixos-anywhere-and-disko/</loc>
+        <loc>https://mich-murphy.com/nixos-anywhere-and-disko/</loc>
         <lastmod>2024-03-27</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/nixos-impermanence/</loc>
+        <loc>https://mich-murphy.com/nixos-impermanence/</loc>
         <lastmod>2023-01-18</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/nixos-minecraft-server/</loc>
+        <loc>https://mich-murphy.com/nixos-minecraft-server/</loc>
         <lastmod>2024-04-02</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/nixos-tmpfs-installation/</loc>
+        <loc>https://mich-murphy.com/nixos-tmpfs-installation/</loc>
         <lastmod>2023-02-06</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/page/1/</loc>
+        <loc>https://mich-murphy.com/page/1/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/page/2/</loc>
+        <loc>https://mich-murphy.com/page/2/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/proxmox-package-repositories/</loc>
+        <loc>https://mich-murphy.com/proxmox-package-repositories/</loc>
         <lastmod>2022-12-22</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/resolving-proxmox-installation-issues/</loc>
+        <loc>https://mich-murphy.com/resolving-proxmox-installation-issues/</loc>
         <lastmod>2023-07-18</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/restore-nextcloud-from-backup-nixos/</loc>
+        <loc>https://mich-murphy.com/restore-nextcloud-from-backup-nixos/</loc>
         <lastmod>2024-03-25</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/s3-object-storage-nixos/</loc>
+        <loc>https://mich-murphy.com/s3-object-storage-nixos/</loc>
         <lastmod>2022-12-14</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/s3-object-storage/</loc>
+        <loc>https://mich-murphy.com/s3-object-storage/</loc>
         <lastmod>2022-11-29</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/systemd-services-and-timers-nixos/</loc>
+        <loc>https://mich-murphy.com/systemd-services-and-timers-nixos/</loc>
         <lastmod>2023-01-12</lastmod>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/</loc>
+        <loc>https://mich-murphy.com/tags/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/acme/</loc>
+        <loc>https://mich-murphy.com/tags/acme/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/agenix/</loc>
+        <loc>https://mich-murphy.com/tags/agenix/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/borg/</loc>
+        <loc>https://mich-murphy.com/tags/borg/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/cron/</loc>
+        <loc>https://mich-murphy.com/tags/cron/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/disko/</loc>
+        <loc>https://mich-murphy.com/tags/disko/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/docker/</loc>
+        <loc>https://mich-murphy.com/tags/docker/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/duplicati/</loc>
+        <loc>https://mich-murphy.com/tags/duplicati/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/flakes/</loc>
+        <loc>https://mich-murphy.com/tags/flakes/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/homelab/</loc>
+        <loc>https://mich-murphy.com/tags/homelab/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/impermanence/</loc>
+        <loc>https://mich-murphy.com/tags/impermanence/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/minecraft/</loc>
+        <loc>https://mich-murphy.com/tags/minecraft/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/neovim/</loc>
+        <loc>https://mich-murphy.com/tags/neovim/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/nextcloud/</loc>
+        <loc>https://mich-murphy.com/tags/nextcloud/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/nginx/</loc>
+        <loc>https://mich-murphy.com/tags/nginx/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/nix/</loc>
+        <loc>https://mich-murphy.com/tags/nix/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/nixos-anywhere/</loc>
+        <loc>https://mich-murphy.com/tags/nixos-anywhere/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/nixos/</loc>
+        <loc>https://mich-murphy.com/tags/nixos/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/postgresql/</loc>
+        <loc>https://mich-murphy.com/tags/postgresql/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/proxmox/</loc>
+        <loc>https://mich-murphy.com/tags/proxmox/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/s3/</loc>
+        <loc>https://mich-murphy.com/tags/s3/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/systemd/</loc>
+        <loc>https://mich-murphy.com/tags/systemd/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/ubuntu/</loc>
+        <loc>https://mich-murphy.com/tags/ubuntu/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/vscode/</loc>
+        <loc>https://mich-murphy.com/tags/vscode/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/tags/zfs/</loc>
+        <loc>https://mich-murphy.com/tags/zfs/</loc>
     </url>
     <url>
-        <loc>https://micha.elmurphy.com/zfs-useful-references/</loc>
+        <loc>https://mich-murphy.com/zfs-useful-references/</loc>
         <lastmod>2023-03-06</lastmod>
     </url>
 </urlset>

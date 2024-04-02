@@ -2,17 +2,17 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<title>Michael Murphy - Blog - disko</title>
 	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
-	<link href="https://micha.elmurphy.com/tags/disko/atom.xml" rel="self" type="application/atom+xml"/>
-  <link href="https://micha.elmurphy.com"/>
+	<link href="https://mich-murphy.com/tags/disko/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
 	<generator uri="https://www.getzola.org/">Zola</generator>
 	<updated>2024-03-27T00:00:00+00:00</updated>
-	<id>https://micha.elmurphy.com/tags/disko/atom.xml</id>
+	<id>https://mich-murphy.com/tags/disko/atom.xml</id>
 	<entry xml:lang="en">
 		<title>Remote Deployment of NixOS Using Nixos-anywhere and Disko</title>
 		<published>2024-03-27T00:00:00+00:00</published>
 		<updated>2024-03-27T00:00:00+00:00</updated>
-		<link rel="alternate" href="https://micha.elmurphy.com/nixos-anywhere-and-disko/" type="text/html"/>
-		<id>https://micha.elmurphy.com/nixos-anywhere-and-disko/</id>
+		<link rel="alternate" href="https://mich-murphy.com/nixos-anywhere-and-disko/" type="text/html"/>
+		<id>https://mich-murphy.com/nixos-anywhere-and-disko/</id>
 		<content type="html">&lt;p&gt;Now that the use cases for my homelab are growing, I&#x27;m finding a need to separate different services into their own virtual machines. This has been a bit tedious in the past, as each time I&#x27;ve had to format disk and create a new NixOS configuration.&lt;&#x2F;p&gt;
 &lt;p&gt;Nixos-anywhere and Disko combine together to make this simple. This post explains how to use these tools.&lt;&#x2F;p&gt;
 &lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;nixos-anywhere-disko&quot;&gt;NixOS Anywhere &amp;amp; Disko&lt;&#x2F;h2&gt;
