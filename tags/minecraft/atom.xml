@@ -13,11 +13,10 @@
 		<updated>2024-04-02T00:00:00+00:00</updated>
 		<link rel="alternate" href="https://mich-murphy.com/nixos-minecraft-server/" type="text/html"/>
 		<id>https://mich-murphy.com/nixos-minecraft-server/</id>
-		<content type="html">&lt;h2 id=&quot;nixos-configuration-minecraft&quot;&gt;NixOS Configuration - Minecraft&lt;&#x2F;h2&gt;
-&lt;p&gt;Minecraft can be configured simply by using the provided &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=unstable&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=minecraft&quot;&gt;NixOS modules&lt;&#x2F;a&gt;. Tailscale have published a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;kb&#x2F;1096&#x2F;nixos-minecraft&quot;&gt;blog post&lt;&#x2F;a&gt; showing how to utilise this and get a working server.&lt;&#x2F;p&gt;
+		<content type="html">&lt;p&gt;Minecraft can be configured simply by using the provided &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;options?channel=unstable&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=minecraft&quot;&gt;NixOS modules&lt;&#x2F;a&gt;. Tailscale have published a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;kb&#x2F;1096&#x2F;nixos-minecraft&quot;&gt;blog post&lt;&#x2F;a&gt; showing how to utilise this and get a working server.&lt;&#x2F;p&gt;
 &lt;p&gt;This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Infinidoge&#x2F;nix-minecraft&quot;&gt;Nix-minecraft&lt;&#x2F;a&gt; was developed for this purpose.&lt;&#x2F;p&gt;
-&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
-&lt;p&gt;To use it, add the following to an existing &lt;code&gt;flake.nix&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;nixos-minecraft-configuration-with-mods&quot;&gt;NixOS Minecraft Configuration With Mods&lt;&#x2F;h2&gt;
+&lt;p&gt;To use Nix-minecraft, add the following to an existing &lt;code&gt;flake.nix&lt;&#x2F;code&gt;, or create a new one like so:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# flake.nix
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;{
@@ -55,6 +54,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;minecraft-configuration-file&quot;&gt;Minecraft Configuration File&lt;&#x2F;h3&gt;
 &lt;p&gt;Then create a new nix file for server configuration, the following shows an example of how to do this using a nix module format.&lt;&#x2F;p&gt;
 &lt;p&gt;Available mods for install can be found at &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;modrinth.com&#x2F;&quot;&gt;Modrinth&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;Nix-minecraft provides a helper scrip to identify the &lt;code&gt;fetchurl&lt;&#x2F;code&gt; and &lt;code&gt;sha512&lt;&#x2F;code&gt; hash needed to install a mod. To use it, find a mod on Modrinth and click on the version you want. In the displayed information, there is a Version ID string. Click on it to copy the version ID. Then run the following on a system with nix flakes enabled, replacing with the copied version ID: &lt;code&gt;nix run github:Infinidoge&#x2F;nix-minecraft#nix-modrinth-prefetch -- versionid&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
@@ -126,6 +126,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;additional-resources&quot;&gt;Additional Resources&lt;&#x2F;h3&gt;
 &lt;p&gt;Another helpful reference was &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Misterio77&#x2F;nix-config&#x2F;tree&#x2F;0ed82f3d63a366eafbacb8eee27985afe30b249a&#x2F;hosts&#x2F;celaeno&#x2F;services&#x2F;minecraft&quot;&gt;Misterio77&#x27;s NixOS Minecraft config&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </content>
 	</entry>
