@@ -6,7 +6,7 @@ date = 2023-02-06
 tags = ["nixos", "homelab", "impermanence"]
 +++
 
-In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about [configuring NixOS for impermanence](https://micha.elmurphy.com/nixos-impermanence/), and walks through the installation.
+In this post I explain how to install NixOS using a temporary file system (tmpfs). This is a precursor to the post I wrote about [configuring NixOS for impermanence](./nixos-impermanence.md), and walks through the installation.
 
 <!-- more -->
 
