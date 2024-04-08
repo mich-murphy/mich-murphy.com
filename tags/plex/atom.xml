@@ -78,10 +78,7 @@ up the connection to a media service such as Plex or Jellyfin.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; exec -ti watchstate console config:add
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;You will need to extract a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.plex.tv&#x2F;articles&#x2F;204059436-finding-an-authentication-token-x-plex-token&#x2F;&quot;&gt;Plex token&lt;&#x2F;a&gt; and retrieve
-you Jellyfin API as part of this setup:&lt;&#x2F;p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Go to Dashboard &amp;gt; Advanced &amp;gt; API keys &amp;gt; then create new api keys&lt;&#x2F;p&gt;
-&lt;&#x2F;blockquote&gt;
+you Jellyfin API as part of this setup: Go to Dashboard &amp;gt; Advanced &amp;gt; API keys &amp;gt; then create new api keys&lt;&#x2F;p&gt;
 &lt;p&gt;The only issue I ran into was due to me being unfamiliar with the terminology.
 I wanted to sync my watch status from Plex to Jellyfin. According to Watchstate
 terminology this means I want to &lt;code&gt;import&lt;&#x2F;code&gt; my Plex watch state to the database
