@@ -95,9 +95,7 @@ docker exec -ti watchstate console config:add
 ```
 
 You will need to extract a [Plex token](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/) and retrieve
-you Jellyfin API as part of this setup:
-
-> Go to Dashboard > Advanced > API keys > then create new api keys
+you Jellyfin API as part of this setup: Go to Dashboard > Advanced > API keys > then create new api keys
 
 The only issue I ran into was due to me being unfamiliar with the terminology.
 I wanted to sync my watch status from Plex to Jellyfin. According to Watchstate
