@@ -42,7 +42,7 @@ librarires.
 
 My Jellyfin configuration is also managed by NixOS and is [available here](https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/jellyfin.nix)
 
-> **Note**: the Jellyfin setup is a bit more involved when it comes to hardware transcoding
+> **Note**: the Jellyfin setup is a bit more involved when it comes to hardware transcoding.
 > I have included a few useful notes in my linked config with helpful resources.
 
 ## Syncing Watch Status
