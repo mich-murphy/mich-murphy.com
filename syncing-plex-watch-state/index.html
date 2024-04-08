@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Syncing Plex Watch State to Jellyfin | Michael Murphy - Blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://mich-murphy.com/style.css">
+    <link rel="stylesheet" href="https://mich-murphy.com/color/monokai_pro.css">
+
+        <link rel="stylesheet" href="https://mich-murphy.com/color/background_dark.css">
+    
+        <link rel="stylesheet" href="https://mich-murphy.com/font-jetbrainsmono.css">
+    
+            
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://mich-murphy.com/atom.xml">
+    
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    
+    <script async src="https://analytics.umami.is/script.js" data-website-id="e85605cb-e8e8-4ff8-8195-1e479b34ae31"></script>
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://mich-murphy.com" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            mm
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://mich-murphy.com">blog</a></li>
+            
+                <li><a href="https://mich-murphy.com/tags">tags</a></li>
+            
+                <li><a href="https://mich-murphy.com/archive">archive</a></li>
+            
+                <li><a href="https://mich-murphy.com/about">about</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://mich-murphy.com/syncing-plex-watch-state/">Syncing Plex Watch State to Jellyfin</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-04-08
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                <a class="post-tag" href="https://mich-murphy.com/tags/jellyfin/">#jellyfin</a>&nbsp;
+                <a class="post-tag" href="https://mich-murphy.com/tags/plex/">#plex</a></span>
+    
+
+        
+        <div class="post-content">
+            <p>I have been using <a rel="noopener" target="_blank" href="https://plex.tv">Plex</a> to manage and serve the media on my homelab for the
+last few years. After recent <a rel="noopener" target="_blank" href="https://www.pcgamer.com/self-hosted-media-app-starts-narcing-on-its-own-users-anime-and-x-rated-habits-with-an-opt-out-service-and-its-going-terribly/">worrying trends</a> have started to emerge on Plex I have started exploring a migration to <a rel="noopener" target="_blank" href="https://jellyfin.org">Jellyfin</a> instead.</p>
+<p>In this post I'll detail how I am syncing my watch state between both Plex and Jellyfin as I decide which one to stick with.</p>
+<span id="continue-reading"></span><h2 id="plex-services">Plex Services</h2>
+<p>I currently use Plex for management of my media, which includes:</p>
+<ul>
+<li>Movies</li>
+<li>TV</li>
+<li>Music - specifically <a rel="noopener" target="_blank" href="https://www.plex.tv/plexamp/">Plexamp</a></li>
+<li>Audiobooks - utilising <a rel="noopener" target="_blank" href="https://github.com/djdembeck/Audnexus.bundle">audNexus</a> as my metadata provider</li>
+<li>YouTube</li>
+</ul>
+<p>In addition to Plex, I setup <a rel="noopener" target="_blank" href="https://tautulli.com/">Tautulli</a> for tracking server usage and <a rel="noopener" target="_blank" href="https://overseerr.dev/">Overseerr</a> for managing media requests.</p>
+<p>Configuration for all of this is managed by NixOS - <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/plex.nix">as seen here</a></p>
+<h2 id="jellyfin-configuration">Jellyfin Configuration</h2>
+<p>I run a much more simple setup when it comes to Jellyfin, with it managing:</p>
+<ul>
+<li>Movies</li>
+<li>TV</li>
+<li>Music - I will look to switch to a different solution if this proves too basic</li>
+<li>YouTube</li>
+</ul>
+<p>I manage audiobooks via <a rel="noopener" target="_blank" href="https://www.audiobookshelf.org/">Audiobookshelf</a> as a
+dedicated service, as it does a much better job than Plex at managing audiobook
+librarires.</p>
+<p>My Jellyfin configuration is also managed by NixOS and is <a rel="noopener" target="_blank" href="https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/jellyfin.nix">available here</a></p>
+<blockquote>
+<p><strong>Note</strong>: the Jellyfin setup is a bit more involved when it comes to hardware transcoding
+I have included a few useful notes in my linked config with helpful resources.</p>
+</blockquote>
+<h2 id="syncing-watch-status">Syncing Watch Status</h2>
+<p>After doing some initial research I came across a project for this purpose aptly named <a rel="noopener" target="_blank" href="https://github.com/arabcoders/watchstate">watchstate</a>.</p>
+<h3 id="watchstatus-configuration">Watchstatus Configuration</h3>
+<p>This was pretty easy to setup via <code>docker-compose</code>. I followed the instructions on GitHub and first created a
+<code>docker-compose.yml</code>:</p>
+<pre data-lang="yaml" style="background-color:#2e3440;color:#d8dee9;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#8fbcbb;">services</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">watchstate</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">image</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">ghcr.io/arabcoders/watchstate:latest
+</span><span>    </span><span style="color:#8fbcbb;">network_mode</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;host&quot; </span><span style="color:#616e88;"># enable connection to host vpn
+</span><span>    </span><span style="color:#8fbcbb;">user</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;1000:1000&quot;
+</span><span>    </span><span style="color:#8fbcbb;">container_name</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">watchstate
+</span><span>    </span><span style="color:#8fbcbb;">restart</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">unless-stopped
+</span><span>    </span><span style="color:#8fbcbb;">environment</span><span style="color:#eceff4;">:
+</span><span>      - </span><span style="color:#a3be8c;">WS_TZ=Australia/Melbourne
+</span><span>    </span><span style="color:#8fbcbb;">ports</span><span style="color:#eceff4;">:
+</span><span>      - </span><span style="color:#a3be8c;">&quot;8001:8080&quot; </span><span style="color:#616e88;"># avoid clashing with other service on 8080
+</span><span>    </span><span style="color:#8fbcbb;">volumes</span><span style="color:#eceff4;">:
+</span><span>      - </span><span style="color:#a3be8c;">./data:/config:rw </span><span style="color:#616e88;"># mount current directory to container /config directory.
+</span></code></pre>
+<p>Following this I created a <code>data</code> folder (passed as a volume to container) in the same
+directory with: <code>mkdir -p data</code></p>
+<p>Finally I started the container by running:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># install docker-compose for the current shell in NixOS
+</span><span style="color:#88c0d0;">nix</span><span> shell nixpkgs#docker-compose
+</span><span>
+</span><span style="color:#616e88;"># start the container in the background
+</span><span style="color:#88c0d0;">sudo</span><span> docker-compose up -d
+</span></code></pre>
+<h3 id="adding-backend">Adding Backend</h3>
+<p>With the container running I was then able to add a new backend. This refers to setting
+up the connection to a media service such as Plex or Jellyfin.</p>
+<p>This was done by running the following commands and completing the prompts:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">docker</span><span> exec -ti watchstate console config:add
+</span></code></pre>
+<p>You will need to extract a <a rel="noopener" target="_blank" href="https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/">Plex token</a> and retrieve
+you Jellyfin API as part of this setup:</p>
+<blockquote>
+<p>Go to Dashboard &gt; Advanced &gt; API keys &gt; then create new api keys</p>
+</blockquote>
+<p>The only issue I ran into was due to me being unfamiliar with the terminology.
+I wanted to sync my watch status from Plex to Jellyfin. According to Watchstate
+terminology this means I want to <code>import</code> my Plex watch state to the database
+and <code>export</code> the database state into Jellyfin.</p>
+<p>Once I understood this I was able to setup backends for both Plex and Jellyfin.</p>
+<h3 id="syncing-backends">Syncing Backends</h3>
+<p>With both backends configured I first exported my Plex state:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># I named my plex backend plex_media
+</span><span style="color:#88c0d0;">sudo</span><span> docker exec -ti watchstate console state:import -v -s plex_media
+</span></code></pre>
+<p>Then finally I export the database state to Jellyfin, following initial instructions
+to forcibly sync the initial export:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;"># I named my jellyfin backend jellyfin_media
+</span><span style="color:#88c0d0;">sudo</span><span> docker exec -ti watchstate console state:import -vvifs jellyfin_media
+</span></code></pre>
+<p>Following this I checked Jellyfin and sure enough, everything was in sync!</p>
+<h3 id="scheduling-regular-sync">Scheduling Regular Sync</h3>
+<p>The project mentioned the option of setting up cron jobs for regular syncing
+ongoing. I chose not to implement this, as I am happy to manage this manually
+myself. I'll evaluate Jellyfin as a replacement to Plex and stick with one or
+the other.</p>
+<p>Should I decide to run this services long-term then I'd create a NixOS module for it.</p>
+<p>If you decide to schedule syncing its just a matter of setting the following
+environment variable in <code>docker-compose.yml</code>: <code>WS_CRON_IMPORT=1</code> and <code>WS_CRON_EXPORT=1</code></p>
+
+        </div>
+
+        
+        <div class="pagination">
+            <div class="pagination__title">
+                <span class="pagination__title-h">other posts</span>
+                <hr />
+            </div>
+            <div class="pagination__buttons">
+                    <span class="button previous">
+                        <a href="https://mich-murphy.com/nixos-minecraft-server/">
+                            <span class="button__icon">←</span>&nbsp;
+                            <span class="button__text">Configuring a Minecraft Server Using NixOS</span>
+                        </a>
+                    </span>
+                
+                </div>
+        </div>
+    
+    </div>
+
+    </div>
+
+    
+<footer class="footer">
+    <div class="footer__inner">
+            <div class="copyright">
+                    <span>© 
+    2024
+ Michael Murphy</span>
+                <span class="copyright-theme">
+                    <span class="copyright-theme-sep">| </span>
+                    Source code is available on <a href="https://github.com/mich-murphy/micha.elmurphy.com">GitHub</a>
+                </span>
+            </div>
+        </div>
+</footer>
+
+
+</div>
+</body>
+
+</html>

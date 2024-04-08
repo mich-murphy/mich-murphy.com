@@ -72,6 +72,10 @@
         <lastmod>2022-11-29</lastmod>
     </url>
     <url>
+        <loc>https://mich-murphy.com/syncing-plex-watch-state/</loc>
+        <lastmod>2024-04-08</lastmod>
+    </url>
+    <url>
         <loc>https://mich-murphy.com/systemd-services-and-timers-nixos/</loc>
         <lastmod>2023-01-12</lastmod>
     </url>
@@ -109,6 +113,9 @@
         <loc>https://mich-murphy.com/tags/impermanence/</loc>
     </url>
     <url>
+        <loc>https://mich-murphy.com/tags/jellyfin/</loc>
+    </url>
+    <url>
         <loc>https://mich-murphy.com/tags/minecraft/</loc>
     </url>
     <url>
@@ -128,6 +135,9 @@
     </url>
     <url>
         <loc>https://mich-murphy.com/tags/nixos/</loc>
+    </url>
+    <url>
+        <loc>https://mich-murphy.com/tags/plex/</loc>
     </url>
     <url>
         <loc>https://mich-murphy.com/tags/postgresql/</loc>

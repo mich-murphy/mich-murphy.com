@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Michael Murphy - Blog - plex</title>
+	<subtitle>Documentation of personal projects covering topics such as data and technology</subtitle>
+	<link href="https://mich-murphy.com/tags/plex/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://mich-murphy.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2024-04-08T00:00:00+00:00</updated>
+	<id>https://mich-murphy.com/tags/plex/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Syncing Plex Watch State to Jellyfin</title>
+		<published>2024-04-08T00:00:00+00:00</published>
+		<updated>2024-04-08T00:00:00+00:00</updated>
+		<link rel="alternate" href="https://mich-murphy.com/syncing-plex-watch-state/" type="text/html"/>
+		<id>https://mich-murphy.com/syncing-plex-watch-state/</id>
+		<content type="html">&lt;p&gt;I have been using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;plex.tv&quot;&gt;Plex&lt;&#x2F;a&gt; to manage and serve the media on my homelab for the
+last few years. After recent &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.pcgamer.com&#x2F;self-hosted-media-app-starts-narcing-on-its-own-users-anime-and-x-rated-habits-with-an-opt-out-service-and-its-going-terribly&#x2F;&quot;&gt;worrying trends&lt;&#x2F;a&gt; have started to emerge on Plex I have started exploring a migration to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jellyfin.org&quot;&gt;Jellyfin&lt;&#x2F;a&gt; instead.&lt;&#x2F;p&gt;
+&lt;p&gt;In this post I&#x27;ll detail how I am syncing my watch state between both Plex and Jellyfin as I decide which one to stick with.&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h2 id=&quot;plex-services&quot;&gt;Plex Services&lt;&#x2F;h2&gt;
+&lt;p&gt;I currently use Plex for management of my media, which includes:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Movies&lt;&#x2F;li&gt;
+&lt;li&gt;TV&lt;&#x2F;li&gt;
+&lt;li&gt;Music - specifically &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.plex.tv&#x2F;plexamp&#x2F;&quot;&gt;Plexamp&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Audiobooks - utilising &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;djdembeck&#x2F;Audnexus.bundle&quot;&gt;audNexus&lt;&#x2F;a&gt; as my metadata provider&lt;&#x2F;li&gt;
+&lt;li&gt;YouTube&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;In addition to Plex, I setup &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tautulli.com&#x2F;&quot;&gt;Tautulli&lt;&#x2F;a&gt; for tracking server usage and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;overseerr.dev&#x2F;&quot;&gt;Overseerr&lt;&#x2F;a&gt; for managing media requests.&lt;&#x2F;p&gt;
+&lt;p&gt;Configuration for all of this is managed by NixOS - &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;main&#x2F;nixos&#x2F;modules&#x2F;media&#x2F;plex.nix&quot;&gt;as seen here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jellyfin-configuration&quot;&gt;Jellyfin Configuration&lt;&#x2F;h2&gt;
+&lt;p&gt;I run a much more simple setup when it comes to Jellyfin, with it managing:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Movies&lt;&#x2F;li&gt;
+&lt;li&gt;TV&lt;&#x2F;li&gt;
+&lt;li&gt;Music - I will look to switch to a different solution if this proves too basic&lt;&#x2F;li&gt;
+&lt;li&gt;YouTube&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;I manage audiobooks via &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.audiobookshelf.org&#x2F;&quot;&gt;Audiobookshelf&lt;&#x2F;a&gt; as a
+dedicated service, as it does a much better job than Plex at managing audiobook
+librarires.&lt;&#x2F;p&gt;
+&lt;p&gt;My Jellyfin configuration is also managed by NixOS and is &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;main&#x2F;nixos&#x2F;modules&#x2F;media&#x2F;jellyfin.nix&quot;&gt;available here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: the Jellyfin setup is a bit more involved when it comes to hardware transcoding
+I have included a few useful notes in my linked config with helpful resources.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;syncing-watch-status&quot;&gt;Syncing Watch Status&lt;&#x2F;h2&gt;
+&lt;p&gt;After doing some initial research I came across a project for this purpose aptly named &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;arabcoders&#x2F;watchstate&quot;&gt;watchstate&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;watchstatus-configuration&quot;&gt;Watchstatus Configuration&lt;&#x2F;h3&gt;
+&lt;p&gt;This was pretty easy to setup via &lt;code&gt;docker-compose&lt;&#x2F;code&gt;. I followed the instructions on GitHub and first created a
+&lt;code&gt;docker-compose.yml&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;watchstate&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ghcr.io&#x2F;arabcoders&#x2F;watchstate:latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;network_mode&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;host&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# enable connection to host vpn
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;1000:1000&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;container_name&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;watchstate
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;restart&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;unless-stopped
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;WS_TZ=Australia&#x2F;Melbourne
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;ports&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;8001:8080&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# avoid clashing with other service on 8080
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fbcbb;&quot;&gt;volumes&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eceff4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;data:&#x2F;config:rw &lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# mount current directory to container &#x2F;config directory.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Following this I created a &lt;code&gt;data&lt;&#x2F;code&gt; folder (passed as a volume to container) in the same
+directory with: &lt;code&gt;mkdir -p data&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Finally I started the container by running:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# install docker-compose for the current shell in NixOS
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;nix&lt;&#x2F;span&gt;&lt;span&gt; shell nixpkgs#docker-compose
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# start the container in the background
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; docker-compose up -d
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;adding-backend&quot;&gt;Adding Backend&lt;&#x2F;h3&gt;
+&lt;p&gt;With the container running I was then able to add a new backend. This refers to setting
+up the connection to a media service such as Plex or Jellyfin.&lt;&#x2F;p&gt;
+&lt;p&gt;This was done by running the following commands and completing the prompts:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; exec -ti watchstate console config:add
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You will need to extract a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.plex.tv&#x2F;articles&#x2F;204059436-finding-an-authentication-token-x-plex-token&#x2F;&quot;&gt;Plex token&lt;&#x2F;a&gt; and retrieve
+you Jellyfin API as part of this setup:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Go to Dashboard &amp;gt; Advanced &amp;gt; API keys &amp;gt; then create new api keys&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;The only issue I ran into was due to me being unfamiliar with the terminology.
+I wanted to sync my watch status from Plex to Jellyfin. According to Watchstate
+terminology this means I want to &lt;code&gt;import&lt;&#x2F;code&gt; my Plex watch state to the database
+and &lt;code&gt;export&lt;&#x2F;code&gt; the database state into Jellyfin.&lt;&#x2F;p&gt;
+&lt;p&gt;Once I understood this I was able to setup backends for both Plex and Jellyfin.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;syncing-backends&quot;&gt;Syncing Backends&lt;&#x2F;h3&gt;
+&lt;p&gt;With both backends configured I first exported my Plex state:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# I named my plex backend plex_media
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; docker exec -ti watchstate console state:import -v -s plex_media
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then finally I export the database state to Jellyfin, following initial instructions
+to forcibly sync the initial export:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2e3440;color:#d8dee9;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#616e88;&quot;&gt;# I named my jellyfin backend jellyfin_media
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#88c0d0;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; docker exec -ti watchstate console state:import -vvifs jellyfin_media
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Following this I checked Jellyfin and sure enough, everything was in sync!&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;scheduling-regular-sync&quot;&gt;Scheduling Regular Sync&lt;&#x2F;h3&gt;
+&lt;p&gt;The project mentioned the option of setting up cron jobs for regular syncing
+ongoing. I chose not to implement this, as I am happy to manage this manually
+myself. I&#x27;ll evaluate Jellyfin as a replacement to Plex and stick with one or
+the other.&lt;&#x2F;p&gt;
+&lt;p&gt;Should I decide to run this services long-term then I&#x27;d create a NixOS module for it.&lt;&#x2F;p&gt;
+&lt;p&gt;If you decide to schedule syncing its just a matter of setting the following
+environment variable in &lt;code&gt;docker-compose.yml&lt;&#x2F;code&gt;: &lt;code&gt;WS_CRON_IMPORT=1&lt;&#x2F;code&gt; and &lt;code&gt;WS_CRON_EXPORT=1&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>
