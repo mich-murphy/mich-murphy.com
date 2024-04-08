@@ -40,7 +40,7 @@ dedicated service, as it does a much better job than Plex at managing audiobook
 librarires.&lt;&#x2F;p&gt;
 &lt;p&gt;My Jellyfin configuration is also managed by NixOS and is &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mich-murphy&#x2F;nix-config&#x2F;blob&#x2F;main&#x2F;nixos&#x2F;modules&#x2F;media&#x2F;jellyfin.nix&quot;&gt;available here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: the Jellyfin setup is a bit more involved when it comes to hardware transcoding
+&lt;p&gt;&lt;strong&gt;Note&lt;&#x2F;strong&gt;: the Jellyfin setup is a bit more involved when it comes to hardware transcoding.
 I have included a few useful notes in my linked config with helpful resources.&lt;&#x2F;p&gt;
 &lt;&#x2F;blockquote&gt;
 &lt;h2 id=&quot;syncing-watch-status&quot;&gt;Syncing Watch Status&lt;&#x2F;h2&gt;
