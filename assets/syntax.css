@@ -1,0 +1,397 @@
+/* White (light) / White Night (dark) */
+/* Based on github.com/arthurwhite/white-theme-vscode */
+/* Foreground and background use CSS variables from original.css */
+/* that auto-switch between light and dark via prefers-color-scheme */
+
+/* Background */
+.bg {
+  color: var(--color-primary);
+  background-color: var(--color-code-bg);
+}
+/* PreWrapper */
+.chroma {
+  color: var(--color-primary);
+  background-color: var(--color-code-bg);
+}
+/* Error */
+.chroma .err {
+  color: var(--color-primary);
+}
+/* LineLink */
+.chroma .lnlinks {
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+}
+/* LineTableTD */
+.chroma .lntd {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+/* LineTable */
+.chroma .lntable {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+/* LineHighlight */
+.chroma .hl {
+  background-color: #f4f6fc;
+}
+/* LineNumbersTable */
+.chroma .lnt {
+  white-space: pre;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0 0.4em 0 0.4em;
+  color: #bec9d3;
+}
+/* LineNumbers */
+.chroma .ln {
+  white-space: pre;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0 0.4em 0 0.4em;
+  color: #bec9d3;
+}
+/* Line */
+.chroma .line {
+  display: flex;
+}
+/* Keyword */
+.chroma .k {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordConstant */
+.chroma .kc {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordDeclaration */
+.chroma .kd {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordNamespace */
+.chroma .kn {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordPseudo */
+.chroma .kp {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordReserved */
+.chroma .kr {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* KeywordType */
+.chroma .kt {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* Name */
+.chroma .n {
+  color: var(--color-primary);
+}
+/* NameAttribute */
+.chroma .na {
+  color: var(--color-primary);
+}
+/* NameClass */
+.chroma .nc {
+  color: var(--color-primary);
+}
+/* NameConstant */
+.chroma .no {
+  color: #6b7a88;
+}
+/* NameDecorator */
+.chroma .nd {
+  color: var(--color-primary);
+}
+/* NameEntity */
+.chroma .ni {
+  color: var(--color-primary);
+}
+/* NameException */
+.chroma .ne {
+  color: var(--color-primary);
+}
+/* NameLabel */
+.chroma .nl {
+  color: var(--color-primary);
+}
+/* NameNamespace */
+.chroma .nn {
+  color: var(--color-primary);
+}
+/* NameProperty */
+.chroma .py {
+  color: var(--color-primary);
+}
+/* NameTag */
+.chroma .nt {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* NameBuiltin */
+.chroma .nb {
+  color: var(--color-primary);
+}
+/* NameBuiltinPseudo */
+.chroma .bp {
+  color: var(--color-primary);
+}
+/* NameVariable */
+.chroma .nv {
+  color: var(--color-primary);
+}
+/* NameVariableClass */
+.chroma .vc {
+  color: var(--color-primary);
+}
+/* NameVariableGlobal */
+.chroma .vg {
+  color: var(--color-primary);
+}
+/* NameVariableInstance */
+.chroma .vi {
+  color: var(--color-primary);
+}
+/* NameVariableMagic */
+.chroma .vm {
+  color: var(--color-primary);
+}
+/* NameFunction */
+.chroma .nf {
+  color: var(--color-primary);
+}
+/* NameFunctionMagic */
+.chroma .fm {
+  color: var(--color-primary);
+}
+/* Literal */
+.chroma .l {
+  color: #6b7a88;
+}
+/* LiteralDate */
+.chroma .ld {
+  color: #6b7a88;
+}
+/* LiteralString */
+.chroma .s {
+  color: #6b7a88;
+}
+/* LiteralStringAffix */
+.chroma .sa {
+  color: #6b7a88;
+}
+/* LiteralStringBacktick */
+.chroma .sb {
+  color: #6b7a88;
+}
+/* LiteralStringChar */
+.chroma .sc {
+  color: #6b7a88;
+}
+/* LiteralStringDelimiter */
+.chroma .dl {
+  color: var(--color-primary);
+}
+/* LiteralStringDoc */
+.chroma .sd {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* LiteralStringDouble */
+.chroma .s2 {
+  color: #6b7a88;
+}
+/* LiteralStringEscape */
+.chroma .se {
+  color: var(--color-primary);
+}
+/* LiteralStringHeredoc */
+.chroma .sh {
+  color: #6b7a88;
+}
+/* LiteralStringInterpol */
+.chroma .si {
+  color: var(--color-primary);
+}
+/* LiteralStringOther */
+.chroma .sx {
+  color: #6b7a88;
+}
+/* LiteralStringRegex */
+.chroma .sr {
+  color: #6b7a88;
+}
+/* LiteralStringSingle */
+.chroma .s1 {
+  color: #6b7a88;
+}
+/* LiteralStringSymbol */
+.chroma .ss {
+  color: #6b7a88;
+}
+/* LiteralNumber */
+.chroma .m {
+  color: #6b7a88;
+}
+/* LiteralNumberBin */
+.chroma .mb {
+  color: #6b7a88;
+}
+/* LiteralNumberFloat */
+.chroma .mf {
+  color: #6b7a88;
+}
+/* LiteralNumberHex */
+.chroma .mh {
+  color: #6b7a88;
+}
+/* LiteralNumberInteger */
+.chroma .mi {
+  color: #6b7a88;
+}
+/* LiteralNumberIntegerLong */
+.chroma .il {
+  color: #6b7a88;
+}
+/* LiteralNumberOct */
+.chroma .mo {
+  color: #6b7a88;
+}
+/* Operator */
+.chroma .o {
+  color: var(--color-primary);
+}
+/* OperatorWord */
+.chroma .ow {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* Punctuation */
+.chroma .p {
+  color: var(--color-primary);
+}
+/* Comment */
+.chroma .c {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentHashbang */
+.chroma .ch {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentMultiline */
+.chroma .cm {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentSingle */
+.chroma .c1 {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentSpecial */
+.chroma .cs {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentPreproc */
+.chroma .cp {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* CommentPreprocFile */
+.chroma .cpf {
+  color: #bec9d3;
+  font-style: italic;
+}
+/* GenericDeleted */
+.chroma .gd {
+  color: #6b7a88;
+}
+/* GenericEmph */
+.chroma .ge {
+  font-style: italic;
+}
+/* GenericInserted */
+.chroma .gi {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+/* GenericStrong */
+.chroma .gs {
+  font-weight: bold;
+}
+/* GenericSubheading */
+.chroma .gu {
+  color: #6b7a88;
+  font-weight: bold;
+}
+
+/* Dark overrides for theme-specific mid-tones only */
+/* Foreground/background handled by CSS variables above */
+
+@media (prefers-color-scheme: dark) {
+  .chroma .hl {
+    background-color: #2a2a2a;
+  }
+  .chroma .lnt {
+    color: #505058;
+  }
+  .chroma .ln {
+    color: #505058;
+  }
+  .chroma .no {
+    color: #908a7e;
+  }
+  .chroma .l,
+  .chroma .ld,
+  .chroma .s,
+  .chroma .sa,
+  .chroma .sb,
+  .chroma .sc,
+  .chroma .s2,
+  .chroma .sh,
+  .chroma .sx,
+  .chroma .sr,
+  .chroma .s1,
+  .chroma .ss,
+  .chroma .m,
+  .chroma .mb,
+  .chroma .mf,
+  .chroma .mh,
+  .chroma .mi,
+  .chroma .il,
+  .chroma .mo,
+  .chroma .gd,
+  .chroma .gu {
+    color: #908a7e;
+  }
+  .chroma .sd {
+    color: #605c54;
+  }
+  .chroma .c,
+  .chroma .ch,
+  .chroma .cm,
+  .chroma .c1,
+  .chroma .cs,
+  .chroma .cp,
+  .chroma .cpf {
+    color: #605c54;
+  }
+}

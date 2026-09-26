@@ -1,0 +1,7 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+{{ .Content }} {{ if eq .Page.Title "About" }}
+<form action="https://github.com/mich-murphy">
+  <button type="submit" formtarget="_blank">GitHub</button>
+</form>
+{{ end }} {{ end }}
