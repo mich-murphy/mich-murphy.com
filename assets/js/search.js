@@ -14,7 +14,7 @@
 //   under it and links to its section.
 // - Each menu choice counts the posts the list would show with it instead, and one that would show none is off.
 // - / focuses the box, down moves to the first result and Enter opens it. Esc closes an open menu, or clears the
-//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone.
+//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone, once typing pauses.
 const $ = (s, e = document) => e.querySelector(s);
 const $$ = (s, e = document) => [...e.querySelectorAll(s)];
 const box = $("search");
@@ -137,15 +137,23 @@ const load = () =>
     })
     .catch(() => (P = 0)));
 
+// the address, once typing pauses: WebKit throws after 100 changes in 10 seconds, and Chrome drops them, so the list
+// doesn't wait on it
+let tu;
 const url = () => {
-  const w = inp.value.trim();
-  const q = [...T.map((t) => "#" + t), Y, w].filter((x) => x).join(" ");
-  history.replaceState(null, "", location.pathname + (T[0] && !T[1] && !Y && !w ? "#" + T[0] : q && "?" + new URLSearchParams({ q })));
+  clearTimeout(tu);
+  tu = setTimeout(() => {
+    const w = inp.value.trim();
+    const q = [...T.map((t) => "#" + t), Y, w].filter((x) => x).join(" ");
+    try {
+      history.replaceState(null, "", location.pathname + (T[0] && !T[1] && !Y && !w ? "#" + T[0] : q && "?" + new URLSearchParams({ q })));
+    } catch {}
+  }, 300);
 };
 
 const go = () => {
-  url();
   load().then(draw);
+  url();
 };
 
 // a tag or year typed in full, then a space, leaves the box for its menu
