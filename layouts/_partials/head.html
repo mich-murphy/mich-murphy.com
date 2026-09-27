@@ -10,7 +10,8 @@
 <link rel="icon" href="/images/favicon.png">
 {{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
 {{- $names := slice "main" }}
-{{- /* Later files go here by page type, e.g. {{ if .IsPage }}{{ $names = $names | append "post" }}{{ end }} */}}
+{{- /* index.css styles the intro and the Posts card */}}
+{{- if .IsHome }}{{ $names = $names | append "index" }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}
   {{- $files = $files | append (resources.Get (printf "css/%s.css" .)) }}

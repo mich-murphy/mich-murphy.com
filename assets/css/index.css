@@ -1,0 +1,23 @@
+/* home's intro, and the Posts card (posts-card.html) on any page that shows it */
+.intro{max-width:64ch}
+
+/* one row per post: the title, then the date in mute at the right, with dotted rules between rows */
+.tcard{margin-top:32px}
+.tcard .frame{padding:12px 18px 4px}
+.tcard ol{margin:0;padding:0;list-style:none}
+.tr{display:grid;grid-template-columns:minmax(0,1fr) 11ch;gap:4px 2ch;align-items:baseline;padding-block:8px}
+.tcard .tr+.tr{border-top:1px dotted var(--edge)}
+.tr .d{color:var(--mute);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
+/* a word longer than the row, like an option path, breaks rather than run out of the card */
+.tr .t{overflow-wrap:anywhere}
+/* titles don't invert, and are underlined only while their row is hovered */
+.tcard .tr .t a{text-decoration:none}
+.tcard .tr .t a:hover{background:none;color:inherit}
+.tcard .tr:hover .t a{text-decoration:underline 1px;text-underline-offset:3px}
+
+/* phones: the date goes under its title */
+@media (max-width:600px){
+  .tcard .frame{padding-inline:12px}
+  .tr{grid-template-columns:minmax(0,1fr)}
+  .tr .d{text-align:left}
+}
