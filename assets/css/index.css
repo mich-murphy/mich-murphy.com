@@ -25,14 +25,16 @@ search[hidden],.tr[hidden]{display:none}
    clears it, and so is its choice, or all while it isn't set. filters.css does the same without the script */
 .ff{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 2.5ch;margin:9px 0 11px;font-size:13.5px;line-height:1.6}
 .ff .k{color:var(--mute)}
-.fr{display:flex}
+/* a value too long for its row, like three tags typed at 390px, ellipsises and keeps the × in view */
+.fr{display:flex;max-width:100%}
+.fmn{min-width:0}
 .fmn>summary{display:flex;align-items:baseline;gap:1ch;border:1px solid var(--edge);padding:0 1ch;list-style:none;cursor:pointer;white-space:nowrap}
 .fmn>summary::-webkit-details-marker{display:none}
 /* a 7x4 triangle, which flips while the menu is open */
 .fmn>summary::after{content:"";align-self:center;width:7px;height:4px;background:currentColor;clip-path:polygon(0 0,100% 0,50% 100%)}
 .fmn[open]>summary::after{transform:scaleY(-1)}
 .fmn>summary:hover,.fmn[open]>summary{border-color:var(--fg)}
-.fmn b{font-weight:400}
+.fmn b{font-weight:400;overflow:hidden;text-overflow:ellipsis}
 .fmn b:empty::before{content:"all"}
 .dx{display:none;border:1px solid var(--fg);border-left-color:var(--bg);padding:0 .9ch;background:var(--fg);color:var(--bg);text-decoration:none}
 .dx:hover{background:var(--bg);color:var(--fg)}
