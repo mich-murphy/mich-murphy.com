@@ -1,0 +1,25 @@
+# Highlighted projects, for the Projects card on About
+[[project]]
+name = "Home Infra"
+url = "https://github.com/mich-murphy/home-infra"
+desc = "Homelab infrastructure managed by Terraform, Ansible and Kubernetes"
+
+[[project]]
+name = "Nix Config"
+url = "https://github.com/mich-murphy/nix-config"
+desc = "My personal MacOS configuration automated using Nix"
+
+[[project]]
+name = "i3 Dotfiles"
+url = "https://github.com/mich-murphy/i3-dotfiles"
+desc = "My Arch Linux dotfiles including automated deployment using Ansible"
+
+[[project]]
+name = "DWM Dotfiles"
+url = "https://github.com/mich-murphy/dwm-dotfiles"
+desc = "Same as above only with DWM as my window manager instead of i3"
+
+[[project]]
+name = "Blog"
+url = "https://github.com/mich-murphy/mich-murphy.com"
+desc = "Hugo static website built and deployed via Github"
