@@ -39,7 +39,7 @@ These are for the user. None blocks M1; each can be answered when its milestone 
 
 The lab's CSS is the reference implementation. It contains every option that was explored, so only the selectors that match the final picks below apply. Everything under `.site` in the lab is the site. Everything outside it is lab chrome. The rev 7 picks are baked into those selectors rather than added as switches.
 
-None of `docs/design/` is committed yet (it is untracked). The lab's saved-state key is `mm-theme-lab-rev15-picked`, so a browser that saved rev 15's recommendations opens on the picks. The lab sources for the mark and rail labs lived in a session scratchpad and are gone; the self-contained HTML copies in `docs/design/` hold all their CSS and data.
+`docs/design/` is committed (`f4e7b18`, on `main` and `theme`). After editing `theme-lab.src.html`, rerun `build-lab.py` and commit both files. The lab's saved-state key is `mm-theme-lab-rev15-picked`, so a browser that saved rev 15's recommendations opens on the picks. The lab sources for the mark and rail labs lived in a session scratchpad and are gone; the self-contained HTML copies in `docs/design/` hold all their CSS and data.
 
 ## Final picks
 
