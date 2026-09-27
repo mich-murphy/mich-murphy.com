@@ -176,10 +176,12 @@ const off = (follow) => {
   if (follow && f) location.hash = f;
 };
 
-// the index, once: each post keeps its row. If it doesn't load, there's no second try. A pick made meanwhile is
-// followed only when the server answered badly, with a SyntaxError: JSON that doesn't parse, which WebKit throws as a
-// DOMException of that name, or a bad status, thrown as one. When the request itself fails, even partway through the
-// body, as WebKit's does when the page is left while it loads, nothing is, since setting the fragment cancels leaving
+// the index, once: each post keeps its row. When it has loaded, the box shows if it's still hidden, or else the list
+// is drawn, once, however many changes waited for it. If it doesn't load, there's no second try. A pick made meanwhile
+// is followed only when the server answered badly, with a SyntaxError: JSON that doesn't parse, which WebKit throws as
+// a DOMException of that name, or a bad status, thrown as one. When the request itself fails, even partway through
+// the body, as WebKit's does when the page is left while it loads, nothing is, since setting the fragment cancels
+// leaving
 const load = () =>
   (P ||= fetch("/index.json")
     .then((r) => {
@@ -189,12 +191,13 @@ const load = () =>
     .then((d) => {
       D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
     })
-    .catch((e) => off(e.name == "SyntaxError")));
+    .catch((e) => off(e.name == "SyntaxError"))
+    .then(() => D && (box.hidden ? show() : draw())));
 
 // the menus show a change at once, and the list once the index has loaded
 const go = () => {
   draw();
-  D || load().then(() => box.hidden || draw());
+  load();
   url();
 };
 
@@ -292,4 +295,4 @@ const show = () => {
   draw();
 };
 hash();
-q || T[0] || Y ? load().then(() => D && show()) : show();
+q || T[0] || Y ? load() : show();
