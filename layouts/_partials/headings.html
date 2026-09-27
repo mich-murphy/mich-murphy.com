@@ -1,13 +1,15 @@
-{{- /* A page's headings in document order, as a list of dicts: id, level and title. The status line uses it, and so can
-  the search index. .Fragments.Identifiers is sorted, so it walks .Fragments.Headings instead, a tree: posts start at
-  h2, so its top level is one placeholder with no id, the h2s under it and the h3s under those. A heading without an
-  id is skipped, and its children still count. Hugo gives each title as HTML, so & comes as &amp;; title is plain
-  text, which a template escapes once. Call it with a page, or with a list of headings as it does for each level */}}
+{{- /* A page's h2 and h3 headings in document order, as a list of dicts: id, level and title. The status line uses it,
+  and so can the search index. .Fragments.Identifiers is sorted, so it walks .Fragments.Headings instead, a tree: posts
+  start at h2, so its top level is one placeholder with no id, the h2s under it and the h3s under those. A heading
+  without an id, or at another level, is skipped, and its children still count. Hugo gives each title as HTML, so &
+  comes as &amp;; title is plain text, which a template escapes once. Call it with a page, or with a list of headings
+  as it does for each level */}}
 {{- $hs := . }}
 {{- if not (reflect.IsSlice .) }}{{ $hs = .Fragments.Headings }}{{ end }}
 {{- $out := slice }}
 {{- range $hs }}
-  {{- if .ID }}{{ $out = $out | append (dict "id" .ID "level" .Level "title" (.Title | plainify | htmlUnescape)) }}{{ end }}
+  {{- /* no h4 and below, so for search a line under an h4 maps to the nearest h2 or h3 before it */}}
+  {{- if and .ID (ge .Level 2) (le .Level 3) }}{{ $out = $out | append (dict "id" .ID "level" .Level "title" (.Title | plainify | htmlUnescape)) }}{{ end }}
   {{- with .Headings }}{{ $out = $out | append (partial "headings.html" .) }}{{ end }}
 {{- end }}
 {{- return $out }}
