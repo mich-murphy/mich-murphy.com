@@ -15,13 +15,16 @@
   {{- $k := index . 0 }}
   {{- $name := index . 1 }}
 <div class="fr fr-{{ $k }}"><details class="fmn" name="ff"><summary><span class="k">{{ $name }}:</span><b></b></summary><div class="fpop" role="group" aria-label="Filter by {{ $name }}"><span class="fo"><a href="#all" class="fb all">all</a>
-  {{- range where $fs "k" $k }}<a href="{{ print "#" .id | safeURL }}" class="fb" data-f="{{ .id }}">{{ .v }}<span class="n">{{ .n }}</span></a>{{ end -}}
+  {{- range where $fs "k" $k }}<a href="{{ print "#" .id | safeURL }}" class="fb" data-f="{{ .id }}"><span>{{ .v }}</span><span class="n">{{ .n }}</span></a>{{ end -}}
 </span></div></details><a href="#all" class="dx" aria-label="Clear the {{ $name }} filter">×</a></div>
 {{- end }}
 </div>
 </div></div>
 {{ partial "posts-card.html" . }}
-{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page), inlined and minified */}}
+{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page), inlined and minified. It loads
+  /index.json, home's JSON output, so the build fails without it there */}}
+{{- $json := .OutputFormats.Get "json" }}
+{{- if or (not $json) (ne $json.RelPermalink "/index.json") }}{{ errorf "search loads /index.json: keep json in outputs.home, and at /index.json" }}{{ end }}
 {{- with resources.Get "js/search.js" | js.Build (dict "minify" true) }}
 <script>{{ .Content | safeJS }}</script>
 {{- end }}
