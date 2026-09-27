@@ -11,6 +11,8 @@ CI runs `scripts/postbuild.sh` after every build. It writes each page's gzipped 
 
 Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
 
+The search on the index reads `/index.json`, which the build writes from each post's Markdown source. It gives each `##` and `###` line the next heading id Hugo found, so write headings with `#`s: a post whose source and Hugo count a different number of them fails the build. A tag can't be called `all` or `main`, or look like `y2023`, since the index already uses those ids.
+
 ## Updated dates
 Each post ends with a colophon that shows when the post was last updated and by which commit, taken from its git history. A commit that only reformats or moves posts shouldn't count as an update: end its message with a `Bulk: true` trailer, or add its hash (7 characters or more) to `bulkCommits` in `hugo.toml`. If every commit to a post since the move from Zola is a bulk one, the colophon shows the post's last Zola-era commit, from `data/origin.toml`.
 
