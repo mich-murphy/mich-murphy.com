@@ -14,7 +14,8 @@
 //   under it and links to its section.
 // - Each menu choice counts the posts the list would show with it instead, and one that would show none is off.
 // - / focuses the box, down moves to the first result and Enter opens it. Esc closes an open menu, or clears the
-//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone, once typing pauses.
+//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone, once typing pauses, and a
+//   fragment typed into it sets the menus as following a menu's link to it would.
 const $ = (s, e = document) => e.querySelector(s);
 const $$ = (s, e = document) => [...e.querySelectorAll(s)];
 const box = $("search");
@@ -28,10 +29,11 @@ const rows = $$(".tr", ol);
 const n = rows.length;
 const dets = $$(".fmn");
 const none = Object.assign(document.createElement("p"), { className: "none", hidden: true, textContent: "No post matches." });
-// each menu entry as [link, whether it's a year, value]; all has none
+// each menu entry as [link, whether it's a year, value, the id it goes to]: all has no value, and the id all
 const E = $$(".fpop a").map((a) => {
+  const f = decodeURIComponent(a.hash.slice(1));
   const y = !!a.closest(".fr-y");
-  return [a, y, a.matches(".all") ? "" : decodeURIComponent(a.hash.slice(y ? 2 : 1))];
+  return [a, y, a.matches(".all") ? "" : y ? f.slice(1) : f, f];
 });
 // the scores of prose, heading and code lines
 const KIND = [10, 20, 5];
@@ -174,6 +176,22 @@ const go = () => {
   url();
 };
 
+// the filter the address's fragment names, as following a menu's link to it would set it: a tag, a year, or neither
+// for #all. Another fragment, like #main, leaves them as they are. Both are compared decoded, since a meta refresh
+// lands on %C3%A9 for é where the menus' links have %c3%a9
+const hash = () => {
+  let h = location.hash.slice(1);
+  try {
+    h = decodeURIComponent(h);
+  } catch {}
+  const e = E.find((x) => x[3] == h);
+  if (e) {
+    T = e[1] || !e[2] ? [] : [e[2]];
+    Y = e[1] ? e[2] : "";
+  }
+  return e;
+};
+
 // a tag or year typed in full, then a space, leaves the box for its menu
 const lift = (s) =>
   s
@@ -224,22 +242,27 @@ addEventListener("keydown", (e) => {
     e.preventDefault();
   } else if (t == inp) {
     if (e.key == "ArrowDown" && f) e.preventDefault(), f.focus();
-    if (e.key == "Enter" && f) f.click();
-  } else if (e.key == "/") {
+    // not while an IME is composing, where Enter takes a word, which Safari says with keyCode 229
+    if (e.key == "Enter" && f && !e.isComposing && e.keyCode != 229) f.click();
+  } else if (e.key == "/" && !box.hidden && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault();
     inp.focus();
   }
 });
 
-// an address with #nixos, #y2023 or ?q= opens with them set, once the index has loaded; until then, filters.css
-// keeps filtering by the fragment
+// a fragment typed into the address, while the box shows
+addEventListener("hashchange", () => box.hidden || (hash() && go()));
+
+// an address with #nixos, #y2023 or ?q= opens with them set, once the index has loaded. Until then, filters.css keeps
+// filtering by the fragment, and the menus' links change it, so it's read again when the box shows
 ol.after(none);
-for (const [a, y, v] of E) if (v && a.hash == location.hash) y ? (Y = v) : (T = [v]);
 const q = new URLSearchParams(location.search).get("q");
-if (q) inp.value = lift(q + " ").trimEnd();
 const show = () => {
+  hash();
+  if (q) inp.value = lift(q + " ").trimEnd();
   box.hidden = false;
   lg.textContent = "Search";
   draw();
 };
+hash();
 q || T[0] || Y ? load().then(() => D && show()) : show();
