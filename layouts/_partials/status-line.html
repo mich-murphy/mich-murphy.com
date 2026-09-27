@@ -3,8 +3,9 @@
   post title, or in Chrome the current section as h2 › h3 from a stack of anchors, one per heading, of which only the
   current one shows; then the percentage read and the minutes left, from the reading time. The head's anchor comes
   first in both lists, empty and hidden in Contents, so Chrome marks nothing and shows the title until the first
-  heading. Only the Contents links are for keyboards and screen readers; role=list keeps Contents a list in WebKit,
-  which drops the role from a list without markers. Styles are in post.css */}}
+  heading. Only the Contents links are for keyboards, screen readers and the pointer; role=list keeps Contents a list
+  in WebKit, which drops the role from a list without markers. On touch, a tap focuses .stat-where (tabindex=-1, so no
+  tab stop), which opens the box. Styles are in post.css */}}
 {{- $hs := partial "headings.html" . }}
 {{- if ge (len $hs) 2 }}
 <nav class="stat" aria-label="Contents">
@@ -12,7 +13,7 @@
 <ol class="clist" role="list"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
 {{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
 </div></div></div>
-<div class="stat-bar"><div class="stat-where"><span class="stat-title">{{ .Title }}</span>
+<div class="stat-bar"><div class="stat-where" tabindex="-1"><span class="stat-title">{{ .Title }}</span>
 <ol class="stat-cur" aria-hidden="true"><li class="sl-hd"><a href="#top" tabindex="-1">{{ .Title }}</a></li>
 {{- $h2 := "" }}
 {{- range $hs }}
