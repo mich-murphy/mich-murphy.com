@@ -85,4 +85,5 @@ main:focus{outline:none}
   .hd nav a[aria-current]{text-decoration:underline}
   .mark .b{fill:Canvas}
 }
-/* reduced motion: nothing animates yet; the Contents box and the progress rule will scope their own prefers-reduced-motion rules */
+/* reduced motion: nothing here animates. Components scope their own rules: the Contents box's fade is off (post.css),
+   and the status line's progress rule stays, because it only moves as the page scrolls */

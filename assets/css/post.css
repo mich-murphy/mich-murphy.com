@@ -1,5 +1,6 @@
-/* the post head and the prose (page.html), callouts (render-blockquote.html), code windows (render-codeblock.html)
-   and the colophon (colophon.html). Only the colophon is post-specific, so About and Feeds can reuse the rest */
+/* the post head and the prose (page.html), callouts (render-blockquote.html), code windows (render-codeblock.html),
+   the colophon (colophon.html) and the status line (status-line.html). Only the last two are post-specific, so About
+   and Feeds can reuse the rest */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -81,7 +82,72 @@
   .colo .hist{grid-column:2/-1;text-align:left}
 }
 
-/* forced colours drop backgrounds, and the squares are backgrounds */
+/* the status line (status-line.html): the header's ruled strip, fixed to the bottom of the window at every width,
+   on the 820px wrap. It shows the post title, or the current section (h2 › h3) with the 7px square, then how far
+   through and the minutes left, and its 2px top rule fills as you read. The page ends 40px lower, about the strip's
+   height, so the strip never covers the footer, and focus scrolls clear of it */
+.stat{position:fixed;left:0;right:0;bottom:0;z-index:20}
+body:has(.stat){padding-bottom:40px}
+:root:has(.stat){scroll-padding-bottom:40px}
+.stat-bar{position:relative;display:flex;align-items:center;gap:16px;background:var(--bg);border-top:2px solid var(--edge);padding:8px max(16px,calc((100% - 772px) / 2));font-size:12px;color:var(--mute)}
+.stat-where{flex:1;display:grid;min-width:0}
+.stat-where>*{grid-area:1/1;min-width:0}
+.stat-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-cur,.clist{margin:0;padding:0;list-style:none}
+/* one anchor per heading, stacked, and only the current one shows. The head's anchor reads as the title */
+.stat-cur{display:grid;scroll-target-group:auto}
+.stat-cur li{grid-area:1/1;min-width:0;opacity:0;pointer-events:none}
+.stat-cur a{display:block;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-cur a::before{content:"";display:inline-block;width:7px;height:7px;background:var(--fg);margin-right:1ch;vertical-align:1px}
+.stat-cur .sl-hd a{color:var(--mute)}
+.stat-cur .sl-hd a::before{content:none}
+/* the current section comes from :target-current (Chrome and Edge 140+). Its rules stay on their own, because a
+   browser that doesn't know it drops the whole rule; there the title shows and Contents marks nothing */
+.stat-cur li:has(>a:target-current){opacity:1;pointer-events:auto}
+.stat-where:has(a:target-current) .stat-title{opacity:0}
+.stat-num{display:none;flex:none;font-variant-numeric:tabular-nums}
+.stat-num .sep{padding-inline:.6ch}
+.stat-prog{position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--fg);transform-origin:0 50%;transform:scaleX(0)}
+/* the percentage, the minutes left and the rule follow the page's scroll (Chrome and Edge 115+, Safari 26+).
+   Without scroll timelines (Firefox) the numbers would stay at 0% and the whole reading time, so they only show
+   where they move. calc() makes Safari round the animated value; without it the counter reads 0 */
+@property --pct{syntax:"<integer>";inherits:false;initial-value:0}
+@property --left{syntax:"<integer>";inherits:false;initial-value:0}
+@supports (animation-timeline:scroll()){
+  .stat-num{display:block}
+  .stat-pct{counter-reset:pct calc(var(--pct));animation:statpct linear both;animation-timeline:scroll(root)}
+  .stat-pct::after{content:counter(pct) "%"}
+  .stat-left{counter-reset:left calc(var(--left));animation:statleft linear both;animation-timeline:scroll(root)}
+  .stat-left::after{content:counter(left) " min left"}
+  .stat-prog{animation:statprog linear both;animation-timeline:scroll(root)}
+}
+@keyframes statprog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes statpct{from{--pct:0}to{--pct:100}}
+/* status-line.html sets --min on .stat-left to the post's reading time */
+@keyframes statleft{from{--left:var(--min)}to{--left:0}}
+
+/* the Contents box opens upward from the strip: the label, a heavy frame, no dither. It's hidden with opacity, not
+   visibility, so its links stay focusable and focusing one opens it. A long list scrolls inside the window */
+.stat-pop{position:absolute;bottom:100%;left:max(16px,calc((100% - 772px) / 2));width:min(calc(38ch + 36px),calc(100% - 32px));padding-bottom:14px;opacity:0;pointer-events:none;transition:opacity .12s}
+.stat:is(:hover,:focus-within) .stat-pop{opacity:1;pointer-events:auto}
+.pbox,.pbox>.frame{position:relative}
+.stat-pop .frame{max-height:calc(100vh - 80px);max-height:calc(100svh - 80px);overflow:auto;padding:18px 16px 8px;font-size:13.5px;line-height:1.45}
+.clist{scroll-target-group:auto}
+.clist li{position:relative;margin:0 0 .6em;padding-left:2.2ch}
+.clist .l3{padding-left:4.4ch}
+.clist a{text-decoration:none;color:var(--mute)}
+.clist li a:hover{background:var(--fg);color:var(--bg)}
+.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
+.clist a:target-current{color:var(--fg)}
+.clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:.45em;width:7px;height:7px;background:var(--fg)}
+.clist .l3:has(>a:target-current)::before{left:2.2ch}
+
+@media (prefers-reduced-motion:reduce){
+  .stat-pop{transition:none}
+}
+/* forced colours drop backgrounds, and the squares are backgrounds. The progress rule would turn into Canvas over the
+   strip's rule, so it takes Highlight, as a native progress bar does */
 @media (forced-colors:active){
-  .prose ul>li::before{background:CanvasText;forced-color-adjust:none}
+  .prose ul>li::before,.stat-cur a::before,.clist li::before{background:CanvasText;forced-color-adjust:none}
+  .stat-prog{background:Highlight;forced-color-adjust:none}
 }

@@ -1,10 +1,11 @@
 {{ define "main" }}
 {{- /* A post's head is its title, then date · reading time · tags, over a rule. Other pages (Feeds) get the title
   alone: post.css only loads on posts, so they have no rule and unstyled prose until M13/M14 give them their CSS.
-  The summary stays out of the page: the head partial uses it for the description. A post ends with its colophon */}}
+  The summary stays out of the page: the head partial uses it for the description. A post ends with its colophon.
+  The head's id is the status line's first anchor (status-line.html) */}}
 {{- $post := eq .Section "posts" }}
 <article>
-<header class="ph{{ if not $post }} bare{{ end }}">
+<header class="ph{{ if not $post }} bare{{ end }}" id="top">
 <h1>{{ .Title }}</h1>
 {{- if $post }}
 {{- /* a tag reads as its slug, decoded from the URL path so café isn't shown as caf%C3%A9 */}}
