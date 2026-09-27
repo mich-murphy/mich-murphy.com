@@ -8,9 +8,10 @@
 <header class="ph{{ if not $post }} bare{{ end }}" id="top">
 <h1>{{ .Title }}</h1>
 {{- if $post }}
-{{- /* a tag reads as its slug, decoded from the URL path so café isn't shown as caf%C3%A9 */}}
+{{- /* a tag reads as its slug, decoded from the URL path so café isn't shown as caf%C3%A9, and links to the index
+  filtered by it, /#<slug>, where search replaced the tag pages */}}
 <p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read
-  {{- with .GetTerms "tags" }} ·{{ range . }} <a href="{{ .RelPermalink }}">#{{ path.Base (urls.Parse .RelPermalink).Path }}</a>{{ end }}{{ end }}</p>
+  {{- with .GetTerms "tags" }} ·{{ range . }}{{ $s := path.Base (urls.Parse .RelPermalink).Path }} <a href="/#{{ $s }}">#{{ $s }}</a>{{ end }}{{ end }}</p>
 {{- end }}
 </header>
 {{- /* WebKit exposes a ul with list-style:none as a group, not a list, unless it has role=list. Goldmark writes
