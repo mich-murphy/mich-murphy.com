@@ -1,8 +1,8 @@
 {{- /* The Posts card: every post, newest first, as a row of its title and date. Each row carries its tags (data-t)
   as the slugs in their /tags/<slug>/ URLs, and its year (data-y), for filtering. It is the page's one dither, and its
-  styles are index.css */}}
+  styles are index.css. The ol has list-style:none, which WebKit exposes as a group unless it has role=list */}}
 {{- $posts := where site.RegularPages "Section" "posts" }}
-<div class="dz tcard idx"><span class="legend">Posts · <span class="lc">{{ len $posts }}</span></span><div class="frame"><ol>
+<div class="dz tcard idx"><span class="legend">Posts · <span class="lc">{{ len $posts }}</span></span><div class="frame"><ol role="list">
 {{- range $posts.ByDate.Reverse }}
 <li class="tr" data-t="{{ with .GetTerms "tags" }}{{ range $i, $t := . }}{{ if $i }} {{ end }}{{ path.Base $t.RelPermalink }}{{ end }}{{ end }}" data-y="{{ .Date.Year }}"><span class="t"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></span><span class="d">{{ .Date.Format "2006-01-02" }}</span></li>
 {{- end }}
