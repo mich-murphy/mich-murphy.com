@@ -1,5 +1,8 @@
-/* home's intro, the Search frame, and the Posts card (posts-card.html) on any page that shows it */
+/* home's intro, the Search frame, and the Posts card (posts-card.html), for home and 404, which shows the card under
+   its box (404.html) */
 .intro{max-width:64ch}
+/* 404's box opens the page, so it sits near the top. It's as wide as the card under it */
+main>.vh:first-child+.callout{margin-top:10px}
 
 /* Search: a plain frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the / key,
    which gives way to the 3/17 count while there's a query. The box needs the script, so it ships hidden; .sb is a flex
