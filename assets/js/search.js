@@ -133,17 +133,28 @@ const draw = () => {
 
 // the address, once typing pauses: WebKit throws after 100 changes in 10 seconds, and Chrome drops them, so the list
 // doesn't wait on it
-let tu;
+let tu = 0;
+const put = () => {
+  clearTimeout(tu);
+  tu = 0;
+  const w = inp.value.trim();
+  const q = [...T.map((t) => "#" + t), Y, w].filter((x) => x).join(" ");
+  try {
+    history.replaceState(null, "", location.pathname + (T[0] && !T[1] && !Y && !w ? "#" + T[0] : q && "?" + new URLSearchParams({ q })));
+  } catch {}
+};
 const url = () => {
   clearTimeout(tu);
-  tu = setTimeout(() => {
-    const w = inp.value.trim();
-    const q = [...T.map((t) => "#" + t), Y, w].filter((x) => x).join(" ");
-    try {
-      history.replaceState(null, "", location.pathname + (T[0] && !T[1] && !Y && !w ? "#" + T[0] : q && "?" + new URLSearchParams({ q })));
-    } catch {}
-  }, 300);
+  tu = setTimeout(put, 300);
 };
+
+// as the page is left, an update still pending is made, so Back returns to it. WebKit restores the page from its
+// back-forward cache with the list as it was, but resets the box, as it does any field with autocomplete off, in a
+// task after pageshow: the reset goes to the box's default value, so that's set to its words
+addEventListener("pagehide", () => {
+  if (tu) put();
+  inp.defaultValue = inp.value;
+});
 
 // without the index, the page goes back to working as it does without the script: the box hides, the frame is
 // labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. The address is
@@ -152,6 +163,7 @@ const url = () => {
 const off = (follow) => {
   if (box.hidden) return;
   clearTimeout(tu);
+  tu = 0;
   box.hidden = true;
   lg.textContent = "Filter";
   for (const [a] of E) attr(a, "aria-current");
