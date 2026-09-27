@@ -1,26 +1,148 @@
 # Theme redesign: handover
 
-Status as of 2026-09-27, rev 15, picked. The design is settled. The user picked `filt=menus pn=file` for rev 15, and the lab now opens on the full set of final picks (see "Final picks"). Baking the picks found one bug, in `menus` without a script, and the lab fixes it (Rev 15, "Found while baking"). M0 is done: the git state is settled and the build starts at M1 on the `theme` branch. Nothing has been built yet.
+Status as of 2026-09-28. The design is settled (rev 15, picked; see "Final picks"). **M1–M10 are built, reviewed and fixed. M11 has had two rounds of review fixes and is waiting on a third review.** Each milestone is on its own local branch, stacked in order on `theme`; see "Build progress". Nothing is pushed.
 
 ## Start here (next session)
 
-1. **Build** following "Build scope", starting at M1, on the `theme` branch, one milestone per PR against `theme`. The lab's CSS is the reference implementation, and only the selectors that match "Final picks" apply. Don't push `main` before launch: it deploys over the live Zola site.
-2. **Ask the open questions below** as their milestones come up.
+1. **Read "Build progress"** below. It has the branch stack, the M11 state, the changes from the spec made while building, and where the evidence and coordinator files are.
+2. **Finish M11.** Run a fresh review of `m11-search` (focus `f0fa3b5..42de225`) in Chrome, Firefox and WebKit, fix what it finds, and record the evidence.
+3. **Continue with M12–M18** the same way: implementer, then an independent reviewer, then a fixer, then checks and screenshots into `.evidence/mN/`. Each milestone branches from the previous one. The briefs are in `.evidence/coordinator/mN-scope.md`. The lab's CSS is the reference implementation, and only the selectors that match "Final picks" apply.
+4. **Don't push `main` before launch:** it deploys over the live Zola site. Pushing the other branches and opening PRs needs the user (see "Needs the user").
 
 To resume, paste this into a new session:
 
 ```
-continue from @docs/design/HANDOVER.md. Start M1.
+continue from @docs/design/HANDOVER.md. Finish M11, then continue with M12.
 ```
 
 ### Open questions
 
-These are for the user. None blocks M1; each can be answered when its milestone comes up.
-- **M8:** does the channel edit (`2a2721c`) go in `bulkCommits`, so the 3 posts keep their old `updated` dates, or count as an update? Recommended: bulk, because it only changes link parameters.
-- **About's bio** is the same two sentences as the home intro. Keep it, or write a longer one?
-- **M7:** does the code block after `backup-solutions-nixos`' second note go inside the callout or after it?
-- **M9:** does the status line's `nav` sit right after the header (recommended, so keyboard users reach Contents first) or after `main`?
-- **Scope:** social cards (M17) and print (M18) can follow launch. Confirm.
+These are for the user. The build took the recommended answer where one existed; "Build progress" lists the defaults taken and the new questions.
+- **M8:** does the channel edit (`2a2721c`) go in `bulkCommits`, so the 3 posts keep their old `updated` dates, or count as an update? Recommended: bulk, because it only changes link parameters. *Built as bulk.*
+- **About's bio** is the same two sentences as the home intro. Keep it, or write a longer one? *M13's brief keeps it.*
+- **M7:** does the code block after `backup-solutions-nixos`' second note go inside the callout or after it? *Built inside.*
+- **M9:** does the status line's `nav` sit right after the header (recommended, so keyboard users reach Contents first) or after `main`? *Built after the header.*
+- **Scope:** social cards (M17) and print (M18) can follow launch. Confirm. *Briefs written; they follow M16 on the stack.*
+
+## Build progress (2026-09-28)
+
+M1–M10 are built, reviewed and fixed. M11 is built and has had two rounds of review fixes; a third review is due (see "M11 state" below). M12–M18 are not started; their briefs are written. Nothing is pushed.
+
+### How the run worked
+- **Loop.** One milestone at a time: an implementer subagent, then an independent reviewer (fresh context, read-only), then a fixer for the accepted findings, then the coordinator's own checks and screenshots. M11's major findings also got a fresh re-reviewer.
+- **Evidence.** Per milestone in `.evidence/mN/`: `checks.txt`, `README.md` and screenshots in dark and light at 1280 and 390px. The implementers' and reviewers' own shots are in `.evidence/impl-mN/` and `.evidence/review-mN/`. `.evidence/` is git-excluded (`.git/info/exclude`) and local only.
+- **Tooling** (in `.evidence/`):
+  - `shoot.sh <label> <paths…>` builds, runs postbuild, serves, and screenshots dark and light at 1280 and 390.
+  - `serve.sh` builds and serves in the background (`PORT=…`).
+  - `cdp.mjs` drives headless Chrome over DevTools. It supports keys, typing, clicks, hover, scroll, eval, forced colours, print, PDF and no-JS, and prints the requests, console output and eval results.
+  - `common-checks.sh <label>` runs a strict build and postbuild, then checks every page for one `<style>`, one h1, no stylesheet link and no stray script, and prints the largest pages.
+- **Coordinator files** (in `.evidence/coordinator/`):
+  - `ledger.md` has every milestone's commits, review verdict and each finding's disposition.
+  - `implementer-preamble.md` and `reviewer-template.md` are the shared brief text.
+  - `mN-scope.md` is each milestone's scope and done-when list, M3–M18.
+  - `compose.py`, `compose-review.py` and `recompose.sh` assemble the briefs.
+  - `harness/` holds the reviewers' real-browser harnesses: `ffbidi.mjs`/`r11ff.mjs` (headless Firefox 156 over WebDriver BiDi), `wk`/`wk.swift`/`r11wk.swift` (WebKit, Safari 26.6, via an offscreen WKWebView), `f11serve.sh`/`rv11b-serve.sh` (a no-store server that can delay or drop `/index.json`) and `f11rapid.js` (the WebKit rapid-input repro).
+  - The templates and harnesses hard-code the old session's scratchpad path (`/private/tmp/claude-501/…/5b639c1e-…/scratchpad`). Replace it with the new session's before use.
+
+### Branches (stacked; each builds on the one before)
+
+| Milestone | Branch | Head | Review |
+|---|---|---|---|
+| M1 clear the ground, pin Hugo 0.166.0 | `m1-clear-ground` (on `theme`) | `d14c759` | pass with nits, fixed |
+| M2 shell, fonts, base CSS | `m2-shell` | `b3c97c1` | pass with nits, fixed |
+| M3 CI gates (`scripts/postbuild.sh`) | `m3-ci-gates` | `bbbe8d6` | pass with nits, fixed |
+| M4 home and the Posts card | `m4-home` | `f5eab31` | pass with nits, fixed |
+| M5 post page, heading and blockquote hooks | `m5-post` | `c3c70f5` | pass with nits, fixed |
+| M6 code blocks | `m6-code` | `56ae775` | pass with nits, fixed |
+| M7 content edits and the link hook | `m7-content-rebuilt` | `7e8cb62` | pass with nits, fixed |
+| M8 git origin and the colophon | `m8-colophon` | `3ad242a` | pass with nits, fixed |
+| M9 status line and Contents box | `m9-status` | `7c77c28` | pass with nits, fixed |
+| M10 Older/Newer | `m10-pn` | `8bb34f4` | pass with nits, fixed |
+| M11 search on the index | `m11-search` | `42de225` | failed twice; fix round 2 done, third review not run |
+
+- **Two M7 branches.** `m7-content` (`9927c1b`) is the first M7 attempt and is superseded. The permission system denied rewriting it (`git reset --hard`), so the rebuilt history went onto `m7-content-rebuilt` and M8 stacks on that. Delete `m7-content` when convenient.
+- **Merging.** Merge the stack in order with merge commits, not squashes. M8 lists bulk commits by hash, and a squash would also spread the M7 content commit's `Bulk: true` trailer over real edits. `26d75ce` is the M7 content commit.
+
+### M11 state
+- **Built:** `dfcd1f1..e94b507`: the index JSON, the Search frame and menus, no-script `:target` filters, the script, tag redirects and docs.
+- **Review 1 failed** on a major finding: WebKit throws on more than 100 `replaceState` calls in 10 s and the list froze. Fix round 1: `cdc8521..f0fa3b5`.
+- **Review 2 failed** on a major finding introduced by round 1. When a page is left, WebKit aborts the index fetch, and the failure path then followed the pending pick, swallowing the navigation. Fix round 2 is `89033f5..42de225` and covers that plus 6 more (see the ledger):
+  - the pick is followed only on a bad answer (not OK, or bad JSON)
+  - the address update is flushed on `pagehide`
+  - WebKit's box is restored after Back (`defaultValue`)
+  - menus close when the box shows
+  - long menu values ellipsise
+  - a pick shows at once
+
+  The fixer checked each in WebKit, and in Chrome or Firefox where it applies. The script is 2.4 KB gzipped and the index page 8.8 KB. The session ended there at the user's request, so the third review hasn't run. `.evidence/m11/` doesn't exist yet; the implementer's and reviewers' shots are in `.evidence/impl-m11/`, `.evidence/review-m11*/` and `.evidence/coordinator/harness/`.
+- **Next:**
+  1. Run a fresh reviewer on `m11-search`, focusing on `f0fa3b5..42de225`. Use `.evidence/coordinator/claims-m11b.md` and `extra-m11b.md` as the base, updated for round 2. Include WebKit and Firefox, as the first two reviews did; the round-2 fixer's test scripts are in `.evidence/coordinator/harness/fx11b/`, including stall and 404 server modes.
+  2. If it passes, record M11's evidence in `.evidence/m11/`.
+
+### Next milestones
+M12 404, M13 About, M14 Feeds, M15 Atom, sitemap and robots, M16 favicon set, then M17 social cards and M18 print. Their briefs are in `.evidence/coordinator/mN-scope.md` and are written for this stack: M12 stacks on `m11-search`, M17 on `m16-favicon`, M18 on `m17-cards`. Copies of the live feed, a live tag feed and the live sitemap, taken on 2026-09-28, are in `.evidence/live-*.xml` for M15 and M19.
+
+### Changes from the spec made during the build
+- **M1:**
+  - `--baseURL` and the configure-pages step are dropped from CI already (finding 7, planned for M3).
+  - x86_64-darwin is dropped from the flake: nixpkgs-unstable no longer supports it.
+  - The Pages artifact uploads on every run; only the deploy job is gated to main.
+- **M2:** there's no global reduced-motion rule. Components scope their own.
+- **M3:** PR builds link `github.event.pull_request.head.sha`, not the temporary merge commit. The checks run after the cache save and before the upload.
+- **M4:**
+  - The intro uses the lab's copy-edited text.
+  - The 5 projects moved to `data/projects.toml`.
+  - `data-t` holds term slugs.
+  - `/posts/` isn't rendered (`render = "never"`).
+- **M5:**
+  - Prose `ul` and the card's `ol` get `role="list"` (WebKit drops list semantics under `list-style:none`).
+  - A plain blockquote has a 2px `edge` left rule, which isn't in the spec.
+- **M6:**
+  - The path lift skips shebangs and version comments.
+  - An unmapped language warns, which fails CI.
+  - The focus ring on `<pre>` is inset (`outline-offset:-4px`) so it shows on the fg frame in light mode.
+- **M7:**
+  - The link hook fails the build on an internal link that doesn't resolve. Link content files (`/posts/<name>.md`).
+  - Two blocks gained `{file=…}`: `docker-compose.yml` and `10-fbdev.conf`.
+- **M8:**
+  - The colophon grid is a `dl`.
+  - Commit links use the full hash for git-derived commits.
+  - Builds outside a git checkout need `HUGO_ENABLEGITINFO=false`.
+- **M9:**
+  - The `nav` sits right after the header.
+  - Contents opens on tap via `tabindex="-1"` on `.stat-where`.
+  - Breadcrumbs ignore the pointer.
+  - A heading with the id `top` fails the build.
+  - Only h2 and h3 count.
+  - In forced colours the progress rule uses `Highlight`.
+  - 6 heading titles contain `&`, not 5.
+- **M10:** names come from `.File.Path` minus `posts/`, not `.File.LogicalName`, so page bundles read `slug/index.md`.
+- **M11:**
+  - Menu filters match tags exactly; only a typed `#word` matches by prefix.
+  - Re-picking the applied value keeps it.
+  - "No post matches." has no query echo or clear link.
+  - Tags named `all`, `main` or like `y2023` fail the build.
+  - The index keeps `outputs.home` json. M15 must keep `json` alongside `atom`, and `home.html` fails the build without it.
+
+### Open questions for the user (defaults taken while away)
+- **M8.** `2a2721c`, the channel edit, is in `bulkCommits` (the recommended option). Drop that line to count it as an update, which changes 3 posts.
+- **M7.** The code block after `backup-solutions-nixos`' second note went inside the callout.
+- **M7.** Path-comment typos in `configure-nextcloud-nixos` were fixed in the bulk content commit:
+  - `/etc/nix/configuration.nix` became `/etc/nixos/…`
+  - 2 × `etc/nixos/…` gained a leading `/`
+
+  Confirm, or count it as an update.
+- **M9.** The status line's `nav` sits after the header (recommended).
+- **About.** The bio stays the same two sentences as the home intro. Not built yet (M13).
+- **M6.** The code scrollbar thumb (`--edge` on `--code`) is about 2:1, below the 3:1 floor for non-text indicators. The spec prescribes it; `--mute` would pass.
+- **Scope.** M17 (social cards) and M18 (print) have briefs and follow M16 on the stack. Confirm, or drop them until after launch.
+
+### Needs the user
+- **Push and PRs.** Nothing is pushed. Git's SSH signing goes through 1Password and needs approval. The active `gh` account (`michaelmbc`) has no push access; `mich-murphy`'s token lacks the `workflow` scope that pushing workflow changes needs. To publish:
+  1. Push `theme` and each branch.
+  2. Open PRs in order: `m1-clear-ground`→`theme`, then each branch against the previous one, or retarget as each merges.
+  3. Watch CI on the first PR: the workflow changes have only been linted (actionlint), never run.
+- **`.git/modules`.** Leftover submodule clones under `.git/modules` need `rm -rf .git/modules`. The permission system blocked it during M1.
 
 ## Where things are
 
@@ -281,6 +403,8 @@ ffffffffffffff.d
 - **Mermaid.** Decided: render at build time. The standard mermaid bundle is 3.6 MB raw and 976 KB gzipped, so it never ships to readers.
 
 ## Current repo state
+
+This section describes the repo before the build started (2026-09-27). For the state after M1–M11, see "Build progress".
 
 - **Live site.** Still the Zola build from `origin/main` (`1d1b39a`), deployed from the `gh-pages` branch. `/atom.xml` is Atom 1.0 with full text, and there are 26 tag feeds and `/page/1/`, `/page/2/`. See "Build scope".
 - **Git** (after M0, 2026-09-27). `main` is 3 commits ahead of `origin/main` and unpushed:
