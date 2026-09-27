@@ -176,8 +176,18 @@ const off = (follow) => {
   if (follow && f) location.hash = f;
 };
 
+// a key pressed in the box for the first result: down moves to it, and Enter opens it. Pressed before the index has
+// loaded, it waits for the list the index draws, and only the last one pressed acts, once
+let K;
+const act = () => {
+  const f = $(".tr:not([hidden]) a", ol);
+  if (f && K) K == "Enter" ? f.click() : f.focus();
+  K = 0;
+};
+
 // the index, once: each post keeps its row. When it has loaded, the box shows if it's still hidden, or else the list
-// is drawn, once, however many changes waited for it. If it doesn't load, there's no second try. A pick made meanwhile
+// is drawn, once, however many changes waited for it, and a key that waited acts. If it doesn't load, there's no
+// second try. A pick made meanwhile
 // is followed only when the server answered badly, with a SyntaxError: JSON that doesn't parse, which WebKit throws as
 // a DOMException of that name, or a bad status, thrown as one. When the request itself fails, even partway through
 // the body, as WebKit's does when the page is left while it loads, nothing is, since setting the fragment cancels
@@ -192,10 +202,13 @@ const load = () =>
       D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
     })
     .catch((e) => off(e.name == "SyntaxError"))
-    .then(() => D && (box.hidden ? show() : draw())));
+    .then(() => {
+      if (D) box.hidden ? show() : draw(), act();
+    }));
 
-// the menus show a change at once, and the list once the index has loaded
+// the menus show a change at once, and the list once the index has loaded. A change drops a key still waiting for it
 const go = () => {
+  K = 0;
   draw();
   load();
   url();
@@ -266,9 +279,12 @@ addEventListener("keydown", (e) => {
     } else return;
     e.preventDefault();
   } else if (t == inp) {
-    if (e.key == "ArrowDown" && f) e.preventDefault(), f.focus();
-    // not while an IME is composing, where Enter takes a word, which Safari says with keyCode 229
-    if (e.key == "Enter" && f && !e.isComposing && e.keyCode != 229) f.click();
+    // Enter not while an IME is composing, where it takes a word, which Safari says with keyCode 229
+    if (e.key == "ArrowDown" || (e.key == "Enter" && !e.isComposing && e.keyCode != 229)) {
+      if (e.key == "ArrowDown" && (f || !D)) e.preventDefault();
+      K = e.key;
+      D && act();
+    }
   } else if (e.key == "/" && !box.hidden && !e.ctrlKey && !e.metaKey && !e.altKey) {
     e.preventDefault();
     inp.focus();
