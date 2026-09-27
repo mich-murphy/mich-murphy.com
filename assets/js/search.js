@@ -116,7 +116,10 @@ const draw = () => {
       r.insertAdjacentHTML("beforeend", `<a class="ex" href="${html(a.getAttribute("href") + (h.ex[2] && "#" + h.ex[2]))}"><span class="br" aria-hidden="true">└</span>${mark(x)}</a>`);
     }
   }
+  // moving a row takes focus from its link, which gets it back if it's still shown
+  const f = document.activeElement;
   ol.append(...(on ? R.map((h) => h.p.r) : rows));
+  if (ol.contains(f)) f.focus();
   none.hidden = m;
   sc.textContent = on ? `${m}/${n}` : "";
   lc.textContent = on ? `${m} of ${n}` : n;
