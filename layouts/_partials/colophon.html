@@ -18,7 +18,7 @@
 <dt>created</dt><dd>{{ .Date.Format "2006-01-02" }}</dd>
 {{- with $o }}
 <dt>updated</dt><dd>{{ .date.Format "2006-01-02" }}</dd>
-<dt>commit</dt><dd class="cm"><a class="h" href="{{ $gh }}/commit/{{ .full }}">{{ .hash }}</a></dd><dd class="hist"><a href="{{ $gh }}/commits/main/{{ $file }}" aria-label="History of {{ $.File.LogicalName }}">history</a></dd>
+<dt>commit</dt><dd class="cm"><a class="h" href="{{ $gh }}/commit/{{ .full }}">{{ .hash }}</a></dd><dd class="hist"><a href="{{ $gh }}/commits/main/{{ $file }}" aria-label="History of {{ strings.TrimPrefix "posts/" $.File.Path }}">history</a></dd>
 {{- end }}
 </dl>
 {{- /* a map ranges in key order, so counting down gives most first, then by name. Each item is a nowrap span, so it

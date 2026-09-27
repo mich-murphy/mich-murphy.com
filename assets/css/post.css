@@ -78,12 +78,14 @@
 
 /* Older and Newer (pn.html): the neighbours' file names at the two ends of the text column, in mute. They invert on
    hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav keeps the
-   body size, so its 74ch matches the colophon's. Only when the two don't fit do they give way, with an ellipsis; on
-   phones they stack. 32px under the colophon's frame (about 24px to the eye, past the dither), and main's bottom
-   padding drops from 56px to 28px, so the footer's rule sits 28px under them */
+   body size, so its 74ch matches the colophon's. Only when the two don't fit do they give way, and then the name's
+   span takes the ellipsis, so the arrow always shows; on phones they stack. 32px under the colophon's frame (about
+   24px to the eye, past the dither), and main's bottom padding drops from 56px to 28px, so the footer's rule sits
+   28px under them */
 .pn{margin-top:32px;max-width:74ch}
 .pn-file{display:flex;column-gap:3ch}
-.pn-file a{flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap}
+.pn-file span{overflow:hidden;text-overflow:ellipsis}
 .pn-file a:hover{color:var(--bg)}
 .pn-file .newer{margin-left:auto}
 main:has(.pn-file){padding-bottom:28px}
@@ -161,7 +163,6 @@ body:has(.stat){padding-bottom:40px}
   .colo .hist{grid-column:2/-1;text-align:left}
   .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
   .pn-file a{max-width:100%}
-  .pn-file .newer{align-self:flex-end}
   .stat{--g:16px}
 }
 @media (prefers-reduced-motion:reduce){
