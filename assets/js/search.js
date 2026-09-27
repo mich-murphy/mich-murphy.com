@@ -1,8 +1,9 @@
 // Search on the index, the site's one script: home.html inlines it, minified by js.Build. Without it, the box stays
 // hidden, the frame is labelled Filter, and the menus filter the list through :target (filters.css). With it, the box
 // shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. The line
-// index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, or when the page opens
-// at ?q= or #tag. If it doesn't load, the page goes back to working as it does without the script.
+// index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, on Esc in the frame, on
+// a filter's fragment typed into the address, or when the page opens at ?q= or #tag. If it doesn't load, the page
+// goes back to working as it does without the script.
 // - The box holds words: each matches from the start of a word, in any case and script, so imperm finds impermanence
 //   and rsa finds ssh_host_rsa_key, but sy doesn't find easy. A single character is ignored until there's a second.
 //   "A phrase" matches as written, #nix any tag starting with nix, and 2023 that year. Every part must match.
@@ -14,8 +15,8 @@
 //   under it and links to its section.
 // - Each menu choice counts the posts the list would show with it instead, and one that would show none is off.
 // - / focuses the box, down moves to the first result and Enter opens it. Esc closes an open menu, or clears the
-//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone, once typing pauses, and a
-//   fragment typed into it sets the menus as following a menu's link to it would.
+//   words, then the filters. The address follows as /?q=…, or /#nixos for a tag alone, once typing pauses or as the
+//   page is left, and a fragment typed into it sets the menus as following a menu's link to it would.
 const $ = (s, e = document) => e.querySelector(s);
 const $$ = (s, e = document) => [...e.querySelectorAll(s)];
 const box = $("search");
@@ -190,8 +191,10 @@ const load = () =>
     })
     .catch((e) => off(e.name == "SyntaxError")));
 
+// the menus show a change at once, and the list once the index has loaded
 const go = () => {
-  load().then(() => box.hidden || draw());
+  draw();
+  D || load().then(() => box.hidden || draw());
   url();
 };
 
@@ -279,6 +282,11 @@ const q = new URLSearchParams(location.search).get("q");
 const show = () => {
   hash();
   if (q) inp.value = lift(q + " ").trimEnd();
+  // a menu opened meanwhile would now open over the list rather than push it down, so it closes, keeping focus
+  for (const d of dets) {
+    if (d.contains(document.activeElement)) $("summary", d).focus();
+    d.open = false;
+  }
   box.hidden = false;
   lg.textContent = "Search";
   draw();
