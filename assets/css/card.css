@@ -1,0 +1,27 @@
+/* the Posts card (posts-card.html), on home and on 404, which shows it under its box (404.html). Search's matches in
+   the card are home's, in index.css */
+/* 404's box opens the page, so it sits near the top. It's as wide as the card under it */
+main>.vh:first-child+.callout{margin-top:10px}
+
+/* one row per post: the title, then the date in mute at the right, with dotted rules between rows. When home's
+   filters hide the first rows, the first one on show would bring its dotted rule to the top of the list, so the list's
+   top pixel is clipped */
+.tcard{margin-top:32px}
+.tcard .frame{padding:12px 18px 4px}
+.tcard ol{margin:0;padding:0;list-style:none;clip-path:inset(1px -12px -12px)}
+.tr{display:grid;grid-template-columns:minmax(0,1fr) 11ch;gap:4px 2ch;align-items:baseline;padding-block:8px}
+.tcard .tr+.tr{border-top:1px dotted var(--edge)}
+.tr .d{color:var(--mute);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
+/* a word longer than the row, like an option path, breaks rather than run out of the card */
+.tr .t{overflow-wrap:anywhere}
+/* titles don't invert, and are underlined only while their row is hovered */
+.tcard .tr .t a{text-decoration:none}
+.tcard .tr .t a:hover{background:none;color:inherit}
+.tcard .tr:hover .t a{text-decoration:underline 1px;text-underline-offset:3px}
+
+/* phones: the date goes under its title */
+@media (max-width:600px){
+  .tcard .frame{padding-inline:12px}
+  .tr{grid-template-columns:minmax(0,1fr)}
+  .tr .d{text-align:left}
+}

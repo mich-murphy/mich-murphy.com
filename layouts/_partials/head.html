@@ -16,10 +16,10 @@
 <link rel="icon" href="/images/favicon.png">
 {{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
 {{- $names := slice "main" }}
-{{- /* index.css styles the intro, Search and the Posts card, which 404 shows too, and filters.css filters the card on
-  home without a script */}}
-{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "index" }}{{ end }}
-{{- if .IsHome }}{{ $names = $names | append "filters" }}{{ end }}
+{{- /* card.css styles the Posts card, on home and on 404, which shows it under its box */}}
+{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "card" }}{{ end }}
+{{- /* index.css styles home's intro and Search, and filters.css filters the card without a script */}}
+{{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
 {{- /* post.css styles the post head, the prose and code windows */}}
 {{- if and .IsPage (eq .Section "posts") }}{{ $names = $names | append "post" }}{{ end }}
 {{- $files := slice }}

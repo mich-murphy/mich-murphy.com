@@ -1,8 +1,6 @@
-/* home's intro, the Search frame, and the Posts card (posts-card.html), for home and 404, which shows the card under
-   its box (404.html) */
+/* home only: the intro, the Search frame with its menus, and search's matches in the Posts card. The card itself is
+   card.css, which 404 shares */
 .intro{max-width:64ch}
-/* 404's box opens the page, so it sits near the top. It's as wide as the card under it */
-main>.vh:first-child+.callout{margin-top:10px}
 
 /* Search: a plain frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the / key,
    which gives way to the 3/17 count while there's a query. The box needs the script, so it ships hidden; .sb is a flex
@@ -54,35 +52,19 @@ search[hidden],.tr[hidden]{display:none}
 .fb[aria-disabled]:hover{border-color:var(--edge)}
 .fmn>summary:has(b:not(:empty)),.fb[aria-current]{border-color:var(--fg);background:var(--fg);color:var(--bg);--mute:var(--bg)}
 
-/* one row per post: the title, then the date in mute at the right, with dotted rules between rows. When a filter
-   hides the first rows, the first one on show would bring its dotted rule to the top of the list, so the list's top
-   pixel is clipped */
-.tcard{margin-top:32px}
-.tcard .frame{padding:12px 18px 4px}
-.tcard ol{margin:0;padding:0;list-style:none;clip-path:inset(1px -12px -12px)}
-.tr{display:grid;grid-template-columns:minmax(0,1fr) 11ch;gap:4px 2ch;align-items:baseline;padding-block:8px}
-.tcard .tr+.tr{border-top:1px dotted var(--edge)}
-.tr .d{color:var(--mute);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
-/* a word longer than the row, like an option path, breaks rather than run out of the card */
-.tr .t{overflow-wrap:anywhere}
-/* titles don't invert, and are underlined only while their row is hovered */
-.tcard .tr .t a{text-decoration:none}
-.tcard .tr .t a:hover{background:none;color:inherit}
-.tcard .tr:hover .t a{text-decoration:underline 1px;text-underline-offset:3px}
-/* a match: its words marked in the title and, when the title lacks one, the line that has it, linking to its section */
+/* a match in the Posts card: its words marked in the title and, when the title lacks one, the line that has it,
+   linking to its section. When nothing matches, the card says so */
 .tr .ex{grid-column:1/-1;margin-top:1px;color:var(--body);font-size:13.5px;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex .br{margin-right:1ch;color:var(--mute)}
 .tcard mark{background:var(--acc);color:var(--on)}
 .tcard .none{margin:0;padding:12px 0 14px;color:var(--mute)}
 
-/* phones: the date goes under its title, and the menus stack beside the filter key */
+/* phones: the menus stack beside the filter key */
 @media (max-width:600px){
-  .sfr .frame,.tcard .frame{padding-inline:12px}
+  .sfr .frame{padding-inline:12px}
   .ff{display:grid;grid-template-columns:max-content minmax(0,1fr);justify-items:start;column-gap:2ch}
   .fr{grid-column:2}
   .fr-t .fo{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .tr{grid-template-columns:minmax(0,1fr)}
-  .tr .d{text-align:left}
 }
 /* forced colours drop backgrounds, so the menus keep their inversion in system colours, and marks take the system's */
 @media (forced-colors:active){
