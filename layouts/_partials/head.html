@@ -12,6 +12,8 @@
 {{- $names := slice "main" }}
 {{- /* index.css styles the intro and the Posts card */}}
 {{- if .IsHome }}{{ $names = $names | append "index" }}{{ end }}
+{{- /* post.css styles the post head and the prose */}}
+{{- if and .IsPage (eq .Section "posts") }}{{ $names = $names | append "post" }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}
   {{- $files = $files | append (resources.Get (printf "css/%s.css" .)) }}

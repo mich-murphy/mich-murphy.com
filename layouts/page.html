@@ -1,4 +1,15 @@
 {{ define "main" }}
+{{- /* A post's head is its title, then date · reading time · tags, over a rule. Other pages (Feeds) keep the title
+  and the rule with no meta line. The summary stays out of the page: the head partial uses it for the description */}}
+{{- $post := eq .Section "posts" }}
+<article>
+<header class="ph{{ if not $post }} bare{{ end }}">
 <h1>{{ .Title }}</h1>
-{{ .Content }}
+{{- if $post }}
+<p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read
+  {{- with .GetTerms "tags" }} ·{{ range . }} <a href="{{ .RelPermalink }}">#{{ path.Base .RelPermalink }}</a>{{ end }}{{ end }}</p>
+{{- end }}
+</header>
+<div class="prose">{{ .Content }}</div>
+</article>
 {{ end }}

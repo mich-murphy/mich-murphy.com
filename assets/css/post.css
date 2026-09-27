@@ -1,0 +1,29 @@
+/* the post head and the prose (page.html). Nothing here is post-specific, so About and Feeds can reuse them */
+/* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
+   width. A bare head has no meta line */
+.ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
+.ph h1{margin:0 0 10px}
+.ph.bare h1{margin:0}
+.ph .meta{margin:0;color:var(--mute);font-size:13.5px}
+
+/* headings in full fg over body text in the body mix. The ids are there for Contents and search, so a jump
+   to one leaves some room above it */
+.prose{max-width:74ch}
+.prose :is(p,li){color:var(--body)}
+.prose h2{margin:2.3em 0 .75em}
+.prose h3{margin:1.9em 0 .6em}
+.prose :is(h2,h3){scroll-margin-top:24px}
+
+/* ul gets the 7px square used by the nav marker and Contents; ol keeps its numbers, in fg */
+.prose :is(ul,ol){margin:0 0 1.15em}
+.prose ul{padding-left:22px;list-style:none}
+.prose li{position:relative;margin:.2em 0}
+.prose ul>li::before{content:"";position:absolute;left:-22px;top:10px;width:7px;height:7px;background:var(--fg)}
+.prose ol{padding-left:3ch}
+.prose ol>li{padding-left:.6ch}
+.prose ol>li::marker{color:var(--fg)}
+
+/* forced colours drop backgrounds, and the squares are backgrounds */
+@media (forced-colors:active){
+  .prose ul>li::before{background:CanvasText;forced-color-adjust:none}
+}
