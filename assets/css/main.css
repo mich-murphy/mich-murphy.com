@@ -45,6 +45,19 @@ pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
 .dz>*{position:relative}
 .frame{border:2px solid var(--fg);background:var(--bg)}
 .legend{position:absolute;top:-.8em;left:12px;z-index:1;padding:0 6px;background:var(--bg);font-size:12px;line-height:1.5}
+/* a callout is a plain frame with its label cut into the border: an alert in a post (render-blockquote.html), or
+   404's box */
+.callout{position:relative;margin-block:2em 2.2em}
+.callout .frame{padding:18px 16px 2px}
+/* a long label wraps inside the frame. It floats, drawn on the border by its relative offsets, and the text clears
+   it, so a wrapped label pushes the text down by its extra lines. Only the callout's own label: a code window's label
+   inside it stays on the window's border */
+.callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
+.callout .frame>:first-child{clear:left}
+/* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
+   just enough room for its own label under the note's */
+.callout .frame>:last-child{margin-bottom:1.15em}
+.callout .frame>.win:first-child{margin-top:.6em}
 
 .vh,.skip:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .skip{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:12px}

@@ -1,6 +1,6 @@
-/* the post head and the prose (page.html), callouts (render-blockquote.html), code windows (render-codeblock.html),
-   the colophon (colophon.html), Older and Newer (pn.html) and the status line (status-line.html). Only the last three
-   are post-specific, so About and Feeds can reuse the rest */
+/* the post head and the prose (page.html), code windows (render-codeblock.html), the colophon (colophon.html), Older
+   and Newer (pn.html) and the status line (status-line.html). Only the last three are post-specific, so About and
+   Feeds can reuse the rest. Callouts (render-blockquote.html) are in main.css */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -25,19 +25,8 @@
 .prose ol>li{padding-left:.6ch}
 .prose ol>li::marker{color:var(--fg)}
 
-/* a quote is set off by a rule. An alert is a callout: a plain frame with its label cut into the border */
+/* a quote is set off by a rule. An alert is a callout, whose rules are in main.css, since 404 has one too */
 .prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
-.callout{position:relative;margin-block:2em 2.2em}
-.callout .frame{padding:18px 16px 2px}
-/* a long label wraps inside the frame. It floats, drawn on the border by its relative offsets, and the text clears
-   it, so a wrapped label pushes the text down by its extra lines. Only the callout's own label: a code window's label
-   inside it stays on the window's border */
-.callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
-.callout .frame>:first-child{clear:left}
-/* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
-   just enough room for its own label under the note's */
-.callout .frame>:last-child{margin-bottom:1.15em}
-.callout .frame>.win:first-child{margin-top:.6em}
 
 /* code windows: a heavy frame on the code ground, with no dither. A file's path goes in an inverted title bar, and a
    block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
