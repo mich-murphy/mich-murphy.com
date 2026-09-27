@@ -147,8 +147,9 @@ const url = () => {
 
 // without the index, the page goes back to working as it does without the script: the box hides, the frame is
 // labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. The address is
-// cleared of words, and a tag or year that was set is followed there, so a pick made meanwhile still applies
-const off = () => {
+// cleared of words. When follow is set, a filter that was set is followed there, so a pick made meanwhile still
+// applies: only one, since filters.css applies one at a time, and the tag wins over the year
+const off = (follow) => {
   if (box.hidden) return;
   clearTimeout(tu);
   box.hidden = true;
@@ -159,17 +160,23 @@ const off = () => {
   try {
     history.replaceState(null, "", location.pathname);
   } catch {}
-  if (f) location.hash = f;
+  if (follow && f) location.hash = f;
 };
 
-// the index, once: each post keeps its row. If it doesn't load, there's no second try
+// the index, once: each post keeps its row. If it doesn't load, there's no second try. A pick made meanwhile is
+// followed only when the server answered badly, with a SyntaxError: JSON that doesn't parse, which WebKit throws as a
+// DOMException of that name, or a bad status, thrown as one. When the request itself fails, even partway through the
+// body, as WebKit's does when the page is left while it loads, nothing is, since setting the fragment cancels leaving
 const load = () =>
   (P ||= fetch("/index.json")
-    .then((r) => r.json())
+    .then((r) => {
+      if (!r.ok) throw SyntaxError(r.status);
+      return r.json();
+    })
     .then((d) => {
       D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
     })
-    .catch(off));
+    .catch((e) => off(e.name == "SyntaxError")));
 
 const go = () => {
   load().then(() => box.hidden || draw());
