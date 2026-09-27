@@ -1,7 +1,5 @@
 +++
 title = "Feeds"
-menu = "main"
-weight = 4
 +++
 
 I self host [Miniflux](https://miniflux.app/) for managing my personal RSS feeds. This helps
