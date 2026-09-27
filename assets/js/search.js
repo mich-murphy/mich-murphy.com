@@ -2,7 +2,7 @@
 // hidden, the frame is labelled Filter, and the menus filter the list through :target (filters.css). With it, the box
 // shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. The line
 // index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, or when the page opens
-// at ?q= or #tag.
+// at ?q= or #tag. If it doesn't load, the page goes back to working as it does without the script.
 // - The box holds words: each matches from the start of a word, in any case and script, so imperm finds impermanence
 //   and rsa finds ssh_host_rsa_key, but sy doesn't find easy. A single character is ignored until there's a second.
 //   "A phrase" matches as written, #nix any tag starting with nix, and 2023 that year. Every part must match.
@@ -20,6 +20,7 @@ const $$ = (s, e = document) => [...e.querySelectorAll(s)];
 const box = $("search");
 const inp = $(".sq", box);
 const sc = $(".sc", box);
+const lg = $(".sfr .legend");
 const lc = $(".lc");
 const st = $(".idx [role=status]");
 const ol = $(".idx ol");
@@ -128,15 +129,6 @@ const draw = () => {
   }
 };
 
-// the index, once: each post keeps its row. If it doesn't load, the next try fetches it again
-const load = () =>
-  (P ||= fetch("index.json")
-    .then((r) => r.json())
-    .then((d) => {
-      D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
-    })
-    .catch(() => (P = 0)));
-
 // the address, once typing pauses: WebKit throws after 100 changes in 10 seconds, and Chrome drops them, so the list
 // doesn't wait on it
 let tu;
@@ -151,8 +143,34 @@ const url = () => {
   }, 300);
 };
 
+// without the index, the page goes back to working as it does without the script: the box hides, the frame is
+// labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. The address is
+// cleared of words, and a tag or year that was set is followed there, so a pick made meanwhile still applies
+const off = () => {
+  if (box.hidden) return;
+  clearTimeout(tu);
+  box.hidden = true;
+  lg.textContent = "Filter";
+  for (const [a] of E) attr(a, "aria-current");
+  for (const b of $$(".fmn b")) b.textContent = "";
+  const f = T[0] || (Y && "y" + Y);
+  try {
+    history.replaceState(null, "", location.pathname);
+  } catch {}
+  if (f) location.hash = f;
+};
+
+// the index, once: each post keeps its row. If it doesn't load, there's no second try
+const load = () =>
+  (P ||= fetch("/index.json")
+    .then((r) => r.json())
+    .then((d) => {
+      D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
+    })
+    .catch(off));
+
 const go = () => {
-  load().then(draw);
+  load().then(() => box.hidden || draw());
   url();
 };
 
@@ -175,8 +193,8 @@ inp.oninput = () => {
 };
 
 // a pick replaces its menu's value, and × clears it. A menu closes on a pick, leaving focus on it, and on a click
-// outside it. While the box is hidden, which it stays if the index doesn't load, the links work as they do without
-// the script
+// outside it. While the box is hidden, until the index loads or for good if it doesn't, the links work as they do
+// without the script
 addEventListener("click", (e) => {
   const a = e.target.closest(".ff a");
   for (const d of dets) if (!d.contains(e.target)) d.open = false;
@@ -199,7 +217,7 @@ addEventListener("keydown", (e) => {
     if (d) {
       d.open = false;
       if (d.contains(t)) $("summary", d).focus();
-    } else if (t.closest(".sfr")) {
+    } else if (t.closest(".sfr") && !box.hidden) {
       inp.value ? (inp.value = "") : ((T = []), (Y = ""));
       go();
     } else return;
@@ -221,7 +239,7 @@ const q = new URLSearchParams(location.search).get("q");
 if (q) inp.value = lift(q + " ").trimEnd();
 const show = () => {
   box.hidden = false;
-  $(".sfr .legend").textContent = "Search";
+  lg.textContent = "Search";
   draw();
 };
 q || T[0] || Y ? load().then(() => D && show()) : show();
