@@ -1,6 +1,6 @@
 /* the post head and the prose (page.html), callouts (render-blockquote.html), code windows (render-codeblock.html),
-   the colophon (colophon.html) and the status line (status-line.html). Only the last two are post-specific, so About
-   and Feeds can reuse the rest */
+   the colophon (colophon.html), Older and Newer (pn.html) and the status line (status-line.html). Only the last three
+   are post-specific, so About and Feeds can reuse the rest */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -76,6 +76,18 @@
 .comp .n{color:var(--fg)}
 .comp .sep{padding-inline:.6ch}
 
+/* Older and Newer (pn.html): the neighbours' file names at the two ends of the text column, in mute. They invert on
+   hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav keeps the
+   body size, so its 74ch matches the colophon's. Only when the two don't fit do they give way, with an ellipsis; on
+   phones they stack. 32px under the colophon's frame (about 24px to the eye, past the dither), and main's bottom
+   padding drops from 56px to 28px, so the footer's rule sits 28px under them */
+.pn{margin-top:32px;max-width:74ch}
+.pn-file{display:flex;column-gap:3ch}
+.pn-file a{flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pn-file a:hover{color:var(--bg)}
+.pn-file .newer{margin-left:auto}
+main:has(.pn-file){padding-bottom:28px}
+
 /* the status line (status-line.html): the header's ruled strip, fixed to the bottom of the window at every width,
    on the 820px wrap. It shows the post title, or the current section (h2 › h3) with the 7px square, then how far
    through and the minutes left, and its 2px top rule fills as you read. The page ends 40px lower, about the strip's
@@ -142,11 +154,14 @@ body:has(.stat){padding-bottom:40px}
 .clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:.45em;width:7px;height:7px;background:var(--fg)}
 .clist .l3:has(>a:target-current)::before{left:2.2ch}
 
-/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, and the strip and
-   its box take main's 16px gutter */
+/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, Older and Newer
+   stack, older at the left and newer at the right, and the strip and its box take main's 16px gutter */
 @media (max-width:600px){
   .colo .frame{padding-top:38px}
   .colo .hist{grid-column:2/-1;text-align:left}
+  .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
+  .pn-file a{max-width:100%}
+  .pn-file .newer{align-self:flex-end}
   .stat{--g:16px}
 }
 @media (prefers-reduced-motion:reduce){
