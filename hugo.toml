@@ -21,9 +21,9 @@ enableRobotsTXT = true
 [taxonomies]
   tag = "tags"
 
-# HTML only for now; the Atom feed is added later
+# HTML, plus home's search index at /index.json (layouts/home.json.json); the Atom feed is added later
 [outputs]
-  home = ["html"]
+  home = ["html", "json"]
   section = ["html"]
   taxonomy = ["html"]
   term = ["html"]
