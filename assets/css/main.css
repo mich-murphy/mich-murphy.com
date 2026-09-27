@@ -22,6 +22,9 @@ body{margin:0;min-height:100vh;min-height:100svh;display:flex;flex-direction:col
 ::selection{background:var(--acc);color:var(--on)}
 a{color:inherit;text-decoration:underline 1px;text-underline-offset:3px}
 a:hover{background:var(--fg);color:var(--bg);text-decoration:none}
+/* a commit hash (the footer's build, the colophon's commit) is accent text. a:hover is more specific, so it still
+   inverts */
+.h{color:var(--acct)}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 h1,h2,h3{font-weight:400;text-wrap:balance}
 h1{font-size:24px;line-height:1.25}
@@ -71,8 +74,6 @@ main:focus{outline:none}
 .hd nav a::after,.ft a::after{content:"";position:absolute;inset:-12px -6px}
 .ftw{border-top:2px solid var(--fg)}
 .ft{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:14px 28px;color:var(--mute);font-size:12px}
-.ft .h{color:var(--acct)}
-.ft a.h:hover{color:var(--bg)}
 
 @media (max-width:600px){
   body{font-size:14.5px}

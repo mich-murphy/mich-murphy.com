@@ -1,7 +1,7 @@
 {{ define "main" }}
 {{- /* A post's head is its title, then date · reading time · tags, over a rule. Other pages (Feeds) get the title
   alone: post.css only loads on posts, so they have no rule and unstyled prose until M13/M14 give them their CSS.
-  The summary stays out of the page: the head partial uses it for the description */}}
+  The summary stays out of the page: the head partial uses it for the description. A post ends with its colophon */}}
 {{- $post := eq .Section "posts" }}
 <article>
 <header class="ph{{ if not $post }} bare{{ end }}">
@@ -15,5 +15,8 @@
 {{- /* WebKit exposes a ul with list-style:none as a group, not a list, unless it has role=list. Goldmark writes
   bare <ul> and escapes it in code, so this only meets real lists. ol keeps its numbers, so it stays a list */}}
 <div class="prose">{{ replace .Content "<ul>" `<ul role="list">` | safeHTML }}</div>
+{{- if $post }}
+{{ partial "colophon.html" . }}
+{{- end }}
 </article>
 {{ end }}

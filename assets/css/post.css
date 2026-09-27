@@ -1,5 +1,5 @@
-/* the post head and the prose (page.html), callouts (render-blockquote.html) and code windows
-   (render-codeblock.html). Nothing here is post-specific, so About and Feeds can reuse it */
+/* the post head and the prose (page.html), callouts (render-blockquote.html), code windows (render-codeblock.html)
+   and the colophon (colophon.html). Only the colophon is post-specific, so About and Feeds can reuse the rest */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -58,6 +58,27 @@
 /* two-tone syntax: comments and strings, and everything else plain */
 .win :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
 .win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
+
+/* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
+   the frame. One keyed list, keys in mute in a max-content column and values in fg, with history at the end of the
+   commit row; then the words and code blocks under a dotted rule */
+.colo{margin-top:56px;max-width:74ch}
+.colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
+.colo .frame{padding:20px 18px 14px;font-size:13.5px;line-height:1.55}
+.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;gap:0 2ch;align-items:baseline;margin:0}
+.colo dt,.comp{color:var(--mute)}
+.colo dd{grid-column:2/-1;min-width:0;margin:0}
+.colo .cm{grid-column:2}
+.colo .hist{grid-column:3;text-align:right}
+.comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge)}
+.comp span{white-space:nowrap}
+.comp .n{color:var(--fg)}
+
+/* phones: history drops under the hash, and a path label that wraps to two lines clears the first row */
+@media (max-width:600px){
+  .colo .frame{padding-top:38px}
+  .colo .hist{grid-column:2/-1;text-align:left}
+}
 
 /* forced colours drop backgrounds, and the squares are backgrounds */
 @media (forced-colors:active){
