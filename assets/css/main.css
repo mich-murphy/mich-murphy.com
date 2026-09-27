@@ -54,10 +54,6 @@ pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
    inside it stays on the window's border */
 .callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
 .callout .frame>:first-child{clear:left}
-/* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
-   just enough room for its own label under the note's */
-.callout .frame>:last-child{margin-bottom:1.15em}
-.callout .frame>.win:first-child{margin-top:.6em}
 
 .vh,.skip:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .skip{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:12px}
