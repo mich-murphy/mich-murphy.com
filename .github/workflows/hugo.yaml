@@ -98,10 +98,12 @@ jobs:
 
       # No --baseURL: hugo.toml's baseURL is the source of truth, and a
       # different one would change every feed id. --panicOnWarning fails the
-      # build on any warning. HUGO_BUILD_SHA is the build hash in the footer
+      # build on any warning. HUGO_BUILD_SHA is the build hash in the footer.
+      # On a pull request github.sha is GitHub's temporary merge commit, so use
+      # the head commit the author pushed
       - name: Build
         env:
-          HUGO_BUILD_SHA: ${{ github.sha }}
+          HUGO_BUILD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           echo "Building the project..."
           hugo build \
@@ -110,17 +112,18 @@ jobs:
             --panicOnWarning \
             --cacheDir "${{ runner.temp }}/.cache/hugo"
 
-      # Writes each page's gzipped weight into its footer, and fails on a script
-      # outside the index or a page over 14 KB gzipped, before anything is
-      # uploaded or deployed
-      - name: Check page weight and scripts
-        run: scripts/postbuild.sh public
-
       - name: Cache save
         uses: actions/cache/save@v6
         with:
           path: ${{ runner.temp }}/.cache/hugo
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+
+      # Writes each page's gzipped weight into its footer, and fails on a script
+      # outside the index or a page over 14 KB gzipped, before anything is
+      # uploaded or deployed. It runs after Cache save, so a failed check keeps
+      # the Hugo cache
+      - name: Check page weight and scripts
+        run: scripts/postbuild.sh public
 
       # Every run uploads the built site, so a pull request's build can be
       # downloaded for preview; only the deploy job below is limited to main
