@@ -2,7 +2,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 <meta name="description" content="{{ or .Params.summary site.Params.description }}">
+{{- /* GitHub Pages serves 404.html at any missing address, so it has no address of its own to name, and it's kept out
+  of search results: it also answers 200 at /404.html */}}
+{{- if eq .Kind "404" }}
+<meta name="robots" content="noindex">
+{{- else }}
 <link rel="canonical" href="{{ .Permalink }}">
+{{- end }}
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
 <meta name="color-scheme" content="dark light">
