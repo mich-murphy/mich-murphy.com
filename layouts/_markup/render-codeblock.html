@@ -3,10 +3,16 @@
   fence's file attribute, or else a first line that is only a path comment, like "# flake.nix". That line comes out of
   the code, with any blank lines under it. A block that is only a path comment stays as it is */ -}}
 {{- $lang := or .Type "txt" }}
-{{- $name := or (index (dict "nix" "Nix" "yaml" "YAML" "bash" "Bash" "json" "JSON" "txt" "Text") $lang) $lang }}
+{{- $name := index (dict "nix" "Nix" "yaml" "YAML" "bash" "Bash" "json" "JSON" "txt" "Text") $lang }}
+{{- /* a language with no name here warns, so CI (--panicOnWarning) fails until it gets one */}}
+{{- if not $name }}
+  {{- $name = strings.FirstUpper $lang }}
+  {{- warnf "code block language %q has no label in layouts/_markup/render-codeblock.html (%s:%d)" $lang .Page.File.Path .Position.LineNumber }}
+{{- end }}
 {{- $code := .Inner }}
 {{- $path := .Attributes.file }}
-{{- $re := `^(?:#|//) ?(\S*[/.]\S*)\n+` }}
+{{- /* a path has a "/" or ends in a dot and letters, so "# v1.2" stays; one starting "!" is a shebang and stays */}}
+{{- $re := `^(?:#|//) ?((?:[^!\s]\S*)?(?:/\S*|\.[A-Za-z]+))\n+` }}
 {{- if not $path }}
   {{- with findRESubmatch $re $code 1 }}
     {{- $path = index . 0 1 }}
