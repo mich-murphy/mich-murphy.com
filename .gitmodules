@@ -1,6 +1,0 @@
-[submodule "static/fonts"]
-	path = static/fonts
-	url = git@github.com:mich-murphy/TX-02.git
-[submodule "themes/hugo-bearcub"]
-	path = themes/hugo-bearcub
-	url = https://github.com/clente/hugo-bearcub

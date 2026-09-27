@@ -1,6 +1,0 @@
-{{ range .Site.Menus.main.ByWeight }}
-  {{ if ne .Page.Title "About" }}
-  <a href="{{ .URL }}">{{ .Name }}</a>
-  {{ end }}
-{{ end }}
-{{ with .Site.Home.OutputFormats.Get "rss" }}<a href='{{ .Permalink }}'>RSS</a>{{ end }}
