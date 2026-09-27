@@ -1,0 +1,34 @@
+{{- /* Where a post's updated date and commit come from (E1): its last commit that isn't a bulk one. A commit is bulk if
+  params.bulkCommits lists a prefix of its hash, or its message has a "Bulk: true" trailer. The walk starts at the
+  file's last commit and goes back through its ancestors, so a bulk commit on top of a real edit doesn't hide it.
+  Hugo's git info stops at the move from Zola, which is bulk, so a post with no real edit since falls back to
+  data/origin.toml by its file name. The date is the author date in the site's timeZone (Australia/Sydney).
+  Returns a dict with date (a time.Time) and hash (abbreviated), or an empty one for an uncommitted post. The
+  colophon uses it, and later the feed and the sitemap: call it with partialCached "origin.html" . .Path. Nothing
+  reads .Lastmod, which git info sets to the last commit, bulk or not */}}
+{{- $o := dict }}
+{{- /* time.AsTime reads a date with no offset in the site's timeZone */}}
+{{- $tz := (time.AsTime "2000-01-01").Location }}
+{{- with .GitInfo }}
+  {{- $commits := slice . }}
+  {{- range .Ancestors }}{{ $commits = $commits | append . }}{{ end }}
+  {{- range $commits }}
+    {{- $c := . }}
+    {{- $bulk := gt (len (findRE `(?im)^bulk:[ \t]*true[ \t]*$` .Body 1)) 0 }}
+    {{- range site.Params.bulkCommits }}
+      {{- if strings.HasPrefix $c.Hash (lower .) }}{{ $bulk = true }}{{ end }}
+    {{- end }}
+    {{- if not $bulk }}
+      {{- $o = dict "date" (.AuthorDate.In $tz) "hash" .AbbreviatedHash }}
+      {{- break }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if not $o }}
+  {{- with .File }}
+    {{- with index hugo.Data.origin .ContentBaseName }}
+      {{- $o = dict "date" (time.AsTime .date) "hash" .hash }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- return $o }}

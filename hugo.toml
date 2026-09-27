@@ -6,6 +6,10 @@ defaultContentLanguage = "en"
 # Dates are built in the same time zone as CI (TZ in .github/workflows/hugo.yaml)
 timeZone = "Australia/Sydney"
 
+# Each post's updated date and commit come from its git history (layouts/_partials/origin.html). CI checks out
+# with fetch-depth: 0, so the whole history is there
+enableGitInfo = true
+
 # Generate a robots.txt
 enableRobotsTXT = true
 
@@ -40,6 +44,19 @@ enableRobotsTXT = true
 [params]
   # The description of the site
   description = "Personal blog of Michael Murphy"
+
+  # Commits that touch posts without changing what they say. A post's updated date and commit skip them, and so
+  # does a commit whose message has a "Bulk: true" trailer, which survives a squash or rebase that changes its hash.
+  # Any prefix of a hash will do (layouts/_partials/origin.html)
+  bulkCommits = [
+    # feat: migrating website from zola to hugo
+    "6f2b864464b2c88626a1f5d186ec87bd2237bdca",
+    # content: stop pinning search.nixos.org links to a channel. It only changed link parameters, so its 3 posts
+    # keep their old updated dates. Drop this line to count it as an update
+    "2a2721c064775048bc021ddd68c4cc3574a501c5",
+    # content: turn notes into callouts and point internal links at their files. It has the trailer too
+    "26d75ce253e5ce8cb388fdff60ef9197f1e2fdf2",
+  ]
 
   [params.author]
     name = "Michael Murphy"
