@@ -28,6 +28,10 @@
 .prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
 .callout{position:relative;margin-block:2em 2.2em}
 .callout .frame{padding:18px 16px 2px}
+/* a long label wraps inside the frame. It floats, drawn on the border by its relative offsets, and the text clears
+   it, so a wrapped label pushes the text down by its extra lines */
+.callout .legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
+.callout .frame>:first-child{clear:left}
 
 /* forced colours drop backgrounds, and the squares are backgrounds */
 @media (forced-colors:active){
