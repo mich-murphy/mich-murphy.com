@@ -1,5 +1,6 @@
 {{- /* The copyright runs from the oldest post's year to the build year. CI sets HUGO_BUILD_SHA to the commit it
-  builds; local builds say so. __WEIGHT__ is replaced by the page's gzipped size after the build */}}
+  builds; local builds say so. After the build, scripts/postbuild.sh replaces __WEIGHT__ with the page's gzipped
+  size, and 0 B js with the script's on the one page that has one */}}
 {{- $first := now.Year }}
 {{- with (where site.RegularPages "Section" "posts").ByDate }}{{ $first = (index . 0).Date.Year }}{{ end }}
 <footer class="ftw">
