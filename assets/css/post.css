@@ -1,4 +1,5 @@
-/* the post head and the prose (page.html). Nothing here is post-specific, so About and Feeds can reuse them */
+/* the post head and the prose (page.html), and callouts (render-blockquote.html). Nothing here is post-specific,
+   so About and Feeds can reuse it */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -22,6 +23,11 @@
 .prose ol{padding-left:3ch}
 .prose ol>li{padding-left:.6ch}
 .prose ol>li::marker{color:var(--fg)}
+
+/* a quote is set off by a rule. An alert is a callout: a plain frame with its label cut into the border */
+.prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
+.callout{position:relative;margin-block:2em 2.2em}
+.callout .frame{padding:18px 16px 2px}
 
 /* forced colours drop backgrounds, and the squares are backgrounds */
 @media (forced-colors:active){
