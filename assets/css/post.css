@@ -61,7 +61,7 @@
 
 /* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
    the frame. One keyed list, keys in mute in a max-content column and values in fg, with history at the end of the
-   commit row; then the words and code blocks under a dotted rule */
+   commit row; then the words and code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
 .colo{margin-top:56px;max-width:74ch}
 .colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
 .colo .frame{padding:20px 18px 14px;font-size:13.5px;line-height:1.55}
@@ -73,6 +73,7 @@
 .comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge)}
 .comp span{white-space:nowrap}
 .comp .n{color:var(--fg)}
+.comp .sep{padding-inline:.6ch}
 
 /* phones: history drops under the hash, and a path label that wraps to two lines clears the first row */
 @media (max-width:600px){

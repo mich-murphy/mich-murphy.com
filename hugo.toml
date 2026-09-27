@@ -46,8 +46,9 @@ enableRobotsTXT = true
   description = "Personal blog of Michael Murphy"
 
   # Commits that touch posts without changing what they say. A post's updated date and commit skip them, and so
-  # does a commit whose message has a "Bulk: true" trailer, which survives a squash or rebase that changes its hash.
-  # Any prefix of a hash will do (layouts/_partials/origin.html)
+  # does a commit whose message has a "Bulk: true" trailer, which survives a rebase that changes its hash (the
+  # README says when a squash is safe). Any prefix of a hash, 7 characters or more, will do; a shorter entry is
+  # ignored (layouts/_partials/origin.html)
   bulkCommits = [
     # feat: migrating website from zola to hugo
     "6f2b864464b2c88626a1f5d186ec87bd2237bdca",

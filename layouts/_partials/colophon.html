@@ -18,16 +18,17 @@
 <dt>created</dt><dd>{{ .Date.Format "2006-01-02" }}</dd>
 {{- with $o }}
 <dt>updated</dt><dd>{{ .date.Format "2006-01-02" }}</dd>
-<dt>commit</dt><dd class="cm"><a class="h" href="{{ $gh }}/commit/{{ .hash }}">{{ .hash }}</a></dd><dd class="hist"><a href="{{ $gh }}/commits/main/{{ $file }}">history</a></dd>
+<dt>commit</dt><dd class="cm"><a class="h" href="{{ $gh }}/commit/{{ .full }}">{{ .hash }}</a></dd><dd class="hist"><a href="{{ $gh }}/commits/main/{{ $file }}" aria-label="History of {{ $.File.LogicalName }}">history</a></dd>
 {{- end }}
 </dl>
-{{- /* a map ranges in key order, so counting down gives most first, then by name. The dot stays with the item before
-  it, and an item never breaks inside */}}
-<p class="comp"><span>words <span class="n">{{ countwords $md }}</span></span>
-{{- with $code }}&nbsp;· <span>code blocks <span class="n">{{ len . }}</span></span>
+{{- /* a map ranges in key order, so counting down gives most first, then by name. Each item is a nowrap span, so it
+  never breaks inside, and the dot after it is in the same span, so a line never starts with one. The line can only
+  break at the wbr after the dot. The span's close tag comes with the next item, or at the end */}}
+<p class="comp"><span>words <span class="n">{{ countwords $md }}</span>
+{{- with $code }}<span class="sep">·</span></span><wbr><span>code blocks <span class="n">{{ len . }}</span>
   {{- range seq (len .) 1 }}
     {{- $n := . }}
-    {{- range $name, $c := $langs.Values }}{{ if eq $c $n }}&nbsp;· <span>{{ $name }} <span class="n">{{ $n }}</span></span>{{ end }}{{ end }}
+    {{- range $name, $c := $langs.Values }}{{ if eq $c $n }}<span class="sep">·</span></span><wbr><span>{{ $name }} <span class="n">{{ $n }}</span>{{ end }}{{ end }}
   {{- end }}
-{{- end }}</p>
+{{- end }}</span></p>
 </div></div>
