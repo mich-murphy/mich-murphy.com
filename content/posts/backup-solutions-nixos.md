@@ -15,7 +15,7 @@ This post details 2 methods of creating encrypted off-site backups in NixOS usin
 
 ## Duplicati
 
-NixOS provides a fairly bare bones [module](https://search.nixos.org/options?channel=22.11&from=0&size=50&sort=relevance&type=packages&query=services.duplicati) for setting up Duplicati. Here's how I configured it:
+NixOS provides a fairly bare bones [module](https://search.nixos.org/options?from=0&size=50&sort=relevance&type=packages&query=services.duplicati) for setting up Duplicati. Here's how I configured it:
 
 ```nix
 # /etc/nixos/configuration.nix
@@ -39,7 +39,7 @@ I found Duplicati worked quite well, and I did have to test a restore in the bri
 
 ## BorgBackup
 
-Thanks to an episode of the [Linux Unplugged Podcast](https://www.jupiterbroadcasting.com/show/linux-unplugged/494/) I came across BorgBackup. I found that the NixOS [module](https://search.nixos.org/options?channel=22.11&from=0&size=50&sort=relevance&type=packages&query=services.borgbackup.jobs) was pretty extensive, and I learnt that a number of cloud hosting options existed for storing these backups, and they seemed to be pretty competitively priced ([BorgBase](https://www.borgbase.com/) and [Rsync.net](https://rsync.net/)). 
+Thanks to an episode of the [Linux Unplugged Podcast](https://www.jupiterbroadcasting.com/show/linux-unplugged/494/) I came across BorgBackup. I found that the NixOS [module](https://search.nixos.org/options?from=0&size=50&sort=relevance&type=packages&query=services.borgbackup.jobs) was pretty extensive, and I learnt that a number of cloud hosting options existed for storing these backups, and they seemed to be pretty competitively priced ([BorgBase](https://www.borgbase.com/) and [Rsync.net](https://rsync.net/)). 
 
 After doing some further digging I came across a very helpful [blog post](https://xeiaso.net/blog/borg-backup-2021-01-09) which detailed all the steps in configuring BorgBackup on NixOS. After looking through the modules and reading the blog post I ended up with the following configuration:
 

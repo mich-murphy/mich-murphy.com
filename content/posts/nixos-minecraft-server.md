@@ -5,7 +5,7 @@ summary = "Declarative minecrraft server? We can setup everything from the serve
 tags = ["minecraft", "nixos"]
 +++
 
-Minecraft can be configured simply by using the provided [NixOS modules](https://search.nixos.org/options?channel=unstable&size=50&sort=relevance&type=packages&query=minecraft). Tailscale have published a [blog post](https://tailscale.com/kb/1096/nixos-minecraft) showing how to utilise this and get a working server.
+Minecraft can be configured simply by using the provided [NixOS modules](https://search.nixos.org/options?size=50&sort=relevance&type=packages&query=minecraft). Tailscale have published a [blog post](https://tailscale.com/kb/1096/nixos-minecraft) showing how to utilise this and get a working server.
 
 This setup is a bit limited when it comes to installing mods and mod toolchains declaratively. [Nix-minecraft](https://github.com/Infinidoge/nix-minecraft) was developed for this purpose.
 
