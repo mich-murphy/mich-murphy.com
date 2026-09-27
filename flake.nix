@@ -3,7 +3,10 @@
 
   # Flake inputs
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixos-unstable on 2026-09-26, which has hugo 0.166.0 in the binary cache.
+    # The Hugo version must match HUGO_VERSION in .github/workflows/hugo.yaml;
+    # change both together, and check `nix develop -c hugo version` afterwards.
+    nixpkgs.url = "github:nixos/nixpkgs/e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa";
   };
 
   # Flake outputs
@@ -11,11 +14,11 @@
     self,
     nixpkgs,
   }: let
-    # Systems supported
+    # Systems supported. Nixpkgs 26.11 dropped x86_64-darwin, and no nixpkgs
+    # release that still supports it has hugo 0.166.0
     allSystems = [
       "x86_64-linux" # 64-bit Intel/AMD Linux
       "aarch64-linux" # 64-bit ARM Linux
-      "x86_64-darwin" # 64-bit Intel macOS
       "aarch64-darwin" # 64-bit ARM macOS
     ];
 
