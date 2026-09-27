@@ -21,4 +21,8 @@
 </div>
 </div></div>
 {{ partial "posts-card.html" . }}
+{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page), inlined and minified */}}
+{{- with resources.Get "js/search.js" | js.Build (dict "minify" true) }}
+<script>{{ .Content | safeJS }}</script>
+{{- end }}
 {{ end }}
