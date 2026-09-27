@@ -1,0 +1,16 @@
+{{- /* The index's filters, for the tag and year menus: each tag, busiest first and then by name, then each year, newest
+  first. Each is a dict: k, the kind (t or y, as in the rows' data-t and data-y); v, the value (a tag's slug, decoded
+  from its URL as the Posts card's data-t has it, or the year); id, the fragment that filters by it (the slug, or the
+  year after a y, since a selector can't start with a digit); and n, how many posts it has. home.html lists them in the
+  menus, posts-card.html writes a hidden target for each, and filters.css writes the rules that filter without a
+  script. A tag can't take an id home already has */}}
+{{- $out := slice }}
+{{- range site.Taxonomies.tags.ByCount }}
+  {{- $s := path.Base (urls.Parse .Page.RelPermalink).Path }}
+  {{- if or (in (slice "all" "main") $s) (findRE `^y\d{4}$` $s 1) }}{{ errorf "the tag %q would clash with the id %q on home: rename it" .Page.Title $s }}{{ end }}
+  {{- $out = $out | append (dict "k" "t" "v" $s "id" $s "n" .Count) }}
+{{- end }}
+{{- range (where site.RegularPages "Section" "posts").GroupByDate "2006" }}
+  {{- $out = $out | append (dict "k" "y" "v" .Key "id" (print "y" .Key) "n" (len .Pages)) }}
+{{- end }}
+{{- return $out }}

@@ -1,10 +1,58 @@
-/* home's intro, and the Posts card (posts-card.html) on any page that shows it */
+/* home's intro, the Search frame, and the Posts card (posts-card.html) on any page that shows it */
 .intro{max-width:64ch}
 
-/* one row per post: the title, then the date in mute at the right, with dotted rules between rows */
+/* Search: a plain frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the / key,
+   which gives way to the 3/17 count while there's a query. The box needs the script, so it ships hidden; .sb is a flex
+   row, which beats the hidden attribute, so it takes a rule of its own, and so do the rows the script hides */
+.sfr{position:relative;margin-top:30px}
+.sfr .frame{padding:12px 18px 2px}
+.sfr+.tcard{margin-top:34px}
+search[hidden],.tr[hidden]{display:none}
+.sb{display:flex;align-items:baseline;gap:1.2ch;padding:8px 0 10px;border-bottom:1px dotted var(--edge)}
+.sq{flex:1;min-width:0;font:inherit;color:var(--fg);background:none;border:0;border-radius:0;padding:0;-webkit-appearance:none;appearance:none;outline-offset:4px}
+.sq::placeholder{color:var(--mute);opacity:1}
+.sq::-webkit-search-cancel-button{display:none}
+.sb .pr,.sc{flex:none;color:var(--mute)}
+.kc{flex:none;font:12px/1.4 var(--mono);color:var(--mute);border:1px solid var(--edge);padding:0 5px}
+.sb:is(:focus-within,:has(.sq:not(:placeholder-shown),.sc:not(:empty))) .kc,.sc:empty{display:none}
+.sc{font-size:13.5px;font-variant-numeric:tabular-nums}
+/* iOS zooms into a field set under 16px */
+@media (pointer:coarse){.sq{font-size:16px}}
+
+/* under a dotted rule, the filters: two menus, "tag: all" and "year: all". Each is a details, named so only one is
+   open at a time, whose list opens under the row, over the posts. Each choice has its count, how many posts the list
+   would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
+   clears it, and so is its choice, or all while it isn't set. filters.css does the same without the script */
+.ff{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 2.5ch;margin:9px 0 11px;font-size:13.5px;line-height:1.6}
+.ff .k{color:var(--mute)}
+.fr{display:flex}
+.fmn>summary{display:flex;align-items:baseline;gap:1ch;border:1px solid var(--edge);padding:0 1ch;list-style:none;cursor:pointer;white-space:nowrap}
+.fmn>summary::-webkit-details-marker{display:none}
+/* a 7x4 triangle, which flips while the menu is open */
+.fmn>summary::after{content:"";align-self:center;width:7px;height:4px;background:currentColor;clip-path:polygon(0 0,100% 0,50% 100%)}
+.fmn[open]>summary::after{transform:scaleY(-1)}
+.fmn>summary:hover,.fmn[open]>summary{border-color:var(--fg)}
+.fmn b{font-weight:400}
+.fmn b:empty::before{content:"all"}
+.dx{display:none;border:1px solid var(--fg);border-left-color:var(--bg);padding:0 .9ch;background:var(--fg);color:var(--bg);text-decoration:none}
+.dx:hover{background:var(--bg);color:var(--fg)}
+.fr:has(b:not(:empty)) .dx{display:block}
+.fpop{position:absolute;z-index:30;top:calc(100% + 8px);left:0;right:0;border:2px solid var(--fg);padding:10px 12px;background:var(--bg)}
+.fo{display:grid;grid-template-columns:repeat(auto-fill,minmax(19ch,1fr));gap:2px 2ch}
+.fr-y .fo{grid-template-columns:repeat(auto-fill,minmax(12ch,1fr))}
+.fb{display:flex;justify-content:space-between;border:1px solid transparent;padding:0 .8ch;text-decoration:none;white-space:nowrap}
+.fb .n{margin-left:.8ch;color:var(--mute);font-variant-numeric:tabular-nums}
+.fb:hover{border-color:var(--fg);background:var(--bg);color:var(--fg)}
+.fb[aria-disabled]{color:var(--mute);border-style:dashed;cursor:default}
+.fb[aria-disabled]:hover{border-color:var(--edge)}
+.fmn>summary:has(b:not(:empty)),.fb[aria-current]{border-color:var(--fg);background:var(--fg);color:var(--bg);--mute:var(--bg)}
+
+/* one row per post: the title, then the date in mute at the right, with dotted rules between rows. When a filter
+   hides the first rows, the first one on show would bring its dotted rule to the top of the list, so the list's top
+   pixel is clipped */
 .tcard{margin-top:32px}
 .tcard .frame{padding:12px 18px 4px}
-.tcard ol{margin:0;padding:0;list-style:none}
+.tcard ol{margin:0;padding:0;list-style:none;clip-path:inset(1px -12px -12px)}
 .tr{display:grid;grid-template-columns:minmax(0,1fr) 11ch;gap:4px 2ch;align-items:baseline;padding-block:8px}
 .tcard .tr+.tr{border-top:1px dotted var(--edge)}
 .tr .d{color:var(--mute);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
@@ -14,10 +62,23 @@
 .tcard .tr .t a{text-decoration:none}
 .tcard .tr .t a:hover{background:none;color:inherit}
 .tcard .tr:hover .t a{text-decoration:underline 1px;text-underline-offset:3px}
+/* a match: its words marked in the title and, when the title lacks one, the line that has it, linking to its section */
+.tr .ex{grid-column:1/-1;margin-top:1px;color:var(--body);font-size:13.5px;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex .br{margin-right:1ch;color:var(--mute)}
+.tcard mark{background:var(--acc);color:var(--on)}
+.tcard .none{margin:0;padding:12px 0 14px;color:var(--mute)}
 
-/* phones: the date goes under its title */
+/* phones: the date goes under its title, and the menus stack beside the filter key */
 @media (max-width:600px){
-  .tcard .frame{padding-inline:12px}
+  .sfr .frame,.tcard .frame{padding-inline:12px}
+  .ff{display:grid;grid-template-columns:max-content minmax(0,1fr);justify-items:start;column-gap:2ch}
+  .fr{grid-column:2}
+  .fr-t .fo{grid-template-columns:repeat(2,minmax(0,1fr))}
   .tr{grid-template-columns:minmax(0,1fr)}
   .tr .d{text-align:left}
+}
+/* forced colours drop backgrounds, so the menus keep their inversion in system colours, and marks take the system's */
+@media (forced-colors:active){
+  .ff{forced-color-adjust:none;--fg:CanvasText;--bg:Canvas;--mute:GrayText;--edge:GrayText;color:var(--fg)}
+  .tcard mark{forced-color-adjust:none;background:Mark;color:MarkText}
 }

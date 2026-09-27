@@ -10,13 +10,16 @@
 <link rel="icon" href="/images/favicon.png">
 {{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
 {{- $names := slice "main" }}
-{{- /* index.css styles the intro and the Posts card */}}
-{{- if .IsHome }}{{ $names = $names | append "index" }}{{ end }}
+{{- /* index.css styles the intro, Search and the Posts card, and filters.css filters the card without a script */}}
+{{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
 {{- /* post.css styles the post head, the prose, callouts and code windows */}}
 {{- if and .IsPage (eq .Section "posts") }}{{ $names = $names | append "post" }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}
-  {{- $files = $files | append (resources.Get (printf "css/%s.css" .)) }}
+  {{- $f := resources.Get (printf "css/%s.css" .) }}
+  {{- /* filters.css is a template, with a rule for each tag and year */}}
+  {{- if eq . "filters" }}{{ $f = $f | resources.ExecuteAsTemplate "css/filters-built.css" $ }}{{ end }}
+  {{- $files = $files | append $f }}
 {{- end }}
 {{- $css := $files | resources.Concat (printf "css/inline-%s.css" (delimit $names "-")) | minify }}
 <style>{{ $css.Content | safeCSS }}</style>
