@@ -1,22 +1,32 @@
+{{- /* Hugo 0.166's embedded link hook: a destination resolves to a page, then a page resource, then a global
+  resource. An internal destination (a path with no scheme or host, like "/posts/x.md") that resolves to none of them
+  fails the build, so a broken link can't ship */ -}}
 {{- $u := urls.Parse .Destination -}}
 {{- $href := $u.String -}}
 {{- if strings.HasPrefix $u.String "#" -}}
-	{{- $href = printf "%s#%s" .PageInner.RelPermalink $u.Fragment -}}
+  {{- $href = printf "%s#%s" .PageInner.RelPermalink $u.Fragment -}}
 {{- else if and $href (not $u.IsAbs) -}}
-	{{- $path := strings.TrimPrefix "./" $u.Path -}}
-	{{- with or
-		($.PageInner.GetPage $path)
-		($.PageInner.Resources.Get $path)
-		(resources.Get $path)
-	-}}
-		{{- $href = .RelPermalink -}}
-		{{- with $u.RawQuery -}}
-			{{- $href = printf "%s?%s" $href . -}}
-		{{- end -}}
-		{{- with $u.Fragment -}}
-			{{- $href = printf "%s#%s" $href . -}}
-		{{- end -}}
-	{{- end -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- with or
+    ($.PageInner.GetPage $path)
+    ($.PageInner.Resources.Get $path)
+    (resources.Get $path)
+  -}}
+    {{- $href = .RelPermalink -}}
+    {{- with $u.RawQuery -}}
+      {{- $href = printf "%s?%s" $href . -}}
+    {{- end -}}
+    {{- with $u.Fragment -}}
+      {{- $href = printf "%s#%s" $href . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- if and $path (not $u.Host) -}}
+      {{- /* a page with no file, like a tag page that renders a string, is named by its path */ -}}
+      {{- $where := $.PageInner.Path -}}
+      {{- with $.PageInner.File }}{{ $where = .Path }}{{ end -}}
+      {{- errorf "link to %q in %s doesn't resolve to a page or resource; link to the content file (e.g. /posts/<name>.md) or use a full https:// URL" $.Destination $where -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 <a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }}>{{ .Text }}</a>
 {{- /**/ -}}

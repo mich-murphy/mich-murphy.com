@@ -9,5 +9,7 @@ This is a static site built using [Hugo](https://gohugo.io/) with my own templat
 ## Checks
 CI runs `scripts/postbuild.sh` after every build. It writes each page's gzipped weight into its footer, and fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory.
 
+Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
+
 ## Font
 The site uses the [0xProto](https://github.com/0xType/0xProto) font, which is licensed under the SIL Open Font License 1.1. The license is included with the font files in `static/fonts/LICENSE-0xProto.txt`.
