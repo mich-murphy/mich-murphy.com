@@ -1,0 +1,10 @@
+{{- /* The copyright runs from the oldest post's year to the build year. CI sets HUGO_BUILD_SHA to the commit it
+  builds; local builds say so. __WEIGHT__ is replaced by the page's gzipped size after the build */}}
+{{- $first := now.Year }}
+{{- with (where site.RegularPages "Section" "posts").ByDate }}{{ $first = (index . 0).Date.Year }}{{ end }}
+<footer class="ftw">
+<div class="ft">
+<span>© {{ $first }}-{{ now.Year }} {{ site.Params.author.name }} · <a href="https://github.com/mich-murphy">github</a></span>
+<span>build {{ with os.Getenv "HUGO_BUILD_SHA" }}<a class="h" href="https://github.com/mich-murphy/mich-murphy.com/commit/{{ . }}">{{ substr . 0 7 }}</a>{{ else }}local{{ end }} · __WEIGHT__ · 0 B js · <a href="/atom.xml">atom.xml</a></span>
+</div>
+</footer>

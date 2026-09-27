@@ -1,0 +1,16 @@
+<a class="skip" href="#main">Skip to content</a>
+<header class="hdw">
+<div class="hd">
+<a class="brand" href="/">{{ partial "mark.html" . }}<span>{{ site.Title }}</span></a>
+{{- /* posts is current on the index and on every post, and nothing is current on tag pages */}}
+{{- $here := .RelPermalink }}
+{{- $post := and .IsPage (eq .Section "posts") }}
+<nav aria-label="Site">
+{{- range slice (slice "posts" "/") (slice "about" "/about/") (slice "feeds" "/feeds/") }}
+  {{- $name := index . 0 }}
+  {{- $href := index . 1 }}
+  <a href="{{ $href }}"{{ if eq $href $here }} aria-current="page"{{ else if and $post (eq $name "posts") }} aria-current="true"{{ end }}>{{ $name }}</a>
+{{- end }}
+</nav>
+</div>
+</header>
