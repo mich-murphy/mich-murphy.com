@@ -167,11 +167,12 @@ inp.oninput = () => {
 };
 
 // a pick replaces its menu's value, and × clears it. A menu closes on a pick, leaving focus on it, and on a click
-// outside it
+// outside it. While the box is hidden, which it stays if the index doesn't load, the links work as they do without
+// the script
 addEventListener("click", (e) => {
   const a = e.target.closest(".ff a");
   for (const d of dets) if (!d.contains(e.target)) d.open = false;
-  if (!a) return;
+  if (!a || box.hidden) return;
   e.preventDefault();
   if (a.hasAttribute("aria-disabled")) return;
   const fr = a.closest(".fr");
