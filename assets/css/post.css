@@ -33,6 +33,10 @@
    inside it stays on the window's border */
 .callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
 .callout .frame>:first-child{clear:left}
+/* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
+   just enough room for its own label under the note's */
+.callout .frame>:last-child{margin-bottom:1.15em}
+.callout .frame>.win:first-child{margin-top:.6em}
 
 /* code windows: a heavy frame on the code ground, with no dither. A file's path goes in an inverted title bar, and a
    block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
