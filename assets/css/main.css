@@ -1,0 +1,86 @@
+/* 0xProto 2.502 by 0xType, SIL Open Font License 1.1 (static/fonts/LICENSE-0xProto.txt), subset to Latin,
+   general punctuation and box drawing. Bold and Italic only download on pages that use them */
+@font-face{font-family:"0xProto";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/0xProto-Regular.woff2) format("woff2")}
+@font-face{font-family:"0xProto";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/0xProto-Bold.woff2) format("woff2")}
+@font-face{font-family:"0xProto";font-style:italic;font-weight:400;font-display:swap;src:url(/fonts/0xProto-Italic.woff2) format("woff2")}
+
+/* the tuned palette, dark first. Light follows prefers-color-scheme: a toggle would need a script */
+:root{color-scheme:dark;
+  --bg:#0f1214;--fg:#e6e2d6;--body:color-mix(in srgb,var(--fg) 85%,var(--bg));--mute:#a39f93;--line:#272c30;--edge:#3e454a;--code:#0a0d0f;
+  --acc:#e7a15a;--on:#0f1214;--acct:#e7a15a;--focus:#e7a15a;--com:#75818b;--str:#e7a15a;
+  --mono:"0xProto",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+/* acc is only 1.98:1 on the light ground, so accent text and the focus ring get their own values */
+@media (prefers-color-scheme:light){
+  :root{color-scheme:light;
+    --bg:#f5f4f0;--fg:#0f1214;--body:color-mix(in srgb,var(--fg) 74%,var(--bg));--mute:#67655d;--line:#dddbd3;--edge:#b3b0a6;--code:#ebe9e3;
+    --acct:#9f5510;--focus:#0f1214;--com:#5f6a72;--str:#9f5510}
+}
+
+*,::before,::after{box-sizing:border-box}
+/* the only sizes are 12, 13.5, 15, 19 and 24px. font-synthesis:style so the browser never fakes a bold */
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:15px/1.7 var(--mono);font-synthesis:style}
+::selection{background:var(--acc);color:var(--on)}
+a{color:inherit;text-decoration:underline 1px;text-underline-offset:3px}
+a:hover{background:var(--fg);color:var(--bg);text-decoration:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-weight:400;text-wrap:balance}
+h1{font-size:24px;line-height:1.25}
+h2{font-size:19px;line-height:1.35}
+h3{font-size:1em;line-height:1.4}
+h3,strong,b{font-weight:700}
+p{margin:0 0 1.15em}
+code{font-family:var(--mono);font-size:.9em;color:var(--fg);background:var(--code);padding:.08em .35em;overflow-wrap:anywhere}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.6;overflow-x:auto}
+pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
+
+/* framed boxes: a label cut into the border, and the dither, an offset shadow in fg through our own 4x6 tile.
+   One dither per page */
+.dz{position:relative}
+.dz::before{content:"";position:absolute;inset:8px -8px -8px 8px;background:var(--fg);opacity:.5;pointer-events:none;
+  --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E") 0 0/4px 6px repeat;
+  -webkit-mask:var(--m);mask:var(--m)}
+.dz>*{position:relative}
+.frame{border:2px solid var(--fg);background:var(--bg)}
+.legend{position:absolute;top:-.8em;left:12px;z-index:1;padding:0 6px;background:var(--bg);font-size:12px;line-height:1.5}
+
+.vh,.skip:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:12px}
+
+/* the ruled header and footer run the full width; their contents and main sit on the 820px wrap */
+.hd,main,.ft{max-width:820px;margin-inline:auto;padding-inline:24px}
+main{flex:1 0 auto;width:100%;padding-block:36px 56px}
+.hdw{border-bottom:2px solid var(--fg)}
+.hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;padding-block:12px;font-size:12px}
+.hd a{text-decoration:none}
+/* only the name is set in capitals; nav items are paths, so they read as written */
+.brand{display:inline-flex;align-items:center;gap:10px;min-width:0;overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:.08em}
+.brand:hover{background:none;color:inherit}
+.mark{display:block;flex:none;width:24px;height:24px;fill:currentColor}
+.mark .b{fill:var(--bg)}
+.hd nav{display:flex;flex-wrap:wrap;gap:4px 3ch}
+/* the current section takes the Contents box's 7px square, outside the flow so nothing shifts; inversion is for hover */
+.hd nav a{position:relative}
+.hd nav a[aria-current]::before{content:"";position:absolute;top:50%;left:calc(-7px - .8ch);width:7px;height:7px;transform:translateY(-50%);background:var(--fg)}
+.hd nav a:hover{padding:2px 5px;margin:-2px -5px}
+/* bigger hit areas without moving anything */
+.ft a{position:relative}
+.hd nav a::after,.ft a::after{content:"";position:absolute;inset:-12px -6px}
+.ftw{border-top:2px solid var(--fg)}
+.ft{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:14px 28px;color:var(--mute);font-size:12px}
+.ft .h{color:var(--acct)}
+.ft a.h:hover{color:var(--bg)}
+
+@media (max-width:600px){
+  body{font-size:14.5px}
+  .hd,main,.ft{padding-inline:16px}
+}
+/* forced colours drop backgrounds, and the current marker is one. The mark's M is knocked out of the system ground */
+@media (forced-colors:active){
+  .hd nav a[aria-current]::before{background:CanvasText;forced-color-adjust:none}
+  .hd nav a[aria-current]{text-decoration:underline}
+  .mark .b{fill:Canvas}
+}
+/* for later transitions (the Contents box, the filter menus). The scroll-driven progress isn't motion, so it stays */
+@media (prefers-reduced-motion:reduce){
+  *,::before,::after{transition:none!important}
+}

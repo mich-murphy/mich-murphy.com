@@ -1,0 +1,19 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+<meta name="description" content="{{ or .Params.summary site.Params.description }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
+<meta name="color-scheme" content="dark light">
+<link rel="preload" href="/fonts/0xProto-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="/images/favicon.png">
+{{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
+{{- $names := slice "main" }}
+{{- /* Later files go here by page type, e.g. {{ if .IsPage }}{{ $names = $names | append "post" }}{{ end }} */}}
+{{- $files := slice }}
+{{- range $names }}
+  {{- $files = $files | append (resources.Get (printf "css/%s.css" .)) }}
+{{- end }}
+{{- $css := $files | resources.Concat (printf "css/inline-%s.css" (delimit $names "-")) | minify }}
+<style>{{ $css.Content | safeCSS }}</style>
