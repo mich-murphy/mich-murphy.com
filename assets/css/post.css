@@ -1,5 +1,5 @@
-/* the post head and the prose (page.html), and callouts (render-blockquote.html). Nothing here is post-specific,
-   so About and Feeds can reuse it */
+/* the post head and the prose (page.html), callouts (render-blockquote.html) and code windows
+   (render-codeblock.html). Nothing here is post-specific, so About and Feeds can reuse it */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
 .ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
@@ -32,6 +32,27 @@
    it, so a wrapped label pushes the text down by its extra lines */
 .callout .legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
 .callout .frame>:first-child{clear:left}
+
+/* code windows: a heavy frame on the code ground, with no dither. A file's path goes in an inverted title bar, and a
+   block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
+   ground */
+.win{position:relative;margin:1.7em 0;border:2px solid var(--fg);background:var(--code)}
+.win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+/* long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed to
+   the box, which the local layers in code cover at each end */
+.win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--edge) var(--code);
+  background:linear-gradient(to right,var(--code) 30%,transparent) left/28px 100% no-repeat local,
+    linear-gradient(to left,var(--code) 30%,transparent) right/28px 100% no-repeat local,
+    linear-gradient(to right,color-mix(in srgb,var(--fg) 22%,transparent),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,color-mix(in srgb,var(--fg) 22%,transparent),transparent) right/10px 100% no-repeat scroll;
+  background-color:var(--code)}
+.win.lgw pre.code{padding-top:20px}
+/* the pre scrolls from the keyboard. Its ring goes inside the frame: in light both are fg, so a ring on the frame
+   would vanish */
+.win pre.code:focus-visible{outline-offset:-4px}
+/* two-tone syntax: comments and strings, and everything else plain */
+.win :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
+.win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
 
 /* forced colours drop backgrounds, and the squares are backgrounds */
 @media (forced-colors:active){

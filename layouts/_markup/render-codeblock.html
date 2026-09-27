@@ -1,0 +1,24 @@
+{{- /* A code window (C1B), with no line numbers, line count or dither. A block with a file path gets a title bar,
+  "Nix · /etc/nixos/configuration.nix"; one without has its language cut into the border as a label. The path is the
+  fence's file attribute, or else a first line that is only a path comment, like "# flake.nix". That line comes out of
+  the code, with any blank lines under it. A block that is only a path comment stays as it is */ -}}
+{{- $lang := or .Type "txt" }}
+{{- $name := or (index (dict "nix" "Nix" "yaml" "YAML" "bash" "Bash" "json" "JSON" "txt" "Text") $lang) $lang }}
+{{- $code := .Inner }}
+{{- $path := .Attributes.file }}
+{{- $re := `^(?:#|//) ?(\S*[/.]\S*)\n+` }}
+{{- if not $path }}
+  {{- with findRESubmatch $re $code 1 }}
+    {{- $path = index . 0 1 }}
+    {{- $code = replaceRE $re "" $code 1 }}
+  {{- end }}
+{{- end }}
+{{- /* keyed by ordinal, so a second render of the page can't count a block twice. The colophon reads it */}}
+{{- .Page.Store.SetInMap "code" (string .Ordinal) $name }}
+{{- /* hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
+  own pre and code replace */}}
+{{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" -}}
+<figure class="win{{ if not $path }} lgw{{ end }}">
+{{- with $path }}<figcaption><span class="path">{{ $name }} · {{ . }}</span></figcaption>
+{{- else }}<span class="legend">{{ $name }}</span>{{ end -}}
+<pre class="code" tabindex="0"><code>{{ $h | safeHTML }}</code></pre></figure>
