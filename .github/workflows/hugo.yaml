@@ -18,8 +18,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  # One group per ref. A newer PR run cancels the older one; runs on main
-  # queue, so a deploy is never cancelled
+  # One group per ref. A newer PR run cancels older runs of the same PR. On
+  # main a running deploy is never cancelled, but GitHub keeps only one
+  # pending run per group, so a newer main run replaces a pending one
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 defaults:
@@ -113,13 +114,14 @@ jobs:
           path: ${{ runner.temp }}/.cache/hugo
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
-      # Pull requests and other branches only build; main deploys
+      # Every run uploads the built site, so a pull request's build can be
+      # downloaded for preview; only the deploy job below is limited to main
       - name: Upload artifact
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-pages-artifact@v5
         with:
           include-hidden-files: false
           path: ./public
+  # Pull requests and other branches only build; main deploys
   deploy:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
