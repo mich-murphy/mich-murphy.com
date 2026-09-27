@@ -11,7 +11,10 @@ In this post I explain how to install NixOS using a temporary file system (tmpfs
 
 The following is summarised from a combination of 2 different blog posts: one detailing how to [configure a tmpfs on NixOS](https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/) and another showing how to [harden the NixOS install](https://xeiaso.net/blog/paranoid-nixos-2021-07-18).
 
-The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space. **Note**: this method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.
+The instructions setup a very simple file system, without a swap partition, just a 512MB boot partition and a root partition on the remaining space.
+
+> [!NOTE]
+> This method is used to create a legacy boot partition, as I use it to create a virtual machine inside of Proxmox. Refer to the linked post above on configuring a tmpfs for UEFI instructions.
 
 Before proceeding you will need a copy of the [NixOS Minimal ISO](https://nixos.org/download.html#nix-more).
 
@@ -149,7 +152,7 @@ nixos-install --no-root-passwd
 
 ### Deploy-rs & Agenix Preparation
 
-This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've written about it [here](/encrypting-secrets-nixos)).
+This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've written about it [here](/posts/encrypting-secrets-nixos.md)).
 
 To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update `secrets.nix` with the new host key `/etc/ssh/ssh_host_ed25516_key.pub`. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:
 

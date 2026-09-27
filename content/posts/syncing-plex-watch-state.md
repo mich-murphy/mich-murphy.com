@@ -39,7 +39,8 @@ librarires.
 
 My Jellyfin configuration is also managed by NixOS and is [available here](https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/jellyfin.nix)
 
-> **Note**: the Jellyfin setup is a bit more involved when it comes to hardware transcoding.
+> [!NOTE]
+> The Jellyfin setup is a bit more involved when it comes to hardware transcoding.
 > I have included a few useful notes in my linked config with helpful resources.
 
 ## Syncing Watch Status
@@ -51,7 +52,7 @@ After doing some initial research I came across a project for this purpose aptly
 This was pretty easy to setup via `docker-compose`. I followed the instructions on GitHub and first created a
 `docker-compose.yml`:
 
-```yaml
+```yaml {file="docker-compose.yml"}
 services:
   watchstate:
     image: ghcr.io/arabcoders/watchstate:latest

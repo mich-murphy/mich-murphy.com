@@ -36,7 +36,8 @@ The first step is to create a dedicated user and group which we can use to isola
 }
 ```
 
-**Note**: I store all relevant files for my services in `/srv`, this is how I like to organise my system.
+> [!NOTE]
+> I store all relevant files for my services in `/srv`, this is how I like to organise my system.
 
 I also created a directory to store all of my media `mkdir -p /data/media/music`, and one to store my backups (for roon-server at this point) `mkdir -p /data/backups/roon-server`).
 

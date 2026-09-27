@@ -54,7 +54,7 @@ vi /usr/share/X11/xorg.conf.d/10-fbdev.conf
 
 Enter the following text in `10-fbdev.conf`
 
-```txt
+```txt {file="/usr/share/X11/xorg.conf.d/10-fbdev.conf"}
 Section "Device"
     Identifier "Card0"
     Driver "fbdev"

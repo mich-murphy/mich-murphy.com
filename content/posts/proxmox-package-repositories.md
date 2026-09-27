@@ -35,7 +35,8 @@ deb http://security.debian.org/debian-security bullseye-security main contrib
 
 After the above changes I ran `apt update` and `apt dist-upgrade`, everything updated without issue.
 
-**Note**: Proxmox highlight in the linked wiki that the pve-no-subscription repo isn't tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.
+> [!NOTE]
+> Proxmox highlight in the linked wiki that the pve-no-subscription repo isn't tested as thoroughly as the repo for the paid subscription. For me this was an acceptable compromise, this may be different for you.
 
 ## Automated Script
 

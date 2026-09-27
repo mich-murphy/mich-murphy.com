@@ -20,7 +20,7 @@ There are several services that need to be configured to setup Nextcloud:
 
 Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look [here](https://search.nixos.org/options?from=0&size=50&sort=relevance&type=packages&query=services.nextcloud).
 
-Here is a look at my config - you'll note that secrets are managed with Agenix, which I've written about [here](/encrypting-secrets-nixos):
+Here is a look at my config - you'll note that secrets are managed with Agenix, which I've written about [here](/posts/encrypting-secrets-nixos.md):
 
 ```nix
 # /etc/nixos/configuration.nix
@@ -74,7 +74,7 @@ Here is a look at my config - you'll note that secrets are managed with Agenix, 
 It's highly recommended that you replace the default Sqlite database with Postgresql, here are the steps involved in making the change:
 
 ```nix
-# /etc/nix/configuration.nix
+# /etc/nixos/configuration.nix
 
 {
   services = {
@@ -106,14 +106,14 @@ It's highly recommended that you replace the default Sqlite database with Postgr
 }
 ```
 
-As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to using [BorgBackup](/backup-solutions-nixos/).
+As mentioned in the comments above, I've included an optional backup service, which will export the database to the specified location. Following this I backup the specified folder to using [BorgBackup](/posts/backup-solutions-nixos.md).
 
 ## Redis Caching
 
 This allows for caching of frequently used files in Nextcloud, which likely provides a more snappy user experience. Here's my configuration:
 
 ```nix
-# etc/nixos/configuration.nix
+# /etc/nixos/configuration.nix
 
 {
   services = {
@@ -136,7 +136,7 @@ In order to login once Nextcloud is configured, HTTPS must be setup. My Nextclou
 I opted for the second option, as such I also had to configure ACME to automatically generate my SSL certificate. NixOS has builtin tooling using a service called [lego](https://github.com/go-acme/lego) behind the scenes to create certificates. Here's my config:
 
 ```nix
-# etc/nixos/configuration.nix
+# /etc/nixos/configuration.nix
 
 {
   services.nginx = {

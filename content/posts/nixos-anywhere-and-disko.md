@@ -196,7 +196,7 @@ nix run github:nix-community/nixos-anywhere -- --flake .#services root@192.168.1
 
 ### Agenix Post Deployment Setup
 
-I've explained in [another post](/encrypting-secrets-nixos/) how I use Agenix to manage secrets. Assuming you are doing this on your new NixOS host there are a couple of steps you need to take to configure Agenix.
+I've explained in [another post](/posts/encrypting-secrets-nixos.md) how I use Agenix to manage secrets. Assuming you are doing this on your new NixOS host there are a couple of steps you need to take to configure Agenix.
 
 First is to find the `ssh host key` for your new NixOS host: `ssh-keyscan <host-ip>`. This will show each available ssh key on your host. You can use this information to add the new ssh key to your Agenix configuration:
 

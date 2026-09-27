@@ -84,7 +84,7 @@ Once the above has been completed you can now add secrets to your NixOS configur
 
 I discovered an interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem's [dotfiles](https://git.chvp.be/chvp/nixos-config/-/tree/main/secrets). I didn't see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.
 
-```bash
+```txt
 # /etc/nixos/secrets
 
 .
