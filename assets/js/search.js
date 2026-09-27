@@ -40,7 +40,7 @@ const KIND = [10, 20, 5];
 // a match starts a word: what's before it isn't a letter or a digit
 const word = (w) => RegExp("(?<![\\p{L}\\p{N}])" + w, "iu");
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const html = (s) => s.replace(/[&<>]/g, (c) => `&#${c.charCodeAt()};`);
+const html = (s) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt()};`);
 const attr = (e, k, v) => (v ? e.setAttribute(k, v) : e.removeAttribute(k));
 let T = [];
 let Y = "";
@@ -112,7 +112,7 @@ const draw = () => {
       let x = h.ex[1].trimStart();
       const i = x.search(mk);
       if (i > 30) x = "…" + x.slice(i - 20);
-      r.insertAdjacentHTML("beforeend", `<a class="ex" href="${a.getAttribute("href")}${h.ex[2] && "#" + h.ex[2]}"><span class="br" aria-hidden="true">└</span>${mark(x)}</a>`);
+      r.insertAdjacentHTML("beforeend", `<a class="ex" href="${html(a.getAttribute("href") + (h.ex[2] && "#" + h.ex[2]))}"><span class="br" aria-hidden="true">└</span>${mark(x)}</a>`);
     }
   }
   ol.append(...(on ? R.map((h) => h.p.r) : rows));
