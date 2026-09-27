@@ -1,4 +1,6 @@
 +++
 title = "Posts"
-aliases = ["/archive/"]
+# Home lists every post, so /posts/ isn't written. The posts themselves still are
+[build]
+  render = "never"
 +++
