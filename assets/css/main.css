@@ -143,4 +143,6 @@ main:focus{outline:none}
   :has(>.legend+.frame){border-top:10px solid transparent}
   .win.lgw{border-width:10px 0 0;border-color:transparent}
   .win.lgw pre.code{border:2px solid var(--fg)}
+  /* the Posts card's clip (card.css) hides, in Firefox, a row that falls past a page break */
+  div.tcard ol{clip-path:none}
 }
