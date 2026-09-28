@@ -104,7 +104,7 @@ main:focus{outline:none}
    footer), Older/Newer, Search, dither or build line; the header shows the page's address where the nav was. Code
    wraps, and title bars are outlined rather than filled, since printers drop backgrounds; for the same reason labels
    and bullets are made to print theirs, or a frame's border would run through its label and the squares would go.
-   External links in the prose print their address, unless their text already is it (render-link.html). Headings stay
+   Prose and Projects card links print their address, unless their text already is it (render-link.html). Headings stay
    with what follows them, a box that fits on a page isn't split, and the footer asks not to start a page. A label sits
    across its frame's top border, above the box, where a page break just above the box would cut it in two or push it
    under the border, so a labelled box takes a clear 10px border on top to hold it; a code window moves its own frame
@@ -130,7 +130,11 @@ main:focus{outline:none}
   figure.win figcaption{background:var(--bg);color:var(--fg);break-after:avoid}
   figure.win pre.code{white-space:pre-wrap;background:none;orphans:4;widows:4}
   .win code{overflow-wrap:anywhere}
-  .prose a[href^="http"]:not(.addr)::after{content:" <" attr(href) ">";color:var(--mute);font-size:12px;overflow-wrap:anywhere}
+  .prose a:is([href^="http"],[href^="/"]):not(.addr)::after,.pcard a[href^="http"]::after{content:" <" attr(href) ">";
+    color:var(--mute);font-size:12px;overflow-wrap:anywhere}
+  /* an internal link's href is a path, so the site's host (baseURL in hugo.toml) goes in front, as in the header's
+     address */
+  .prose a[href^="/"]:not(.addr)::after{content:" <mich-murphy.com" attr(href) ">"}
   .prose :is(h2,h3){break-after:avoid}
   /* a code window taller than a page (class long, render-codeblock.html) would be pushed to a new page and split there
      anyway, so it splits where it falls, keeping its title bar with its code and at least 4 lines on each side
