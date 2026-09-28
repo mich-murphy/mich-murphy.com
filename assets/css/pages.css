@@ -9,11 +9,13 @@
 /* Subscribe's feed address reads as the value around it, and one click selects all of it and nothing else */
 .url{font:inherit;background:none;padding:0;-webkit-user-select:all;user-select:all}
 
-/* the Projects card: each project's name, linked, over its description in mute, with dotted rules between. The ul
-   has list-style:none, which WebKit exposes as a group unless it has role=list */
+/* the Projects and Feeds I read cards list their rows in bare uls. With list-style:none WebKit exposes a ul as a
+   group unless it has role=list */
+.pcard ul,.roll ul{margin:0;padding:0;list-style:none}
+
+/* the Projects card: each project's name, linked, over its description in mute, with dotted rules between */
 .pcard{margin-top:40px}
 .pcard .frame{padding:12px 18px 6px}
-.pcard ul{margin:0;padding:0;list-style:none}
 .pcard li{padding-block:8px}
 .pcard li+li{border-top:1px dotted var(--edge)}
 .pcard .pd{display:block;color:var(--mute);font-size:13.5px;line-height:1.5}
@@ -27,7 +29,6 @@
 .roll dt,.roll dd{margin:0;padding:8px 0}
 .roll dt{padding-right:3ch;color:var(--mute);font-size:13.5px;line-height:1.9}
 .roll dt~dt,.roll dt~dt+dd{border-top:1px dotted var(--edge)}
-.roll ul{margin:0;padding:0;list-style:none}
 .roll li{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 2ch}
 .roll .dm{margin-left:auto;color:var(--mute);font-size:13.5px}
 
