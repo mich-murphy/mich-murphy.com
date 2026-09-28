@@ -112,6 +112,10 @@ main:focus{outline:none}
    by its element to outrank it */
 @media print{
   :root{--bg:#fff;--code:#fff;--body:var(--fg)}
+  /* a plain block: the screen's flex column, which holds the footer at the foot of the window, breaks badly across
+     pages. Firefox prints a page with only the header, or with nothing, drops main's bottom padding and can leave the
+     footer's rule a page before its text */
+  body{display:block;min-height:0}
   .hd nav,nav.stat,nav.pn,.sfr,.ft>span+span,.dz::before{display:none}
   body:has(nav.stat){padding-bottom:0}
   .purl{display:inline;color:var(--mute)}
