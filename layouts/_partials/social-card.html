@@ -18,9 +18,10 @@
 {{- end }}
 {{- $words := split $text " " }}
 {{- $size := 0 }}
+{{- $cols := 0 }}
 {{- $lines := slice }}
 {{- range $s := slice 62 54 48 }}
-  {{- $cols := int (math.Floor (div 978 (mul 0.62 $s))) }}
+  {{- $cols = int (math.Floor (div 978 (mul 0.62 $s))) }}
   {{- /* wrap at the full width, then 1 character narrower each time, until a word no longer fits or the title takes
     more lines: at the full width up to 3, and after that no more than it took there */}}
   {{- range $w := seq $cols -1 1 }}
@@ -42,8 +43,15 @@
   {{- end }}
   {{- if $lines }}{{ $size = $s }}{{ break }}{{ end }}
 {{- end }}
+{{- /* the smallest size's lines hold $cols characters, so a word longer than that never fits */}}
 {{- if not $size }}
-  {{- errorf "%s: the title is too long for the social card, which fits 3 lines of 32 characters; shorten it" .File.Path }}
+  {{- $long := "" }}
+  {{- range $words }}{{ if gt (strings.RuneCount .) $cols }}{{ $long = . }}{{ break }}{{ end }}{{ end }}
+  {{- with $long }}
+    {{- errorf "%s: the title's word %q is %d characters, too long for the social card's lines of %d; shorten it" $.File.Path . (strings.RuneCount .) $cols }}
+  {{- else }}
+    {{- errorf "%s: the title is too long for the social card, which fits 3 lines of %d characters; shorten it" $.File.Path $cols }}
+  {{- end }}
 {{- end }}
 {{- /* images.Text keys a font by its path in the image cache, so a changed TTF would leave the cached cards as they
   were. Fingerprinting puts the font's hash in its path. Neither font is published */}}
