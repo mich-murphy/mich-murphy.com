@@ -3,9 +3,13 @@
   full address, /atom.xml on the base URL, which one click selects whole (pages.css), and the post count and newest
   date from the build. Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic
   in the file's order: each feed's name, linked, and its host, the URL's without www. unless the file sets one. A feed
-  whose topic isn't listed fails the build rather than go missing from the card. Styles are prose.css and pages.css */}}
+  with no name, with a URL that has no host (noted.lol/ rather than https://noted.lol/), or whose topic isn't listed
+  fails the build rather than show a broken row or go missing from the card. Styles are prose.css and pages.css */}}
 {{- $roll := hugo.Data.blogroll }}
 {{- range $roll.feed }}
+  {{- $url := string .url }}
+  {{- if not .name }}{{ errorf "data/blogroll.toml: the feed with the url %q has no name" $url }}{{ end }}
+  {{- if not (urls.Parse $url).Host }}{{ errorf "data/blogroll.toml: %q has the url %q, which has no host" .name $url }}{{ end }}
   {{- if not (in $roll.topics .topic) }}{{ errorf "data/blogroll.toml: %q has the topic %q, which isn't in topics" .name .topic }}{{ end }}
 {{- end }}
 <header class="ph bare"><h1>{{ .Title }}</h1></header>

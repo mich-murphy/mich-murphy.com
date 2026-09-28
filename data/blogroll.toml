@@ -1,6 +1,7 @@
 # The feeds I read, for the Feeds page (layouts/feeds.html), edited by hand. topics sets the order the topics are
-# listed in, and every feed's topic must be one of them. A feed's host is its URL's, without www., unless host is set.
-# Write an apostrophe in a name as ’, the curly one Goldmark gives the intro
+# listed in, and every feed's topic must be one of them. Every feed needs a name and a URL with its scheme, like
+# https://noted.lol/. A feed's host is its URL's, without www., unless host is set. Write an apostrophe in a name as
+# ’, the curly one Goldmark gives the intro
 topics = ["Data", "Development", "Self Hosting", "Technology"]
 
 [[feed]]
