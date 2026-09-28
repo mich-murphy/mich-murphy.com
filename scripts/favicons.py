@@ -6,7 +6,8 @@
 # fg dither cell and . is nothing. Every icon draws it on a bg plate, so b and .
 # show the plate. The SVG is dark and turns light with prefers-color-scheme; the
 # PNGs are dark. PNGs scale the map by a whole number with no smoothing: 2x at
-# 32px, and 10x at 180px, centred with a 10px margin, as iOS rounds the corners.
+# 32px, and 9x at 180px, centred with an 18px margin that clears the corners
+# iOS rounds off.
 # Plain Python, so it needs nothing installed.
 import struct
 import zlib
@@ -92,4 +93,4 @@ def png(size, cell):
 assert len(MAP) == 16 and all(len(r) == 16 and set(r) <= set("fbd.") for r in MAP)
 (STATIC / "favicon.svg").write_text(svg())
 (STATIC / "favicon.png").write_bytes(png(32, 2))
-(STATIC / "apple-touch-icon.png").write_bytes(png(180, 10))
+(STATIC / "apple-touch-icon.png").write_bytes(png(180, 9))
