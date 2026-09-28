@@ -1,0 +1,75 @@
+{{- /* A post's social card: returns a 1200x630 PNG, published at /<slug>/card.png. It draws the title in 0xProto Bold
+  and "date · N min read" in Regular, in the dark fg and mute, onto a card base: the ruled header and an empty framed
+  box, which scripts/card-base.sh draws from scripts/card-base.html. The text is 978px wide from x 104.
+  images.Text has no width: it wraps only at the image's width less 20 and x, and keeps \n, so the title is wrapped
+  here, on spaces. 0xProto's advance is 0.62em, so a line holds ⌊978 ÷ (0.62 × size)⌋ characters. The size steps 62,
+  54, 48 until the title fits in 3 lines. The lab balances its title (text-wrap:balance), so the lines are wrapped at
+  the narrowest width that keeps as many lines; Chrome's balancing may break a title elsewhere. images.Text sets lines
+  0xProto's ascent (1.13em, rounded up) plus the line spacing apart, so a spacing of 0 gives the lab's 1.14. A title
+  too long for 3 lines at 48px fails the build */}}
+{{- $text := replaceRE `\s+` " " (strings.TrimSpace .Title) }}
+{{- /* images.Text draws a character its font lacks as an empty box, so a title with one fails the build. These are the
+  Latin-1 and Latin Extended-A letters and the punctuation and symbols that 0xProto's TTFs have (their cmap). The TTFs
+  have a few more, e.g. Vietnamese and box drawing: add any a title needs */}}
+{{- with findRE `[^\x20-\x7E\xA0-\xA3\xA5-\xAB\xAE-\xB1\xB4\xB6-\xB8\xBA\xBB\xBF-\x{131}\x{134}-\x{137}\x{139}-\x{148}\x{14A}-\x{17E}\x{2013}\x{2014}\x{2018}-\x{201A}\x{201C}-\x{201E}\x{2020}-\x{2022}\x{2025}\x{2026}\x{2039}\x{203A}\x{20AC}\x{2122}\x{2212}\x{2248}\x{2260}\x{2264}\x{2265}]` $text }}
+  {{- errorf "%s: the social card's font can't draw %q in the title; change them, or add them to social-card.html's list if 0xProto has them" $.File.Path (delimit (uniq .) "") }}
+{{- end }}
+{{- $words := split $text " " }}
+{{- $size := 0 }}
+{{- $cols := 0 }}
+{{- $lines := slice }}
+{{- range $s := slice 62 54 48 }}
+  {{- $cols = int (math.Floor (div 978 (mul 0.62 $s))) }}
+  {{- /* wrap at the full width, then 1 character narrower each time, until a word no longer fits or the title takes
+    more lines: at the full width up to 3, and after that no more than it took there */}}
+  {{- range $w := seq $cols -1 1 }}
+    {{- $l := slice }}
+    {{- $line := "" }}
+    {{- $fits := true }}
+    {{- range $words }}
+      {{- if gt (strings.RuneCount .) $w }}{{ $fits = false }}{{ end }}
+      {{- if and $line (gt (add (strings.RuneCount $line) 1 (strings.RuneCount .)) $w) }}
+        {{- $l = $l | append $line }}
+        {{- $line = . }}
+      {{- else }}
+        {{- $line = strings.TrimSpace (print $line " " .) }}
+      {{- end }}
+    {{- end }}
+    {{- $l = $l | append $line }}
+    {{- if or (not $fits) (gt (len $l) (cond (eq $w $cols) 3 (len $lines))) }}{{ break }}{{ end }}
+    {{- $lines = $l }}
+  {{- end }}
+  {{- if $lines }}{{ $size = $s }}{{ break }}{{ end }}
+{{- end }}
+{{- /* the smallest size's lines hold $cols characters, so a word longer than that never fits */}}
+{{- if not $size }}
+  {{- $long := "" }}
+  {{- range $words }}{{ if gt (strings.RuneCount .) $cols }}{{ $long = . }}{{ break }}{{ end }}{{ end }}
+  {{- with $long }}
+    {{- errorf "%s: the title's word %q is %d characters, too long for the social card's lines of %d; shorten it" $.File.Path . (strings.RuneCount .) $cols }}
+  {{- else }}
+    {{- errorf "%s: the title is too long for the social card, which fits 3 lines of %d characters; shorten it" $.File.Path $cols }}
+  {{- end }}
+  {{- return "" }}
+{{- end }}
+{{- /* The box fits the title, as the lab's does. card-base-N.png's box holds N lines at 62px, which are 71px apart: it's
+  178 + 71 × N px tall and centred at y 364.5, so its top is at ⌊(729 − its height) ÷ 2⌋ (scripts/card-base.html).
+  The title starts 39px below the box's top and the meta line 41px below the title's last line, where the lab puts
+  them: at y 243 and 426 in the 2-line box, and 98px above its foot. A title at 54 or 48px takes the smallest box that
+  holds its lines, and the room left over goes half above the title and half below the meta line */}}
+{{- $height := mul (len $lines) (int (math.Ceil (mul 1.13 $size))) }}
+{{- $n := div (add $height 70) 71 }}
+{{- $top := div (sub 729 (add 178 (mul 71 $n))) 2 }}
+{{- $y := add $top 39 (div (sub (mul 71 $n) $height) 2) }}
+{{- /* images.Text keys a font by its path in the image cache, so a changed TTF would leave the cached cards as they
+  were. Fingerprinting puts the font's hash in its path. Neither font is published */}}
+{{- $bold := resources.Get "fonts/0xProto-Bold.ttf" | fingerprint }}
+{{- $regular := resources.Get "fonts/0xProto-Regular.ttf" | fingerprint }}
+{{- $title := images.Text (delimit $lines "\n") (dict
+  "font" $bold "size" $size "linespacing" 0 "color" "#e6e2d6" "x" 104 "y" $y) }}
+{{- $meta := images.Text (printf "%s · %d min read" (.Date.Format "2006-01-02") .ReadingTime) (dict
+  "font" $regular "size" 23 "color" "#a39f93" "x" 104 "y" (add $y $height 41)) }}
+{{- $card := resources.Get (printf "images/card-base-%d.png" $n) | images.Filter $title $meta }}
+{{- /* .RelPermalink is percent-encoded, and a target path is written as given, so the card takes the decoded path: a
+  post at /café/ gets café/card.png, not caf%C3%A9/card.png */}}
+{{- return resources.Copy (path.Join (strings.TrimPrefix "/" (urls.Parse .RelPermalink).Path) "card.png") $card }}

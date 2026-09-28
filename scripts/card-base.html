@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- The social card's base, 1200x630 in the dark palette: the ruled header and an empty framed box, as in the lab's
+  mock (.og in docs/design/theme-lab.src.html, which is sized in cqw: 1cqw is 12px here). scripts/card-base.sh fills in
+  the font, the mark and the box's number of title lines, and screenshots it to assets/images/card-base-1.png, -2.png
+  and -3.png. The build draws each post's title and date in the box (layouts/_partials/social-card.html), so a change
+  to the box's size, place or padding must change the numbers there too -->
+<html lang="en">
+<meta charset="utf-8">
+<title>Social card base</title>
+<style>
+/* 0xProto Regular, the site's subset (static/fonts) */
+@font-face{font-family:"0xProto";font-weight:400;src:url(@FONT@) format("woff2")}
+/* the site's dark tokens (assets/css/main.css) */
+:root{--bg:#0f1214;--fg:#e6e2d6;--mute:#a39f93}
+*,::before{box-sizing:border-box}
+body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg);color:var(--fg);font:22px/1 "0xProto",monospace}
+/* the ruled header: the mark at 48px (3 pixels to each of its 16) and the name, and the address in mute */
+.hd{display:flex;justify-content:space-between;align-items:center;height:114px;padding:34px 58px 29px;border-bottom:3px solid var(--fg)}
+.brand{display:flex;align-items:center;gap:16px;text-transform:uppercase;letter-spacing:.08em}
+.mark{display:block;width:48px;height:48px;fill:var(--fg)}
+.mark .b{fill:var(--bg)}
+.u{color:var(--mute)}
+/* the box fits its title, as the lab's does: it's 178px tall plus 71px, the title's line height at 62px, for each of
+   its --lines. It's centred between the header's rule and 15px above the foot, at y 364.5, with its top rounded down
+   to a whole pixel. So it runs from y 169 to 560 round 3 lines, where the lab draws it, from 204 to 524 round 2 and
+   from 240 to 489 round 1, and from x 58 to 1128. Its text starts at x 104, inside the 3px frame and 43px of padding,
+   and is 978px wide. The dither is main.css's tile at twice the size, 14px down and right */
+.box{--lines:@LINES@;--h:calc(178px + 71px * var(--lines));position:absolute;left:58px;
+  top:round(down,(729px - var(--h)) / 2,1px);width:1070px;height:var(--h)}
+.box::before{content:"";position:absolute;inset:14px -14px -14px 14px;background:var(--fg);opacity:.5;
+  --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E") 0 0/8px 12px repeat;
+  -webkit-mask:var(--m);mask:var(--m)}
+.frame{position:absolute;inset:0;border:3px solid var(--fg);background:var(--bg)}
+/* the label cut into the border, placed as main.css's .legend */
+.legend{position:absolute;top:-.8em;left:24px;padding:0 10px;background:var(--bg);font-size:20px;line-height:1.5}
+</style>
+<header class="hd"><span class="brand">
+@MARK@
+<span>Michael Murphy</span></span><span class="u">mich-murphy.com</span></header>
+<div class="box"><div class="frame"><span class="legend">Post</span></div></div>
