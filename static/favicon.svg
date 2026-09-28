@@ -1,25 +1,8 @@
-{{- /* The Shadow stamp, a 16x16 pixel map: a 14x14 fg square, a 5x5 pixel M knocked out in bg with 2px cells
-  from (2,2), and a 1px fg checker along the right and bottom, the site's dither shadow at favicon scale.
-  f is fg, b is bg, d is one fg dither cell. Horizontal runs are merged into rects. The favicon and the
-  social card reuse it: scripts/favicons.py draws the favicons from a copy, so change both together.
-    ffffffffffffff..
-    ffffffffffffff..
-    ffbbffffffbbffd.
-    ffbbffffffbbff.d
-    ffbbbbffbbbbffd.
-    ffbbbbffbbbbff.d
-    ffbbffbbffbbffd.
-    ffbbffbbffbbff.d
-    ffbbffffffbbffd.
-    ffbbffffffbbff.d
-    ffbbffffffbbffd.
-    ffbbffffffbbff.d
-    ffffffffffffffd.
-    ffffffffffffff.d
-    ..d.d.d.d.d.d.d.
-    ...d.d.d.d.d.d.d
-*/ -}}
-<svg class="mark" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+<!-- The Shadow stamp, drawn by scripts/favicons.py -->
+<style>@media (prefers-color-scheme:light){.p{fill:#f5f4f0}.m{fill:#0f1214}}</style>
+<rect class="p" width="16" height="16" fill="#0f1214"/>
+<g class="m" fill="#e6e2d6">
 <rect x="0" y="0" width="14" height="1"/>
 <rect x="0" y="1" width="14" height="1"/>
 <rect x="0" y="2" width="2" height="1"/><rect x="4" y="2" width="6" height="1"/><rect x="12" y="2" width="2" height="1"/><rect x="14" y="2" width="1" height="1"/>
@@ -36,16 +19,5 @@
 <rect x="0" y="13" width="14" height="1"/><rect x="15" y="13" width="1" height="1"/>
 <rect x="2" y="14" width="1" height="1"/><rect x="4" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="8" y="14" width="1" height="1"/><rect x="10" y="14" width="1" height="1"/><rect x="12" y="14" width="1" height="1"/><rect x="14" y="14" width="1" height="1"/>
 <rect x="3" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="7" y="15" width="1" height="1"/><rect x="9" y="15" width="1" height="1"/><rect x="11" y="15" width="1" height="1"/><rect x="13" y="15" width="1" height="1"/><rect x="15" y="15" width="1" height="1"/>
-<g class="b">
-<rect x="2" y="2" width="2" height="1"/><rect x="10" y="2" width="2" height="1"/>
-<rect x="2" y="3" width="2" height="1"/><rect x="10" y="3" width="2" height="1"/>
-<rect x="2" y="4" width="4" height="1"/><rect x="8" y="4" width="4" height="1"/>
-<rect x="2" y="5" width="4" height="1"/><rect x="8" y="5" width="4" height="1"/>
-<rect x="2" y="6" width="2" height="1"/><rect x="6" y="6" width="2" height="1"/><rect x="10" y="6" width="2" height="1"/>
-<rect x="2" y="7" width="2" height="1"/><rect x="6" y="7" width="2" height="1"/><rect x="10" y="7" width="2" height="1"/>
-<rect x="2" y="8" width="2" height="1"/><rect x="10" y="8" width="2" height="1"/>
-<rect x="2" y="9" width="2" height="1"/><rect x="10" y="9" width="2" height="1"/>
-<rect x="2" y="10" width="2" height="1"/><rect x="10" y="10" width="2" height="1"/>
-<rect x="2" y="11" width="2" height="1"/><rect x="10" y="11" width="2" height="1"/>
 </g>
 </svg>
