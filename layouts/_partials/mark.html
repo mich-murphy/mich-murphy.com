@@ -1,7 +1,8 @@
 {{- /* The Shadow stamp, a 16x16 pixel map: a 14x14 fg square, a 5x5 pixel M knocked out in bg with 2px cells
   from (2,2), and a 1px fg checker along the right and bottom, the site's dither shadow at favicon scale.
   f is fg, b is bg, d is one fg dither cell. Horizontal runs are merged into rects. The favicon and the
-  social card reuse it: scripts/favicons.py draws the favicons from a copy, so change both together.
+  social card reuse it: scripts/favicons.py reads the map below and stops if the fg rects don't match
+  it, so change the map and the rects together, then rerun the script.
     ffffffffffffff..
     ffffffffffffff..
     ffbbffffffbbffd.
