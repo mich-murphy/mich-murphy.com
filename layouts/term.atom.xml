@@ -1,0 +1,3 @@
+{{- /* A tag's feed, /tags/<tag>/atom.xml: its posts (_partials/feed.xml). The tag's HTML page is a redirect
+  (tags/list.html), but its feed stays where the Zola site served it */}}
+{{- partial "feed.xml" (dict "page" . "pages" .Pages) }}

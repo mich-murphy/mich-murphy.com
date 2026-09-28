@@ -6,9 +6,8 @@
   falls back to data/origin.toml by its file name. The date is the author date in the site's timeZone
   (Australia/Sydney). Returns a dict with date (a time.Time), hash (abbreviated, to show) and full (the whole hash,
   to link to; a fallback only has the abbreviated one, so full is that), or an empty one for an uncommitted post.
-  The colophon uses it, and later the feed and the sitemap: call it with partialCached "origin.html" . .Path. No
-  template of ours reads .Lastmod, which git info sets to the last commit, bulk or not; Hugo's built-in sitemap
-  does until M15 replaces it */}}
+  The colophon, the feeds (feed.xml) and the sitemap use it: call it with partialCached "origin.html" . .Path. No
+  template reads .Lastmod, which git info sets to the last commit, bulk or not */}}
 {{- $o := dict }}
 {{- /* time.AsTime reads a date with no offset in the site's timeZone */}}
 {{- $tz := (time.AsTime "2000-01-01").Location }}
