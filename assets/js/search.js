@@ -3,7 +3,7 @@
 // shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. The line
 // index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, on Esc in the frame, on
 // a filter's fragment typed into the address, or when the page opens at ?q= or #tag. If it doesn't load, the page
-// goes back to working as it does without the script.
+// goes back to working as it does without the script, and if the request itself failed, it asks again later.
 // - The box holds words: each matches from the start of a word, in any case and script, so imperm finds impermanence
 //   and rsa finds ssh_host_rsa_key, but sy doesn't find easy. A single character is ignored until there's a second.
 //   "A phrase" matches as written, #nix any tag starting with nix, and 2023 that year. Every part must match.
@@ -161,22 +161,25 @@ addEventListener("pagehide", () => {
 });
 
 // without the index, the page goes back to working as it does without the script: the box hides, the frame is
-// labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. The address is
-// cleared of words. When follow is set, a filter that was set is followed there, so a pick made meanwhile still
-// applies: only one, since filters.css applies one at a time, and the tag wins over the year
-const off = (follow) => {
+// labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. When the server
+// answered badly, the address is cleared of words, and a filter that was set is followed there, so a pick made
+// meanwhile still applies: only one, since filters.css applies one at a time, and the tag wins over the year. When the
+// request failed instead, the page may be being left, where following would cancel leaving and clearing would lose
+// what Back returns to, so the address stays as it is, with any update pending for it
+const off = (bad) => {
   if (box.hidden) return;
-  clearTimeout(tu);
-  tu = 0;
   box.hidden = true;
   lg.textContent = "Filter";
   for (const [a] of E) attr(a, "aria-current");
   for (const b of $$(".fmn b")) b.textContent = "";
+  if (!bad) return;
+  clearTimeout(tu);
+  tu = 0;
   const f = T[0] || (Y && "y" + Y);
   try {
     history.replaceState(null, "", location.pathname);
   } catch {}
-  if (follow && f) location.hash = f;
+  if (f) location.hash = f;
 };
 
 // a key pressed in the box for the first result: down moves to it, and Enter opens it. Pressed before the index has
@@ -189,12 +192,13 @@ const act = () => {
 };
 
 // the index, once: each post keeps its row. When it has loaded, the box shows if it's still hidden, or else the list
-// is drawn, once, however many changes waited for it, and a key that waited acts. If it doesn't load, there's no
-// second try. A pick made meanwhile
-// is followed only when the server answered badly, with a SyntaxError: JSON that doesn't parse, which WebKit throws as
-// a DOMException of that name, or a bad status, thrown as one. When the request itself fails, even partway through
-// the body, as WebKit's does when the page is left while it loads, nothing is, since setting the fragment cancels
-// leaving
+// is drawn, once, however many changes waited for it, and a key that waited acts. If the server answers badly, with a
+// SyntaxError (JSON that doesn't parse, which WebKit throws as a DOMException of that name, or a bad status, thrown as
+// one), there's no second try. The request itself fails, even partway through the body, when the page is left while
+// it loads: WebKit fails it as the navigation starts, and Chrome and Firefox as the page unloads. That can't be told
+// from a failure with the page staying, so either way the page works as it does without the script, a key that
+// waited is dropped, and the request is made again when the page is shown again, as on Back from the back-forward
+// cache, or on a pick from a menu
 const load = () =>
   (P ||= fetch("/index.json")
     .then((r) => {
@@ -204,10 +208,15 @@ const load = () =>
     .then((d) => {
       D = d.filter((p) => (p.r = rows.find((r) => $("a", r).getAttribute("href") == `/${p.s}/`)));
     })
-    .catch((e) => off(e.name == "SyntaxError"))
+    .catch((e) => {
+      const bad = e.name == "SyntaxError";
+      if (!bad) P = K = 0;
+      off(bad);
+    })
     .then(() => {
       if (D) box.hidden ? show() : draw(), act();
     }));
+addEventListener("pageshow", () => P === 0 && load());
 
 // the menus show a change at once, and the list once the index has loaded. A change drops a key still waiting for it
 const go = () => {
@@ -252,11 +261,12 @@ inp.oninput = () => {
 };
 
 // a pick replaces its menu's value, and × clears it. A menu closes on a pick, leaving focus on it, and on a click
-// outside it. While the box is hidden, until the index loads or for good if it doesn't, the links work as they do
-// without the script
+// outside it. While the box is hidden, the links work as they do without the script, and after a request for the index
+// that failed, a pick makes it again
 addEventListener("click", (e) => {
   const a = e.target.closest(".ff a");
   for (const d of dets) if (!d.contains(e.target)) d.open = false;
+  if (a && P === 0) load();
   if (!a || box.hidden) return;
   e.preventDefault();
   if (a.hasAttribute("aria-disabled")) return;
