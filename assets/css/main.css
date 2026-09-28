@@ -105,7 +105,7 @@ main:focus{outline:none}
    wraps, and title bars are outlined rather than filled, since printers drop backgrounds; for the same reason labels
    and bullets are made to print theirs, or a frame's border would run through its label and the squares would go.
    External links in the prose print their address, unless their text already is it (render-link.html). Headings stay
-   with what follows them, a box that fits on a page isn't split, and the footer avoids starting a page. A label sits
+   with what follows them, a box that fits on a page isn't split, and the footer asks not to start a page. A label sits
    across its frame's top border, above the box, where a page break just above the box would cut it in two or push it
    under the border, so a labelled box takes a clear 10px border on top to hold it; a code window moves its own frame
    onto its code to make room. main.css comes first on every page, so a rule that overrides another file's is qualified
@@ -116,6 +116,13 @@ main:focus{outline:none}
      pages. Firefox prints a page with only the header, or with nothing, drops main's bottom padding and can leave the
      footer's rule a page before its text */
   body{display:block;min-height:0}
+  /* the 28px over the footer, as under a post's Older/Newer, is the footer's margin rather than main's padding. The
+     screen's 56px pushed /feeds/'s footer to a page of its own, and Firefox won't break in padding: when main's content
+     fits but its padding runs over, it moves all of main to the next page and leaves one with only the header. A margin
+     at a break is just dropped. The footer asks not to start a page; Chrome then takes the last row or lines with it
+     when it can, and Firefox ignores it */
+  main,body main:has(.pn-file){padding-bottom:0}
+  .ftw{margin-top:28px;break-before:avoid}
   .hd nav,nav.stat,nav.pn,.sfr,.ft>span+span,.dz::before{display:none}
   body:has(nav.stat){padding-bottom:0}
   .purl{display:inline;color:var(--mute)}
@@ -126,7 +133,6 @@ main:focus{outline:none}
   .prose a[href^="http"]:not(.addr)::after{content:" <" attr(href) ">";color:var(--mute);font-size:12px;overflow-wrap:anywhere}
   .prose :is(h2,h3){break-after:avoid}
   .win,.callout,.colo,.kv{break-inside:avoid}
-  .ftw{break-before:avoid}
   :has(>.legend+.frame){border-top:10px solid transparent}
   .win.lgw{border-width:10px 0 0;border-color:transparent}
   .win.lgw pre.code{border:2px solid var(--fg)}
