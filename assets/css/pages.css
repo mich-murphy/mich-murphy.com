@@ -1,0 +1,21 @@
+/* the boxes on the pages that aren't posts (about.html, and Feeds), as wide as the text column. A keyed box's list is
+   laid out in prose.css, as the colophon's is. A value that can't break, like a URL, breaks anywhere rather than run
+   out of the box. The last box sits as far above the footer as any page's */
+.kv,.pcard{position:relative;max-width:74ch}
+.kv{margin-block:32px 40px}
+.kv:last-child{margin-bottom:0}
+.kv dl{row-gap:2px}
+.kv dd{overflow-wrap:anywhere}
+
+/* the Projects card: each project's name, linked, over its description in mute, with dotted rules between. The ul
+   has list-style:none, which WebKit exposes as a group unless it has role=list */
+.pcard{margin-top:40px}
+.pcard .frame{padding:12px 18px 6px}
+.pcard ul{margin:0;padding:0;list-style:none}
+.pcard li{padding-block:8px}
+.pcard li+li{border-top:1px dotted var(--edge)}
+.pcard .pd{display:block;color:var(--mute);font-size:13.5px;line-height:1.5}
+
+@media (max-width:600px){
+  .pcard .frame{padding-inline:12px}
+}
