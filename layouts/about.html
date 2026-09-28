@@ -1,11 +1,11 @@
 {{ define "main" }}
-{{- /* About (content/about.md): the bare head and the bio, then the Projects card from data/projects.toml, and the
-  "This site" box, the page's one dither, whose values all come from the build. A ul in the bio gets role=list, as in
-  page.html. Styles are prose.css and pages.css */}}
+{{- /* About (content/about.md): the bare head and the bio (prose.html), then the Projects card from
+  data/projects.toml, and the "This site" box, the page's one dither, whose values all come from the build. Styles
+  are prose.css and pages.css */}}
 {{- $gh := site.Params.repo }}
 {{- $projects := hugo.Data.projects.project }}
 <header class="ph bare"><h1>{{ .Title }}</h1></header>
-<div class="prose">{{ replace .Content "<ul>" `<ul role="list">` | safeHTML }}</div>
+{{ partial "prose.html" . }}
 <div class="pcard"><span class="legend">Projects · {{ len $projects }}</span><div class="frame"><ul role="list">
 {{- range $projects }}
 <li><a href="{{ .url }}">{{ .name }}</a><span class="pd">{{ .desc }}</span></li>

@@ -14,9 +14,7 @@
   {{- with .GetTerms "tags" }} ·{{ range . }}{{ $s := path.Base (urls.Parse .RelPermalink).Path }} <a href="/#{{ $s }}">#{{ $s }}</a>{{ end }}{{ end }}</p>
 {{- end }}
 </header>
-{{- /* WebKit exposes a ul with list-style:none as a group, not a list, unless it has role=list. Goldmark writes
-  bare <ul> and escapes it in code, so this only meets real lists. ol keeps its numbers, so it stays a list */}}
-<div class="prose">{{ replace .Content "<ul>" `<ul role="list">` | safeHTML }}</div>
+{{ partial "prose.html" . }}
 {{- if $post }}
 {{ partial "colophon.html" . }}
 {{ partial "pn.html" . }}
