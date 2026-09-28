@@ -9,7 +9,14 @@
   the narrowest width that keeps as many lines; Chrome's balancing may break a title elsewhere. images.Text sets lines
   0xProto's ascent (1.13em, rounded up) plus the line spacing apart, so a spacing of 0 gives the lab's 1.14. A title
   too long for 3 lines at 48px fails the build */}}
-{{- $words := split (replaceRE `\s+` " " (strings.TrimSpace .Title)) " " }}
+{{- $text := replaceRE `\s+` " " (strings.TrimSpace .Title) }}
+{{- /* images.Text draws a character its font lacks as an empty box, so a title with one fails the build. These are the
+  Latin-1 and Latin Extended-A letters and the punctuation and symbols that 0xProto's TTFs have (their cmap). The TTFs
+  have a few more, e.g. Vietnamese and box drawing: add any a title needs */}}
+{{- with findRE `[^\x20-\x7E\xA0-\xA3\xA5-\xAB\xAE-\xB1\xB4\xB6-\xB8\xBA\xBB\xBF-\x{131}\x{134}-\x{137}\x{139}-\x{148}\x{14A}-\x{17E}\x{2013}\x{2014}\x{2018}-\x{201A}\x{201C}-\x{201E}\x{2020}-\x{2022}\x{2025}\x{2026}\x{2039}\x{203A}\x{20AC}\x{2122}\x{2212}\x{2248}\x{2260}\x{2264}\x{2265}]` $text }}
+  {{- errorf "%s: the social card's font can't draw %q in the title; change them, or add them to social-card.html's list if 0xProto has them" $.File.Path (delimit (uniq .) "") }}
+{{- end }}
+{{- $words := split $text " " }}
 {{- $size := 0 }}
 {{- $lines := slice }}
 {{- range $s := slice 62 54 48 }}
