@@ -131,8 +131,6 @@ body:has(.stat){padding-bottom:40px}
 @media (prefers-reduced-motion:reduce){
   .stat-pop{transition:none}
 }
-/* the status line is for the screen */
-@media print{.stat{display:none}}
 /* forced colours drop backgrounds, and the squares are backgrounds. The progress rule would turn into Canvas over the
    strip's rule, so it takes Highlight, as a native progress bar does */
 @media (forced-colors:active){

@@ -4,13 +4,14 @@
 @font-face{font-family:"0xProto";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/0xProto-Bold.woff2) format("woff2")}
 @font-face{font-family:"0xProto";font-style:italic;font-weight:400;font-display:swap;src:url(/fonts/0xProto-Italic.woff2) format("woff2")}
 
-/* the tuned palette, dark first. Light follows prefers-color-scheme: a toggle would need a script */
+/* the tuned palette, dark first. Light follows prefers-color-scheme: a toggle would need a script. Print always takes
+   light, whatever the scheme, and the print block at the end turns its grounds white */
 :root{color-scheme:dark;
   --bg:#0f1214;--fg:#e6e2d6;--body:color-mix(in srgb,var(--fg) 85%,var(--bg));--mute:#a39f93;--line:#272c30;--edge:#3e454a;--code:#0a0d0f;
   --acc:#e7a15a;--on:#0f1214;--acct:#e7a15a;--focus:#e7a15a;--com:#75818b;--str:#e7a15a;
   --mono:"0xProto",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
 /* acc is only 1.98:1 on the light ground, so accent text and the focus ring get their own values */
-@media (prefers-color-scheme:light){
+@media print,(prefers-color-scheme:light){
   :root{color-scheme:light;
     --bg:#f5f4f0;--fg:#0f1214;--body:color-mix(in srgb,var(--fg) 74%,var(--bg));--mute:#67655d;--line:#dddbd3;--edge:#b3b0a6;--code:#ebe9e3;
     --acct:#9f5510;--focus:#0f1214;--com:#5f6a72;--str:#9f5510}
@@ -98,3 +99,31 @@ main:focus{outline:none}
 }
 /* reduced motion: nothing here animates. Components scope their own rules: the Contents box's fade is off (post.css),
    and the status line's progress rule stays, because it only moves as the page scrolls */
+
+/* print: the light palette on white, with body text in full fg. No nav, status line (nor the room kept for it under the
+   footer), Older/Newer, Search, dither or build line; the header shows the page's address where the nav was. Code
+   wraps, and title bars are outlined rather than filled, since printers drop backgrounds; for the same reason labels
+   and bullets are made to print theirs, or a frame's border would run through its label and the squares would go.
+   External links in the prose print their address, unless their text already is it (render-link.html). Headings stay
+   with what follows them, a box that fits on a page isn't split, and the footer avoids starting a page. A label sits
+   across its frame's top border, above the box, where a page break just above the box would cut it in two or push it
+   under the border, so a labelled box takes a clear 10px border on top to hold it; a code window moves its own frame
+   onto its code to make room. main.css comes first on every page, so a rule that overrides another file's is qualified
+   by its element to outrank it */
+@media print{
+  :root{--bg:#fff;--code:#fff;--body:var(--fg)}
+  .hd nav,nav.stat,nav.pn,.sfr,.ft>span+span,.dz::before{display:none}
+  body:has(nav.stat){padding-bottom:0}
+  .purl{display:inline;color:var(--mute)}
+  .legend,.prose ul>li::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  figure.win figcaption{background:var(--bg);color:var(--fg)}
+  figure.win pre.code{white-space:pre-wrap;background:none}
+  .win code{overflow-wrap:anywhere}
+  .prose a[href^="http"]:not(.addr)::after{content:" <" attr(href) ">";color:var(--mute);font-size:12px;overflow-wrap:anywhere}
+  .prose :is(h2,h3){break-after:avoid}
+  .win,.callout,.colo,.kv{break-inside:avoid}
+  .ftw{break-before:avoid}
+  :has(>.legend+.frame){border-top:10px solid transparent}
+  .win.lgw{border-width:10px 0 0;border-color:transparent}
+  .win.lgw pre.code{border:2px solid var(--fg)}
+}
