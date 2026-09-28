@@ -22,7 +22,7 @@
 {{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
 {{- /* prose.css styles the page head, the prose and keyed lists, on posts and on the other pages (About, Feeds).
   post.css adds a post's code windows, colophon, Older/Newer and status line, and pages.css the other pages' keyed
-  boxes and Projects card */}}
+  boxes, Projects card and Feeds I read card */}}
 {{- if .IsPage }}{{ $names = $names | append "prose" (cond (eq .Section "posts") "post" "pages") }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}

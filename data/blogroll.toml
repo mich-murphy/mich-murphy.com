@@ -1,0 +1,55 @@
+# The feeds I read, for the Feeds page (layouts/feeds.html), edited by hand. topics sets the order the topics are
+# listed in, and every feed's topic must be one of them. A feed's host is its URL's, without www., unless host is set
+topics = ["Data", "Development", "Self Hosting", "Technology"]
+
+[[feed]]
+topic = "Data"
+name = "Data Engineering Blog"
+url = "https://www.ssp.sh/"
+
+[[feed]]
+topic = "Data"
+name = "Ludicity"
+url = "https://ludic.mataroa.blog"
+
+[[feed]]
+topic = "Development"
+name = "Sean Goedecke"
+url = "https://seangoedecke.com"
+
+[[feed]]
+topic = "Development"
+name = "Xe Iaso's blog"
+url = "https://xeiaso.net/"
+
+[[feed]]
+topic = "Development"
+name = "マリウス"
+url = "https://xn--gckvb8fzb.com/"
+# the URL's host is the punycode form of this
+host = "マリウス.com"
+
+[[feed]]
+topic = "Self Hosting"
+name = "ktz."
+url = "https://blog.ktz.me/"
+
+[[feed]]
+topic = "Self Hosting"
+name = "Noted"
+url = "https://noted.lol/"
+
+[[feed]]
+topic = "Self Hosting"
+name = "selfh.st"
+url = "https://selfh.st"
+
+[[feed]]
+topic = "Technology"
+name = "Alterslash"
+url = "https://alterslash.org/"
+
+[[feed]]
+topic = "Technology"
+name = "Ed Zitron's Where's Your Ed At"
+url = "https://www.wheresyoured.at/"
