@@ -78,6 +78,8 @@ main:focus{outline:none}
 .hd nav a:hover{padding:2px 5px;margin:-2px -5px}
 /* that padding moves the link's box 5px left, so the square moves back by as much */
 .hd nav a[aria-current]:hover::before{left:calc(-2px - .8ch)}
+/* the page's address (header.html) is for print, where it takes the nav's place */
+.purl{display:none}
 /* bigger hit areas without moving anything */
 .ft a{position:relative}
 .hd nav a::after,.ft a::after{content:"";position:absolute;inset:-12px -6px}

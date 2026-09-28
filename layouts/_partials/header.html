@@ -12,5 +12,10 @@
   <a href="{{ $href }}"{{ if eq $href $here }} aria-current="page"{{ else if and $post (eq $name "posts") }} aria-current="true"{{ end }}>{{ $name }}</a>
 {{- end }}
 </nav>
+{{- /* print only (main.css): the page's address, where the nav was. 404 is served at any missing address, so it has
+  none of its own */}}
+{{- if ne .Kind "404" }}
+<span class="purl">{{ replaceRE `^https?://` "" .Permalink }}</span>
+{{- end }}
 </div>
 </header>
