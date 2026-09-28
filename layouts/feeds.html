@@ -1,10 +1,11 @@
 {{ define "main" }}
 {{- /* Feeds (content/feeds/index.md): the bare head, then the Subscribe box, the page's one dither. It keys the feed's
   full address, /atom.xml on the base URL, which one click selects whole (pages.css), and the post count and newest
-  date from the build. Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic
-  in the file's order: each feed's name, linked, and its host, the URL's without www. unless the file sets one. A feed
-  with no name, with a URL that has no host (noted.lol/ rather than https://noted.lol/), or whose topic isn't listed
-  fails the build rather than show a broken row or go missing from the card. Styles are prose.css and pages.css */}}
+  date from the build. The <wbr> lets a phone break the address before atom.xml rather than at mich-murphy's hyphen.
+  Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic in the file's order:
+  each feed's name, linked, and its host, the URL's without www. unless the file sets one. A feed with no name, with a
+  URL that has no host (noted.lol/ rather than https://noted.lol/), or whose topic isn't listed fails the build rather
+  than show a broken row or go missing from the card. Styles are prose.css and pages.css */}}
 {{- $roll := hugo.Data.blogroll }}
 {{- range $roll.feed }}
   {{- $url := string .url }}
@@ -15,7 +16,7 @@
 <header class="ph bare"><h1>{{ .Title }}</h1></header>
 <div class="dz kv"><span class="legend">Subscribe</span><div class="frame">
 <dl>
-<dt>feed</dt><dd><code class="url">{{ urls.JoinPath site.BaseURL "atom.xml" }}</code></dd>
+<dt>feed</dt><dd><code class="url">{{ strings.TrimSuffix "/" site.BaseURL }}/<wbr>atom.xml</code></dd>
 <dt>format</dt><dd>Atom 1.0, full post text</dd>
 {{- with (where site.RegularPages "Section" "posts").ByDate.Reverse }}
 <dt>posts</dt><dd>{{ len . }}, newest {{ (index . 0).Date.Format "2006-01-02" }}</dd>
