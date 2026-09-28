@@ -1,8 +1,6 @@
 {{- /* A post's social card: returns a 1200x630 PNG, published at /<slug>/card.png. It draws the title in 0xProto Bold
-  and "date · N min read" in Regular, in the dark fg and mute, onto assets/images/card-base.png: the ruled header and
-  an empty framed box, which scripts/card-base.sh draws from scripts/card-base.html. The numbers place the text in
-  that box as the lab places a 3-line title: the text is 978px wide from x 104, the title's first line starts at y 208,
-  and the meta line starts at y 462, at the foot of the box.
+  and "date · N min read" in Regular, in the dark fg and mute, onto a card base: the ruled header and an empty framed
+  box, which scripts/card-base.sh draws from scripts/card-base.html. The text is 978px wide from x 104.
   images.Text has no width: it wraps only at the image's width less 20 and x, and keeps \n, so the title is wrapped
   here, on spaces. 0xProto's advance is 0.62em, so a line holds ⌊978 ÷ (0.62 × size)⌋ characters. The size steps 62,
   54, 48 until the title fits in 3 lines. The lab balances its title (text-wrap:balance), so the lines are wrapped at
@@ -52,16 +50,26 @@
   {{- else }}
     {{- errorf "%s: the title is too long for the social card, which fits 3 lines of %d characters; shorten it" $.File.Path $cols }}
   {{- end }}
+  {{- return "" }}
 {{- end }}
+{{- /* The box fits the title, as the lab's does. card-base-N.png's box holds N lines at 62px, which are 71px apart: it's
+  178 + 71 × N px tall and centred at y 364.5, so its top is at ⌊(729 − its height) ÷ 2⌋ (scripts/card-base.html).
+  The title starts 39px below the box's top and the meta line 41px below the title's last line, where the lab puts
+  them: at y 243 and 426 in the 2-line box, and 98px above its foot. A title at 54 or 48px takes the smallest box that
+  holds its lines, and the room left over goes half above the title and half below the meta line */}}
+{{- $height := mul (len $lines) (int (math.Ceil (mul 1.13 $size))) }}
+{{- $n := div (add $height 70) 71 }}
+{{- $top := div (sub 729 (add 178 (mul 71 $n))) 2 }}
+{{- $y := add $top 39 (div (sub (mul 71 $n) $height) 2) }}
 {{- /* images.Text keys a font by its path in the image cache, so a changed TTF would leave the cached cards as they
   were. Fingerprinting puts the font's hash in its path. Neither font is published */}}
 {{- $bold := resources.Get "fonts/0xProto-Bold.ttf" | fingerprint }}
 {{- $regular := resources.Get "fonts/0xProto-Regular.ttf" | fingerprint }}
 {{- $title := images.Text (delimit $lines "\n") (dict
-  "font" $bold "size" $size "linespacing" 0 "color" "#e6e2d6" "x" 104 "y" 208) }}
+  "font" $bold "size" $size "linespacing" 0 "color" "#e6e2d6" "x" 104 "y" $y) }}
 {{- $meta := images.Text (printf "%s · %d min read" (.Date.Format "2006-01-02") .ReadingTime) (dict
-  "font" $regular "size" 23 "color" "#a39f93" "x" 104 "y" 462) }}
-{{- $card := resources.Get "images/card-base.png" | images.Filter $title $meta }}
+  "font" $regular "size" 23 "color" "#a39f93" "x" 104 "y" (add $y $height 41)) }}
+{{- $card := resources.Get (printf "images/card-base-%d.png" $n) | images.Filter $title $meta }}
 {{- /* .RelPermalink is percent-encoded, and a target path is written as given, so the card takes the decoded path: a
   post at /café/ gets café/card.png, not caf%C3%A9/card.png */}}
 {{- return resources.Copy (path.Join (strings.TrimPrefix "/" (urls.Parse .RelPermalink).Path) "card.png") $card }}

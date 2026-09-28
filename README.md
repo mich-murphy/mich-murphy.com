@@ -21,7 +21,7 @@ Use the trailer only on a commit that changes nothing but formatting and links. 
 Because the build reads git history, it only runs in a git checkout. In a copy without `.git`, like a tarball or a `git archive` export, it fails with "fatal: not a git repository". Build one with `HUGO_ENABLEGITINFO=false`, and each colophon falls back to `data/origin.toml`; a post that isn't in it shows only its created date.
 
 ## Social cards
-Each post has a 1200×630 card for link previews at `/<slug>/card.png`. The build draws the post's title and date onto `assets/images/card-base.png`, which holds the header and an empty framed box. A title too long for 3 lines at the smallest size fails the build. To change the base, edit `scripts/card-base.html`, run `scripts/card-base.sh` (it needs Google Chrome), and commit the new PNG.
+Each post has a 1200×630 card for link previews at `/<slug>/card.png`. The build draws the post's title and date onto one of `assets/images/card-base-1.png`, `-2.png` and `-3.png`, which hold the header and an empty framed box sized for a title of 1, 2 or 3 lines. A title too long for 3 lines at the smallest size, or with a character the card's font can't draw, fails the build. To change the bases, edit `scripts/card-base.html`, run `scripts/card-base.sh` (it needs Google Chrome), and commit the new PNGs.
 
 ## Font
 The site uses the [0xProto](https://github.com/0xType/0xProto) font, which is licensed under the SIL Open Font License 1.1. The pages load subsets from `static/fonts`, and the social cards are drawn with the release's TTF files in `assets/fonts`. A copy of the license, `LICENSE-0xProto.txt`, sits in both folders.
