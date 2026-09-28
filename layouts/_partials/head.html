@@ -20,7 +20,9 @@
 {{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "card" }}{{ end }}
 {{- /* index.css styles home's intro and Search, and filters.css filters the card without a script */}}
 {{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
-{{- /* post.css styles the post head, the prose and code windows */}}
+{{- /* prose.css styles the page head, the prose and keyed lists, on posts and on the other pages (About, Feeds).
+  post.css adds a post's code windows, colophon, Older/Newer and status line */}}
+{{- if .IsPage }}{{ $names = $names | append "prose" }}{{ end }}
 {{- if and .IsPage (eq .Section "posts") }}{{ $names = $names | append "post" }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}

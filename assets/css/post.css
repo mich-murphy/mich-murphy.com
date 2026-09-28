@@ -1,33 +1,6 @@
-/* the post head and the prose (page.html), code windows (render-codeblock.html), the colophon (colophon.html), Older
-   and Newer (pn.html) and the status line (status-line.html). Only the last three are post-specific, so About and
-   Feeds can reuse the rest. Callouts (render-blockquote.html) are in main.css, apart from how a code window sits in
-   one */
-/* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
-   width. A bare head has no meta line */
-.ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
-.ph h1{margin:0 0 10px}
-.ph.bare h1{margin:0}
-.ph .meta{margin:0;color:var(--mute);font-size:13.5px}
-
-/* headings in full fg over body text in the body mix. The ids are there for Contents and search, so a jump
-   to one leaves some room above it */
-.prose{max-width:74ch}
-.prose :is(p,li){color:var(--body)}
-.prose h2{margin:2.3em 0 .75em}
-.prose h3{margin:1.9em 0 .6em}
-.prose :is(h2,h3){scroll-margin-top:24px}
-
-/* ul gets the 7px square used by the nav marker and Contents; ol keeps its numbers, in fg */
-.prose :is(ul,ol){margin:0 0 1.15em}
-.prose ul{padding-left:22px;list-style:none}
-.prose li{position:relative;margin:.2em 0}
-.prose ul>li::before{content:"";position:absolute;left:-22px;top:10px;width:7px;height:7px;background:var(--fg)}
-.prose ol{padding-left:3ch}
-.prose ol>li{padding-left:.6ch}
-.prose ol>li::marker{color:var(--fg)}
-
-/* a quote is set off by a rule. An alert is a callout, whose rules are in main.css, since 404 has one too */
-.prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
+/* a post's code windows (render-codeblock.html), colophon (colophon.html), Older and Newer (pn.html) and status line
+   (status-line.html). The head, the prose and the colophon's keyed list are in prose.css, which About and Feeds share,
+   and callouts (render-blockquote.html) in main.css, apart from how a code window sits in one */
 /* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
    just enough room for its own label under the note's */
 .callout .frame>:last-child{margin-bottom:1.15em}
@@ -55,17 +28,13 @@
 .win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
 
 /* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
-   the frame. One keyed list, keys in mute in a max-content column and values in fg, with history at the end of the
-   commit row; then the words and code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
+   the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
+   code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
 .colo{margin-top:56px;max-width:74ch}
 .colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
-.colo .frame{padding:20px 18px 14px;font-size:13.5px;line-height:1.55}
-.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;gap:0 2ch;align-items:baseline;margin:0}
-.colo dt,.comp{color:var(--mute)}
-.colo dd{grid-column:2/-1;min-width:0;margin:0}
 .colo .cm{grid-column:2}
 .colo .hist{grid-column:3;text-align:right}
-.comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge)}
+.comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge);color:var(--mute)}
 .comp span{white-space:nowrap}
 .comp .n{color:var(--fg)}
 .comp .sep{padding-inline:.6ch}
@@ -167,6 +136,6 @@ body:has(.stat){padding-bottom:40px}
 /* forced colours drop backgrounds, and the squares are backgrounds. The progress rule would turn into Canvas over the
    strip's rule, so it takes Highlight, as a native progress bar does */
 @media (forced-colors:active){
-  .prose ul>li::before,.stat-cur a::before,.clist li::before{background:CanvasText;forced-color-adjust:none}
+  .stat-cur a::before,.clist li::before{background:CanvasText;forced-color-adjust:none}
   .stat-prog{background:Highlight;forced-color-adjust:none}
 }
