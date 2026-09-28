@@ -28,5 +28,9 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }}>{{ .Text }}</a>
+{{- /* print writes an external link's address after it (main.css), unless its text already is the address, as an
+  autolink's is. Class addr marks those, with or without the scheme and a trailing slash */ -}}
+{{- $bare := `^https?://|/$` -}}
+{{- $addr := eq (replaceRE $bare "" .PlainText) (replaceRE $bare "" .Destination) -}}
+<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }} {{- if $addr }} class="addr" {{- end }}>{{ .Text }}</a>
 {{- /**/ -}}
