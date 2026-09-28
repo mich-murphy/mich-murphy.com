@@ -127,12 +127,15 @@ main:focus{outline:none}
   body:has(nav.stat){padding-bottom:0}
   .purl{display:inline;color:var(--mute)}
   .legend,.prose ul>li::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  figure.win figcaption{background:var(--bg);color:var(--fg)}
-  figure.win pre.code{white-space:pre-wrap;background:none}
+  figure.win figcaption{background:var(--bg);color:var(--fg);break-after:avoid}
+  figure.win pre.code{white-space:pre-wrap;background:none;orphans:4;widows:4}
   .win code{overflow-wrap:anywhere}
   .prose a[href^="http"]:not(.addr)::after{content:" <" attr(href) ">";color:var(--mute);font-size:12px;overflow-wrap:anywhere}
   .prose :is(h2,h3){break-after:avoid}
-  .win,.callout,.colo,.kv{break-inside:avoid}
+  /* a code window taller than a page (class long, render-codeblock.html) would be pushed to a new page and split there
+     anyway, so it splits where it falls, keeping its title bar with its code and at least 4 lines on each side
+     (orphans and widows, which Firefox ignores) */
+  .win:not(.long),.callout,.colo,.kv{break-inside:avoid}
   :has(>.legend+.frame){border-top:10px solid transparent}
   .win.lgw{border-width:10px 0 0;border-color:transparent}
   .win.lgw pre.code{border:2px solid var(--fg)}
