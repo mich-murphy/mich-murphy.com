@@ -1,22 +1,21 @@
 # Theme redesign: handover
 
-Status as of 2026-09-28. The design is settled (rev 15, picked; see "Final picks"). **M1–M18 are built, reviewed and fixed.** Each milestone is on its own local branch, and `m18-print` holds the whole stack. See "Build progress". Nothing is pushed. M19, verify and launch, is next and needs the user.
+Status as of 2026-09-28. The design is settled (rev 15, picked; see "Final picks"). **M1–M18 are built, reviewed and fixed, and M19's checks pass** (see "M19 checks"). Each milestone is on its own local branch, and `m18-print` holds the whole stack. See "Build progress". Nothing is pushed. What's left of M19 is the launch, which needs the user.
 
 ## Start here (next session)
 
 1. **Read "Build progress"** below. It has the branch stack, the changes from the spec made while building, and where the evidence and coordinator files are.
 2. **Answer the open questions** below, or accept the defaults that were taken.
-3. **One small M18 follow-up:** add a print-only `.tcard ol{clip-path:none}` (`card.css` or the print block). In Firefox, the card's clip-path hides a row that falls past a page break, as on 404's page 2 (`.evidence/fix-m18/`).
-4. **M19 · Verify and launch** (see "Build scope"). It needs the user:
+3. **M19 · Launch** (see "Build scope"). The checks are done (see "M19 checks"). The launch needs the user:
    - push the branches and open the PRs (see "Needs the user")
    - watch CI on the first PR, since the workflow has never run
    - switch Pages to GitHub Actions and merge
-5. **Don't push `main` before launch:** it deploys over the live Zola site.
+4. **Don't push `main` before launch:** it deploys over the live Zola site.
 
 To resume, paste this into a new session:
 
 ```
-continue from @docs/design/HANDOVER.md. Run M19's checks, then walk me through launch.
+continue from @docs/design/HANDOVER.md. Walk me through launch.
 ```
 
 ### Open questions
@@ -34,6 +33,17 @@ These are for the user. The build took the recommended answer where one existed.
 ## Build progress (2026-09-28)
 
 M1–M18 are built, reviewed and fixed. Nothing is pushed.
+
+### M19 checks (2026-09-28, `m18-print` @ `604c314`)
+All pass. Output is in `.evidence/m19/`.
+- **Build and gates.** A strict build (`--panicOnWarning`) has no WARN or ERROR, and postbuild passes. All 21 pages have one `<style>`, one h1, no stylesheet link, and a script only on the index. Every footer weight matches `gzip -9`.
+- **Budget** (gzip -9, limit 14,336 B): the index is 9,685 B, with a 2.5 KB script. The largest post is `nixos-anywhere-and-disko` at 9,280 B and the smallest is `zfs-useful-references` at 6,515 B. Feeds is 4,491 B, About 4,339 B and 404 4,293 B.
+- **URLs.** All 49 live sitemap URLs exist: 19 pages (home, About and the 17 posts), 3 alias redirects to `/` (`/archive/`, `/page/1/`, `/page/2/`), `/tags/` redirecting to `/`, and 26 tag pages redirecting to `/#<tag>`.
+- **Feeds.** The ids and `published` values of `/atom.xml` (the feed id and 17 entries) and all 26 tag feeds match the live site's. The W3C feedvalidator source passes all 27, with the 3 known "same atom:updated" warnings. There's no `index.xml`.
+- **Phone, light and forced colours.** No page scrolls sideways at 390px, and no page logs an error. Home, a post, About, Feeds and 404 were checked by eye at 390px in light mode, and home and a post in forced colours, dark and light.
+- **Keyboard.** Tab reaches every link, box, menu and code window in order on home and a post, each with a 2px ring and scrolled into view. `/` focuses search, `tailscale` ranks the Nextcloud post first, and ↓ reaches its row. From the box, Esc clears the words, then the filter, and the address follows after its 300 ms pause. Esc from a row does nothing, by design.
+- **The M18 follow-up** is `604c314`: print drops `.tcard ol`'s clip-path. Firefox now prints 404's last row on page 2, and home and 404 print all 17 rows in Chrome and Firefox.
+- **CI.** actionlint passes, and every action tag the workflow names exists. The `github-pages` environment allows deploys from `main` and `gh-pages`. Pages is `build_type: legacy` from `gh-pages`, with `cname` `mich-murphy.com`, a verified domain and HTTPS enforced.
 
 ### How the run worked
 - **Loop.** One milestone at a time, in stages:
@@ -81,7 +91,7 @@ M1–M18 are built, reviewed and fixed. Nothing is pushed.
 | M15 Atom feeds, sitemap, robots | `m15-feeds-xml` | `a0de55b` | pass with nits, fixed |
 | M16 favicon set | `m16-favicon` | `a8345a2` | pass with nits, fixed |
 | M17 social cards | `m17-cards` | `60b120a` | pass with nits, fixed |
-| M18 print | `m18-print` | `ea107d7` | pass with nits, fixed |
+| M18 print | `m18-print` | `604c314` | pass with nits, fixed |
 
 - **Two M7 branches.** `m7-content` (`9927c1b`) is the first M7 attempt and is superseded. M8 stacks on `m7-content-rebuilt`. Delete `m7-content` when convenient.
 - **Parallel branches.** M14–M17 were each branched from `m13-about` and merged up in order, and M18 from `m16-favicon`. Each merge is a merge commit (`merge: …`):
@@ -189,10 +199,11 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
     - `body` printed as a block
     - code windows over 45 printed lines (A4) get `long` and may split; the rest stay whole, with `orphans`/`widows:4`
     - internal prose links and About's Projects links print their address too
-    - Firefox ignores `break-before:avoid`, `orphans` and `widows`, and `.tcard ol`'s `clip-path` hides a Posts-card row past a page break (see Start here)
+    - Firefox ignores `break-before:avoid`, `orphans` and `widows`
+    - print drops `.tcard ol`'s `clip-path`, which in Firefox hid a Posts-card row past a page break (`604c314`)
 
 ### Needs the user
-- **Push and PRs.** Nothing is pushed. Git's SSH signing goes through 1Password and needs approval. The active `gh` account (`michaelmbc`) has no push access; `mich-murphy`'s token lacks the `workflow` scope that pushing workflow changes needs. To publish:
+- **Push and PRs.** Nothing is pushed. Git's SSH signing goes through 1Password and needs approval. `origin` is an SSH remote, so `git push` uses the SSH key, not a `gh` token, and the `workflow` scope doesn't apply. As of 2026-09-28 the active `gh` account is `mich-murphy`. To publish:
   1. Push `theme` and each branch.
   2. Open PRs in order: `m1-clear-ground`→`theme`, then each branch against the previous one, or retarget as each merges.
   3. Watch CI on the first PR: the workflow changes have only been linted (actionlint), never run.
@@ -796,7 +807,7 @@ Done when `syncing-plex-watch-state` shows only older, `s3-object-storage` only 
   - Merge `theme` into `main`.
   - Recheck the 404, aliases, commit and history links, and the live feed.
   - Open `github.com/mich-murphy/mich-murphy.com/commits/main/content/posts/nixos-impermanence.md` and check it reaches back into `blog/content/`. If not, also link `commits/1d1b39a/blog/content/<file>`.
-  - Later, delete the `gh-pages` branch and the `TX02_DEPLOY_KEY` secret.
+  - Later, delete the `gh-pages` branch. The `TX02_DEPLOY_KEY` secret is already gone from the repo's secrets (checked 2026-09-28); its public half may still be a deploy key on the private `TX-02` repo.
 
 ### Deferred
 
