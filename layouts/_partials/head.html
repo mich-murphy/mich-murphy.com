@@ -13,7 +13,10 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
 <meta name="color-scheme" content="dark light">
 <link rel="preload" href="/fonts/0xProto-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="/images/favicon.png">
+{{- /* scripts/favicons.py draws the icons. sizes keeps Chrome on the SVG, which follows the colour scheme */}}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 {{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
 {{- $names := slice "main" }}
 {{- /* card.css styles the Posts card, on home and on 404, which shows it under its box */}}
