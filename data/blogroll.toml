@@ -1,5 +1,6 @@
 # The feeds I read, for the Feeds page (layouts/feeds.html), edited by hand. topics sets the order the topics are
-# listed in, and every feed's topic must be one of them. A feed's host is its URL's, without www., unless host is set
+# listed in, and every feed's topic must be one of them. A feed's host is its URL's, without www., unless host is set.
+# Write an apostrophe in a name as ’, the curly one Goldmark gives the intro
 topics = ["Data", "Development", "Self Hosting", "Technology"]
 
 [[feed]]
@@ -19,7 +20,7 @@ url = "https://seangoedecke.com"
 
 [[feed]]
 topic = "Development"
-name = "Xe Iaso's blog"
+name = "Xe Iaso’s blog"
 url = "https://xeiaso.net/"
 
 [[feed]]
@@ -51,5 +52,5 @@ url = "https://alterslash.org/"
 
 [[feed]]
 topic = "Technology"
-name = "Ed Zitron's Where's Your Ed At"
+name = "Ed Zitron’s Where’s Your Ed At"
 url = "https://www.wheresyoured.at/"
