@@ -3,10 +3,11 @@
   the page the feed belongs to and its pages; only posts are listed, with no limit. Readers key on the ids, which match
   the Zola feed's: the feed's is its own address, and an entry's is the post's, with its trailing slash. published is
   the front-matter date, and updated is the post's updated date from the origin partial, as its colophon shows it, but
-  never earlier than published; the feed's updated is its newest entry's. A date that is only a day, which Hugo reads as midnight in the site's time
-  zone, is written as midnight UTC, as Zola wrote it, so an entry whose dates haven't changed keeps the values readers
-  already have. A date from git keeps its time and offset. The content is the post as its page shows it, with
-  root-relative links and sources made absolute, since a reader would resolve them against the feed's address */}}
+  never earlier than published; the feed's updated is its newest entry's. A date that is only a day, which Hugo reads
+  as midnight in the site's time zone, is written as midnight UTC, as Zola wrote it, so an entry whose dates haven't
+  changed keeps the values readers already have. A date from git keeps its time and offset. The content is the post as
+  its page shows it, with root-relative links and sources made absolute, since a reader would resolve them against the
+  feed's address */}}
 {{- $p := .page }}
 {{- $self := ($p.OutputFormats.Get "atom").Permalink }}
 {{- $title := site.Title }}
