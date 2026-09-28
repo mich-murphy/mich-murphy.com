@@ -45,6 +45,9 @@ enableRobotsTXT = true
   # The description of the site
   description = "Personal blog of Michael Murphy"
 
+  # The site's source. The footer's build commit, About's source row and each post's colophon link into it
+  repo = "https://github.com/mich-murphy/mich-murphy.com"
+
   # Commits that touch posts without changing what they say. A post's updated date and commit skip them, and so
   # does a commit whose message has a "Bulk: true" trailer, which survives a rebase that changes its hash (the
   # README says when a squash is safe). Any prefix of a hash, 7 characters or more, will do; a shorter entry is

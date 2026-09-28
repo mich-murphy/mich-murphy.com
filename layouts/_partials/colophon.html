@@ -3,7 +3,7 @@
   end of the commit row. An uncommitted post has neither yet. Under a dotted rule, the words and the code blocks by
   their title-bar names, most first. It reads the code map render-codeblock.html fills, so it goes after .Content.
   Styles are in post.css */}}
-{{- $gh := "https://github.com/mich-murphy/mich-murphy.com" }}
+{{- $gh := site.Params.repo }}
 {{- $file := printf "content/%s" .File.Path }}
 {{- $o := partialCached "origin.html" . .Path }}
 {{- /* words: the Markdown without its fenced code (in or out of a callout), and without the markers that open a line
