@@ -3,9 +3,10 @@
   full address, /atom.xml on the base URL, which one click selects whole (pages.css), and the post count and newest
   date from the build. The <wbr> lets a phone break the address before atom.xml rather than at mich-murphy's hyphen.
   Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic in the file's order:
-  each feed's name, linked, and its host, the URL's without www. unless the file sets one. A feed with no name, with a
-  URL that has no host (noted.lol/ rather than https://noted.lol/), or whose topic isn't listed fails the build rather
-  than show a broken row or go missing from the card. Styles are prose.css and pages.css */}}
+  each feed's name, linked, and its host, the URL's without www. unless the file sets one. The space between them keeps
+  them apart in reader mode and without CSS. A feed with no name, with a URL that has no host (noted.lol/ rather than
+  https://noted.lol/), or whose topic isn't listed fails the build rather than show a broken row or go missing from the
+  card. Styles are prose.css and pages.css */}}
 {{- $roll := hugo.Data.blogroll }}
 {{- range $roll.feed }}
   {{- $url := string .url }}
@@ -31,7 +32,7 @@
 {{- with where $roll.feed "topic" $topic }}
 <dt>{{ lower $topic }}</dt><dd><ul role="list">
 {{- range . }}
-<li><a href="{{ .url }}">{{ .name }}</a><span class="dm">{{ or .host (strings.TrimPrefix "www." (urls.Parse .url).Host) }}</span></li>
+<li><a href="{{ .url }}">{{ .name }}</a> <span class="dm">{{ or .host (strings.TrimPrefix "www." (urls.Parse .url).Host) }}</span></li>
 {{- end }}
 </ul></dd>
 {{- end }}
