@@ -9,6 +9,8 @@
 {{- else }}
 <link rel="canonical" href="{{ .Permalink }}">
 {{- end }}
+{{- /* every page points feed readers to the site's feed, /atom.xml */}}
+<link rel="alternate" type="application/atom+xml" href="{{ (site.Home.OutputFormats.Get "atom").Permalink }}" title="{{ site.Title }}">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
 <meta name="color-scheme" content="dark light">
