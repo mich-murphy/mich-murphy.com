@@ -1,4 +1,4 @@
-/* the page head and the prose, on posts (page.html) and the other pages (about.html, and Feeds), and the keyed list
+/* the page head and the prose, on posts (page.html) and the other pages (about.html, feeds.html), and the keyed list
    the colophon (post.css) and the keyed boxes (pages.css) share. Callouts (render-blockquote.html) are in main.css,
    since 404 has one too */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column

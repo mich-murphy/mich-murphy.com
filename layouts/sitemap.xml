@@ -1,0 +1,15 @@
+{{- /* The site's real pages: home, the posts, About and Feeds. Not 404, the tag pages and /tags/ (noindex redirects to
+  the index, tags/list.html) or the alias stubs. A post's lastmod is its updated date from the origin partial, as its
+  colophon shows it. The other pages are built from templates and data as much as from their own files, so no date
+  says when they last changed, and they have none */}}
+{{- printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{{- range where site.Pages "Kind" "in" (slice "home" "page") }}
+<url>
+<loc>{{ .Permalink }}</loc>
+{{- if eq .Section "posts" }}{{ with (partialCached "origin.html" . .Path).date }}
+<lastmod>{{ .Format "2006-01-02" }}</lastmod>
+{{- end }}{{ end }}
+</url>
+{{- end }}
+</urlset>
