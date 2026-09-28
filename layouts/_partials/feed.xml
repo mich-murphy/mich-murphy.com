@@ -1,0 +1,54 @@
+{{- /* An Atom 1.0 feed of posts with their full text (rev 11 feed=full), newest first. Home's, at /atom.xml, has every
+  post (home.atom.xml), and a tag's, at /tags/<tag>/atom.xml, has that tag's (term.atom.xml). Call it with a dict of
+  the page the feed belongs to and its pages; only posts are listed, with no limit. Readers key on the ids, which match
+  the Zola feed's: the feed's is its own address, and an entry's is the post's, with its trailing slash. published is
+  the front-matter date, and updated is the post's updated date from the origin partial, as its colophon shows it; the
+  feed's updated is its newest entry's. A date that is only a day, which Hugo reads as midnight in the site's time
+  zone, is written as midnight UTC, as Zola wrote it, so an entry whose dates haven't changed keeps the values readers
+  already have. A date from git keeps its time and offset. The content is the post as its page shows it, with
+  root-relative links and sources made absolute, since a reader would resolve them against the feed's address */}}
+{{- $p := .page }}
+{{- $self := ($p.OutputFormats.Get "atom").Permalink }}
+{{- $title := site.Title }}
+{{- if eq $p.Kind "term" }}{{ $title = printf "#%s · %s" (path.Base (urls.Parse $p.RelPermalink).Path) site.Title }}{{ end }}
+{{- $entries := slice }}
+{{- range (where .pages "Section" "posts").ByDate.Reverse }}
+  {{- $o := partialCached "origin.html" . .Path }}
+  {{- $e := dict "page" . }}
+  {{- range $k, $t := dict "published" .Date "updated" (or $o.date .Date) }}
+    {{- if eq ($t.Format "15:04:05") "00:00:00" }}{{ $t = time.AsTime (printf "%sT00:00:00Z" ($t.Format "2006-01-02")) }}{{ end }}
+    {{- $e = merge $e (dict $k $t) }}
+  {{- end }}
+  {{- $entries = $entries | append $e }}
+{{- end }}
+{{- /* RFC 3339. A date goes out through safeHTML, so its offset reads +00:00 rather than &#43;00:00 */}}
+{{- $f := "2006-01-02T15:04:05-07:00" }}
+{{- /* a root-relative href or src, but not a protocol-relative one (//host) */}}
+{{- $root := `(\s(?:href|src)=")/([^/])` }}
+{{- $abs := printf "${1}%s${2}" site.Home.Permalink }}
+{{- printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ site.Language.Locale }}">
+<title>{{ $title }}</title>
+<subtitle>{{ site.Params.description }}</subtitle>
+<link rel="self" type="application/atom+xml" href="{{ $self }}"/>
+<link rel="alternate" type="text/html" href="{{ $p.Permalink }}"/>
+<id>{{ $self }}</id>
+{{- with sort $entries "updated" "desc" }}
+<updated>{{ (index . 0).updated.Format $f | safeHTML }}</updated>
+{{- end }}
+<author><name>{{ site.Params.author.name }}</name></author>
+<generator uri="https://gohugo.io/" version="{{ hugo.Version }}">Hugo</generator>
+{{- range $entries }}
+{{- $e := . }}
+{{- with .page }}
+<entry>
+<title>{{ .Title }}</title>
+<link rel="alternate" type="text/html" href="{{ .Permalink }}"/>
+<id>{{ .Permalink }}</id>
+<published>{{ $e.published.Format $f | safeHTML }}</published>
+<updated>{{ $e.updated.Format $f | safeHTML }}</updated>
+<content type="html">{{ replaceRE $root $abs .Content | transform.XMLEscape | safeHTML }}</content>
+</entry>
+{{- end }}
+{{- end }}
+</feed>

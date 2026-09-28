@@ -21,13 +21,28 @@ enableRobotsTXT = true
 [taxonomies]
   tag = "tags"
 
-# HTML, plus home's search index at /index.json (layouts/home.json.json); the Atom feed is added later
+# HTML, plus home's search index at /index.json (layouts/home.json.json) and the Atom feeds, at /atom.xml and
+# /tags/<tag>/atom.xml where the Zola site served them (layouts/_partials/feed.xml). There's no RSS, so no index.xml
 [outputs]
-  home = ["html", "json"]
+  home = ["html", "atom", "json"]
   section = ["html"]
   taxonomy = ["html"]
-  term = ["html"]
+  term = ["html", "atom"]
   page = ["html"]
+
+[mediaTypes."application/atom+xml"]
+  suffixes = ["xml"]
+
+[outputFormats.atom]
+  mediaType = "application/atom+xml"
+  baseName = "atom"
+  rel = "alternate"
+  noUgly = true
+
+# --minify leaves XML (the feeds and the sitemap) alone: the XML minifier collapses runs of spaces in text, so the
+# code in a feed's escaped post content would lose its indentation
+[minify]
+  disableXML = true
 
 # Persist processed images (e.g. social cards) in the CI build cache
 [caches.images]
