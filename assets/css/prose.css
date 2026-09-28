@@ -31,7 +31,7 @@
 /* a keyed list, in a framed box: keys in mute in a max-content column, values in fg, at 13.5px. The third column is
    for the colophon's history; other values span it */
 .kv .frame,.colo .frame{padding:20px 18px 14px;font-size:13.5px;line-height:1.55}
-.kv dl,.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;gap:0 2ch;align-items:baseline;margin:0}
+.kv dl,.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;column-gap:2ch;align-items:baseline;margin:0}
 .kv dt,.colo dt{color:var(--mute)}
 .kv dd,.colo dd{grid-column:2/-1;min-width:0;margin:0}
 
