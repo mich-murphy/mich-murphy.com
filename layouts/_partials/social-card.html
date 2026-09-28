@@ -38,9 +38,13 @@
 {{- if not $size }}
   {{- errorf "%s: the title is too long for the social card, which fits 3 lines of 32 characters; shorten it" .File.Path }}
 {{- end }}
+{{- /* images.Text keys a font by its path in the image cache, so a changed TTF would leave the cached cards as they
+  were. Fingerprinting puts the font's hash in its path. Neither font is published */}}
+{{- $bold := resources.Get "fonts/0xProto-Bold.ttf" | fingerprint }}
+{{- $regular := resources.Get "fonts/0xProto-Regular.ttf" | fingerprint }}
 {{- $title := images.Text (delimit $lines "\n") (dict
-  "font" (resources.Get "fonts/0xProto-Bold.ttf") "size" $size "linespacing" 0 "color" "#e6e2d6" "x" 104 "y" 208) }}
+  "font" $bold "size" $size "linespacing" 0 "color" "#e6e2d6" "x" 104 "y" 208) }}
 {{- $meta := images.Text (printf "%s · %d min read" (.Date.Format "2006-01-02") .ReadingTime) (dict
-  "font" (resources.Get "fonts/0xProto-Regular.ttf") "size" 23 "color" "#a39f93" "x" 104 "y" 462) }}
+  "font" $regular "size" 23 "color" "#a39f93" "x" 104 "y" 462) }}
 {{- $card := resources.Get "images/card-base.png" | images.Filter $title $meta }}
 {{- return resources.Copy (path.Join (strings.TrimPrefix "/" .RelPermalink) "card.png") $card }}
