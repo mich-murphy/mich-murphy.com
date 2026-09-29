@@ -91,7 +91,7 @@ All pass. Output is in `.evidence/m19/`.
 | M15 Atom feeds, sitemap, robots | `m15-feeds-xml` | `a0de55b` | pass with nits, fixed |
 | M16 favicon set | `m16-favicon` | `a8345a2` | pass with nits, fixed |
 | M17 social cards | `m17-cards` | `60b120a` | pass with nits, fixed |
-| M18 print | `m18-print` | `604c314` | pass with nits, fixed |
+| M18 print | `m18-print` | `c4fa14b` | pass with nits, fixed |
 
 - **Two M7 branches.** `m7-content` (`9927c1b`) is the first M7 attempt and is superseded. M8 stacks on `m7-content-rebuilt`. Delete `m7-content` when convenient.
 - **Parallel branches.** M14–M17 were each branched from `m13-about` and merged up in order, and M18 from `m16-favicon`. Each merge is a merge commit (`merge: …`):
@@ -102,7 +102,7 @@ All pass. Output is in `.evidence/m19/`.
   
   M11's round-3 fixes reached M12 and M13 the same way (`1036f30`, `bbf97c9`). So each branch contains the previous one, and a PR of each against the previous one shows only its milestone.
 - **Merging to `theme`.** Merge the stack in order with merge commits, not squashes. M8 lists bulk commits by hash, and a squash would also spread the M7 content commit's `Bulk: true` trailer over real edits. `26d75ce` is the M7 content commit.
-- **Worktrees.** `../mich-murphy.com-m12` … `-m18` are git worktrees, one per branch, each with a `.evidence` symlink (git-excluded). The main checkout is on `m11-search`. Remove them with `git worktree remove --force ../mich-murphy.com-mNN` once they're no longer wanted; the branches stay.
+- **Worktrees.** `../mich-murphy.com-m12` … `-m18` are git worktrees, one per branch, each with a `.evidence` symlink (git-excluded). The main checkout is on `m11-search`. Remove them with `git worktree remove --force ../mich-murphy.com-mNN` once they're no longer wanted; the branches stay. To preview the whole site, run `hugo serve` in `../mich-murphy.com-m18`: the main checkout's `m11-search` has no About or new Feeds page, and its `/about/` still redirects home. Under `hugo serve` the footer reads `build serve` (`c4fa14b`), and Firefox shows the status line's fallback, the title with no percentage.
 
 ### Sizes at `m18-print`
 The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336 B) budget. The largest post is `nixos-anywhere-and-disko`, at about 9.2 KB. The search script is 2.6 KB gzipped, and 404 is 3.8 KB.
