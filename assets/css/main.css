@@ -8,13 +8,14 @@
    light, whatever the scheme, and the print block at the end turns its grounds white */
 :root{color-scheme:dark;
   --bg:#0f1214;--fg:#e6e2d6;--body:color-mix(in srgb,var(--fg) 85%,var(--bg));--mute:#a39f93;--line:#272c30;--edge:#3e454a;--code:#0a0d0f;
-  --acc:#e7a15a;--on:#0f1214;--acct:#e7a15a;--focus:#e7a15a;--com:#75818b;--str:#e7a15a;
+  --thumb:color-mix(in srgb,var(--mute) 35%,var(--edge));--acc:#e7a15a;--on:#0f1214;--acct:#e7a15a;--focus:#e7a15a;--com:#75818b;--str:#e7a15a;
   --mono:"0xProto",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-/* acc is only 1.98:1 on the light ground, so accent text and the focus ring get their own values */
+/* acc is only 1.98:1 on the light ground, so accent text and the focus ring get their own values. The scrollbar
+   thumb is the least mix of mute into edge that shows 3:1 on the code ground: about 3.3:1 in dark, 3.1:1 in light */
 @media print,(prefers-color-scheme:light){
   :root{color-scheme:light;
     --bg:#f5f4f0;--fg:#0f1214;--body:color-mix(in srgb,var(--fg) 74%,var(--bg));--mute:#67655d;--line:#dddbd3;--edge:#b3b0a6;--code:#ebe9e3;
-    --acct:#9f5510;--focus:#0f1214;--com:#5f6a72;--str:#9f5510}
+    --thumb:color-mix(in srgb,var(--mute) 60%,var(--edge));--acct:#9f5510;--focus:#0f1214;--com:#5f6a72;--str:#9f5510}
 }
 
 *,::before,::after{box-sizing:border-box}

@@ -13,7 +13,7 @@
 .win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-size:12px;line-height:1.35;overflow-wrap:anywhere}
 /* long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed to
    the box, which the local layers in code cover at each end */
-.win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--edge) var(--code);
+.win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--thumb) var(--code);
   background:linear-gradient(to right,var(--code) 30%,transparent) left/28px 100% no-repeat local,
     linear-gradient(to left,var(--code) 30%,transparent) right/28px 100% no-repeat local,
     linear-gradient(to right,color-mix(in srgb,var(--fg) 22%,transparent),transparent) left/10px 100% no-repeat scroll,
