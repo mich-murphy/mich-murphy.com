@@ -7,7 +7,7 @@ Created to document my personal projects, for my own reference and hopefully to 
 This is a static site built using [Hugo](https://gohugo.io/) with my own templates rather than a theme. A Nix flake provides the local development environment (`nix develop`). The flake and the GitHub Actions workflow pin the same Hugo version. GitHub Actions builds every pull request and deploys `main` to [GitHub Pages](https://pages.github.com/).
 
 ## Checks
-CI runs `scripts/postbuild.sh` after every build. It writes each page's gzipped weight into its footer, and fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory. `hugo server` doesn't run it, so there the footer reads `build serve` with no weights.
+CI runs `scripts/postbuild.sh` after every build. It writes two figures into every page's footer: what a browser fetches to load the homepage (the page gzipped, its preloaded font and its SVG icon), and the site's script. It fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory. `hugo server` doesn't run it, so there the footer reads `build serve` with neither figure.
 
 Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
 
