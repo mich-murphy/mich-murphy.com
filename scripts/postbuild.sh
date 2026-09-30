@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 # Checks and finishes a Hugo build, in CI and locally: scripts/postbuild.sh [dir]
-# (default public). It writes each page's gzipped size in place of the footer's
-# __WEIGHT__, and on any page with a script the gzipped size of that script in
-# place of the footer's "0 B js". It fails if any page other than the index has
-# a script, or if any page is over MAX_GZIP_BYTES gzipped (default 14336, i.e.
-# 14 KB). Sizes are `gzip -9 -c <file> | wc -c`, shown as KB with one decimal
-# (1 KB = 1024 B). It runs on macOS and Linux, and a second run only checks
+# (default public). Every page's footer shows the same two figures, for the
+# site rather than the page: in place of __HOME__, what a browser fetches to
+# load the homepage, as the 10 KB and 250KB Clubs measure a site (the page,
+# gzipped, and the files its head fetches: the preloaded font and the SVG icon),
+# and in place of __JS__, the site's script, which only the index has. It fails
+# if any page other than the index has a script, or if any page is over
+# MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB). Sizes are
+# `gzip -9 -c <file> | wc -c` for text, and bytes on disk for woff2 and PNG,
+# which servers send as they are; shown as KB with one decimal (1 KB = 1024 B).
+# It runs on macOS and Linux, and a second run only checks
 set -euo pipefail
 
 dir=${1:-public}
 dir=${dir%/}
 max=${MAX_GZIP_BYTES:-14336}
-token=__WEIGHT__
+home_token=__HOME__ js_token=__JS__
 
 case $max in
   '' | *[!0-9]*)
@@ -31,6 +35,14 @@ trap 'rm -f "$orig"' EXIT
 
 # Gzipped size in bytes of a file, or of stdin
 gz() { gzip -9 -c "$@" | wc -c | tr -d ' '; }
+
+# Bytes a server sends for a file: woff2 and images are already compressed
+sent() {
+  case $1 in
+    *.woff2 | *.png | *.jpg | *.webp) wc -c <"$1" | tr -d ' ' ;;
+    *) gz "$1" ;;
+  esac
+}
 
 # Bytes as KB with one decimal, rounded half up
 kb() {
@@ -73,30 +85,49 @@ fail() {
   fails="$fails$1"$'\n'
 }
 
+index=$dir/index.html
+home='' js=''
+if [ -f "$index" ] && grep -q "$home_token" "$index"; then
+  # The files the index's head makes a browser fetch as it loads: preloads and
+  # the SVG icon. A font the page only uses later (Bold, Italic) isn't preloaded
+  # and doesn't load on the index, and search's /index.json waits for the box
+  assets=0
+  while IFS= read -r href; do
+    a=$dir$href
+    if [ ! -f "$a" ]; then
+      fail "$index: its head fetches $href, which isn't in $dir"
+      continue
+    fi
+    assets=$((assets + $(sent "$a")))
+  done < <(grep -oE '<link [^>]*>' "$index" |
+    grep -E 'rel="?preload|rel="?icon[" ][^>]*type="?image/svg' |
+    sed -E 's/.*href="?([^" >]+).*/\1/')
+  js=$(kb "$(script_text "$index" | gz)")
+  # The homepage's size is part of what it measures: write it, measure again,
+  # and repeat while the rounded value changes
+  sed "s/$js_token/$js/g" "$index" >"$orig"
+  home=$(kb $(($(gz "$orig") + assets)))
+  for _ in 1 2 3 4 5; do
+    h=$(kb $(($(sed "s/$home_token/$home/g" "$orig" | gz) + assets)))
+    if [ "$h" = "$home" ]; then break; fi
+    home=$h
+  done
+fi
+
 while IFS= read -r f; do
   pages=$((pages + 1))
-  script=''
-  if grep -qi '<script' "$f"; then
-    script=1
-    if [ "$f" != "$dir/index.html" ]; then
-      fail "$f: <script> outside the index, at: $(script_context "$f")"
-    fi
+  if grep -qi '<script' "$f" && [ "$f" != "$index" ]; then
+    fail "$f: <script> outside the index, at: $(script_context "$f")"
   fi
 
-  if grep -q "$token" "$f"; then
-    written=$((written + 1))
-    if [ -n "$script" ]; then
-      # Anchored on the weight token, so only the footer's "0 B js" matches
-      sed "s/$token · 0 B js · /$token · $(kb "$(script_text "$f" | gz)") js · /" "$f" >"$orig"
+  if grep -q "$home_token" "$f"; then
+    if [ -z "$home" ]; then
+      fail "$f: its footer needs the homepage's size, but $index has no $home_token"
+    else
+      written=$((written + 1))
+      sed "s/$home_token/$home/g; s/$js_token/$js/g" "$f" >"$orig"
       cat "$orig" >"$f"
     fi
-    # The weight is part of what it measures: write it, measure again, and
-    # rewrite once if the rounded value changed
-    cp "$f" "$orig"
-    v=$(kb "$(gz "$f")")
-    sed "s/$token/$v/g" "$orig" >"$f"
-    w=$(kb "$(gz "$f")")
-    if [ "$w" != "$v" ]; then sed "s/$token/$w/g" "$orig" >"$f"; fi
   fi
 
   n=$(gz "$f")
@@ -106,7 +137,11 @@ done < <(find "$dir" -type f -name '*.html' | sort)
 
 if [ "$pages" -eq 0 ]; then fail "$dir: no HTML pages"; fi
 
-echo "postbuild: checked $pages pages in $dir, wrote $written weights"
+if [ "$written" -gt 0 ]; then
+  echo "postbuild: checked $pages pages in $dir, and wrote the homepage's $home and the site's $js of script into $written footers"
+else
+  echo "postbuild: checked $pages pages in $dir; no footer to write"
+fi
 if [ -n "$bigf" ]; then
   echo "postbuild: largest is $bigf at $(kb "$big") ($big B gzipped), limit $(kb "$max") ($max B)"
 fi
