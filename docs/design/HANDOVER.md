@@ -1,31 +1,31 @@
 # Theme redesign: handover
 
-Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m18-print` → `main`) was merged as `5c995f0` with a merge commit, and GitHub Actions deployed it to https://mich-murphy.com/. See "Launch". What's left are the open questions and some cleanup (see "Needs the user").
+Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m18-print` → `main`) was merged as `5c995f0` with a merge commit, and GitHub Actions deployed it to https://mich-murphy.com/. See "Launch". On 2026-09-30 the open questions were answered and the cleanup done (see "Decisions" and "After launch"). Nothing is outstanding.
 
 ## Start here (next session)
 
-1. **Read "Launch"** below for what's live and how it was checked.
-2. **Answer the open questions** below, or accept the defaults that were taken. Each change is now an ordinary PR against `main`.
-3. **Cleanup** (see "Needs the user").
-4. **Pushing `main` deploys**, and `main` requires a PR with 1 approving review. The owner merges as admin (`gh pr merge <n> --merge --admin`). Always use a merge commit: `params.bulkCommits` names commits by hash.
+1. **Read "Launch" and "After launch"** below for what's live and how it was checked.
+2. **Make changes as ordinary PRs against `main`.** Run `hugo serve` in the main checkout to preview, then a real build and `scripts/postbuild.sh` for the footer's figures and the gates.
+3. **Pushing `main` deploys**, and `main` requires a PR with 1 approving review. The owner merges as admin (`gh pr merge <n> --merge --admin`). Always use a merge commit: `params.bulkCommits` names commits by hash.
 
 To resume, paste this into a new session:
 
 ```
-continue from @docs/design/HANDOVER.md. Work through the open questions.
+continue from @docs/design/HANDOVER.md.
 ```
 
-### Open questions
+### Decisions (2026-09-30)
 
-These are for the user. The build took the recommended answer where one existed.
-- **M8:** does the channel edit (`2a2721c`) go in `bulkCommits`, so the 3 posts keep their old `updated` dates, or count as an update? Recommended: bulk, because it only changes link parameters. *Built as bulk.*
-- **About's bio** is the same two sentences as the home intro. Keep it, or write a longer one? *Built with the two sentences.*
-- **M7:** does the code block after `backup-solutions-nixos`' second note go inside the callout or after it? *Built inside.*
-- **M7:** path-comment typos in `configure-nextcloud-nixos` were fixed in the bulk content commit (`/etc/nix/configuration.nix` became `/etc/nixos/…`; 2 × `etc/nixos/…` gained a leading `/`). Confirm, or count it as an update.
-- **M9:** does the status line's `nav` sit right after the header (recommended, so keyboard users reach Contents first) or after `main`? *Built after the header.*
-- **M6:** the code scrollbar thumb (`--edge` on `--code`) is about 2:1, below the 3:1 floor for non-text indicators. The spec prescribes it; `--mute` would pass.
-- **Box labels** (M13 review): the cut-in labels ("Posts · 17", "Projects · 5", "This site", the colophon's path) are plain `span`s, as in the lab, so a screen reader's heading or landmark navigation finds only each page's h1. The labels are still read in order. Giving each box `aria-labelledby` its label is a small site-wide change. *Not built.*
-- **Scope:** social cards (M17) and print (M18) were built before launch rather than after. Drop either branch if you'd rather launch without it: nothing else depends on them.
+The open questions from the build, as the user answered them:
+- **Kept as built:**
+  - the channel edit (`2a2721c`) is in `bulkCommits`, so 3 posts keep their old `updated` dates
+  - the code block after `backup-solutions-nixos`' second note sits inside the callout
+  - the path-comment typo fixes in `configure-nextcloud-nixos` count as bulk
+  - the status line's `nav` sits right after the header
+- **About's bio** stays the same two sentences as the home intro.
+- **The code scrollbar thumb** is `--thumb`, the least mix of `--mute` into `--edge` that clears 3:1 on `--code`: 35% in dark (about 3.3:1) and 60% in light (about 3.1:1). `--edge` alone was 2.0:1 and 1.8:1.
+- **Box labels:** the labels of a page's own boxes are `h2`s, so a screen reader's heading list finds them: Filter/Search and Posts on home, 404 and Posts on 404, Projects and This site on About, and Subscribe and Feeds I read on Feeds. They render pixel for pixel as before. Code windows, callouts, the colophon and Contents keep a `span`.
+- **Scope** (social cards and print before launch) was settled by the launch.
 
 ## Build progress (2026-09-28)
 
@@ -99,7 +99,7 @@ All pass. Output is in `.evidence/m19/`.
   
   M11's round-3 fixes reached M12 and M13 the same way (`1036f30`, `bbf97c9`). So each branch contains the previous one, and a PR of each against the previous one shows only its milestone.
 - **Merging to `theme`.** Merge the stack in order with merge commits, not squashes. M8 lists bulk commits by hash, and a squash would also spread the M7 content commit's `Bulk: true` trailer over real edits. `26d75ce` is the M7 content commit.
-- **Worktrees.** `../mich-murphy.com-m12` … `-m18` are git worktrees, one per branch, each with a `.evidence` symlink (git-excluded). The main checkout is on `m11-search`. Remove them with `git worktree remove --force ../mich-murphy.com-mNN` once they're no longer wanted; the branches stay. To preview the whole site, run `hugo serve` in `../mich-murphy.com-m18`: the main checkout's `m11-search` has no About or new Feeds page, and its `/about/` still redirects home. Under `hugo serve` the footer reads `build serve` (`c4fa14b`), and Firefox shows the status line's fallback, the title with no percentage.
+- **Worktrees and branches** were removed on 2026-09-30 (see "After launch"). Every milestone's commits are on `main`, through PR #1's merge commit.
 
 ### Sizes at `m18-print`
 The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336 B) budget. The largest post is `nixos-anywhere-and-disko`, at about 9.2 KB. The search script is 2.6 KB gzipped, and 404 is 3.8 KB.
@@ -216,12 +216,24 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
 - **CI note.** `ubuntu-latest` moves to Ubuntu 26 from 2026-10-19. The workflow downloads its own Hugo, so it shouldn't matter; check the first run after that date.
 - **Firefox and `hugo serve`.** Firefox shows the status line's fallback, the title with no percentage and no current section: by design, since it has no CSS scroll tracking. Under `hugo serve` the footer reads `build serve` (`c4fa14b`).
 
-### Needs the user
-- **Branches.** Delete `gh-pages`, the old Zola deploy, once the launch has settled. It's the rollback: to go back, set Pages' source to the branch again. Then delete the pushed `theme` and `m18-print`, the local milestone branches and the worktrees (see "Worktrees"). Local `main` is behind `origin/main`: `git branch -f main origin/main` from a checkout that isn't on `main`.
-- **`.git/modules`.** Leftover submodule clones under `.git/modules` need `rm -rf .git/modules`. The permission system blocked it during M1.
-- **A stray headless Chrome.** One test instance from this session, PID 8236 with a `cdp-*` temp profile, was orphaned. Stopping it was denied by the permission system, so run `kill 8236`.
-- **Safari's favicon in dark mode.** WKWebView drew `favicon.svg`, as an `<img>`, in its light variant while the page reported dark. Safari's own tab icon couldn't be checked from the harness. It stays legible either way.
-- **Feed readers at launch.** Every entry's content changes with the new markup (code windows, callouts), and `updated` changes on 12 entries. Some readers may show those entries as updated once. The ids, `published` values and feed URLs don't change, so nothing is delivered twice.
+### After launch (2026-09-30)
+- **Cleanup.**
+  - The worktrees and all 21 local milestone branches are removed, and the main checkout is on `main`. Every branch but `m7-content`, the superseded first M7 attempt, was merged.
+  - `theme`, `m18-print`, `m19-launch` and `gh-pages` are deleted from GitHub, which has only `main`.
+  - `.git/modules` is removed. None of its old submodule clones had unpushed work.
+  - The stray Chrome, PID 8236, had already exited.
+- **Rollback.** The old Zola deploy survives only as a local tag, `zola-site` (`f8bacec`), in the main checkout. To go back: `git push origin zola-site:refs/heads/gh-pages`, then set Pages' source to that branch.
+- **Changes after launch.**
+  - Answers to the open questions (see "Decisions").
+  - **Width.** Posts, About and Feeds capped their head, prose and boxes at 74ch, about 688px. Every page's content now fills the 772px column, lining up with the header and footer. Prose lines run to about 83 characters.
+  - **Footer figures.** Every page shows the same two figures, `home 37.5 KB · 2.5 KB js`, instead of its own size.
+    - The first is what a browser fetches to load the homepage: `index.html` gzipped, plus the files its head fetches (the preloaded Regular font and the SVG icon). That's how the 10 KB and 250KB Clubs count a site: one page, compressed, with everything it loads.
+    - The 512KB and 14KB Clubs count uncompressed, about 72 KB here.
+    - The font is 73% of the homepage's 37.5 KB, so it's the lever for going smaller.
+    - The second is the site's one script, the index's. `scripts/postbuild.sh` writes both into `__HOME__` and `__JS__`, repeating until the homepage's own figure is stable, and still fails any page over 14 KB.
+- **Known.**
+  - Safari's favicon in dark mode: WKWebView drew `favicon.svg`, as an `<img>`, in its light variant while the page reported dark. Safari's own tab icon couldn't be checked from the harness. It stays legible either way.
+  - Feed readers may show the 12 entries whose `updated` changed at launch as updated once. The ids, `published` values and feed URLs didn't change.
 
 ## Where things are
 
@@ -564,7 +576,7 @@ This replaces the 16-step build plan from rev 10. It was last updated on 2026-09
 
 **M0 · Settle the git state (done 2026-09-27).** The user chose the recommended plan:
 - The staged migration was amended into `27256ac`, which became `6f2b864`. Each post is now a rename, and `git log --follow --name-status -- content/posts/nixos-impermanence.md` shows `R087` at `6f2b864` and reaches back to the post's first commit.
-- The channel edit is `2a2721c`, on its own, so its hash can go in `bulkCommits` or count as an update (see "Open questions").
+- The channel edit is `2a2721c`, on its own, so its hash can go in `bulkCommits` or count as an update (see "Decisions": bulk).
 - `docs/design/` is committed separately, after it.
 - The build happens on the `theme` branch, with PRs against it. `main` stays unpushed until launch.
 - `bulkCommits` starts with `6f2b864`, not `27256ac`.
