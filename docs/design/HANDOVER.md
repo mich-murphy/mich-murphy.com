@@ -1,21 +1,18 @@
 # Theme redesign: handover
 
-Status as of 2026-09-28. The design is settled (rev 15, picked; see "Final picks"). **M1–M18 are built, reviewed and fixed, and M19's checks pass** (see "M19 checks"). Each milestone is on its own local branch, and `m18-print` holds the whole stack. See "Build progress". Nothing is pushed. What's left of M19 is the launch, which needs the user.
+Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m18-print` → `main`) was merged as `5c995f0` with a merge commit, and GitHub Actions deployed it to https://mich-murphy.com/. See "Launch". What's left are the open questions and some cleanup (see "Needs the user").
 
 ## Start here (next session)
 
-1. **Read "Build progress"** below. It has the branch stack, the changes from the spec made while building, and where the evidence and coordinator files are.
-2. **Answer the open questions** below, or accept the defaults that were taken.
-3. **M19 · Launch** (see "Build scope"). The checks are done (see "M19 checks"). The launch needs the user:
-   - push the branches and open the PRs (see "Needs the user")
-   - watch CI on the first PR, since the workflow has never run
-   - switch Pages to GitHub Actions and merge
-4. **Don't push `main` before launch:** it deploys over the live Zola site.
+1. **Read "Launch"** below for what's live and how it was checked.
+2. **Answer the open questions** below, or accept the defaults that were taken. Each change is now an ordinary PR against `main`.
+3. **Cleanup** (see "Needs the user").
+4. **Pushing `main` deploys**, and `main` requires a PR with 1 approving review. The owner merges as admin (`gh pr merge <n> --merge --admin`). Always use a merge commit: `params.bulkCommits` names commits by hash.
 
 To resume, paste this into a new session:
 
 ```
-continue from @docs/design/HANDOVER.md. Walk me through launch.
+continue from @docs/design/HANDOVER.md. Work through the open questions.
 ```
 
 ### Open questions
@@ -32,7 +29,7 @@ These are for the user. The build took the recommended answer where one existed.
 
 ## Build progress (2026-09-28)
 
-M1–M18 are built, reviewed and fixed. Nothing is pushed.
+M1–M18 are built, reviewed and fixed, and launched on 2026-09-30 (see "Launch").
 
 ### M19 checks (2026-09-28, `m18-print` @ `604c314`)
 All pass. Output is in `.evidence/m19/`.
@@ -202,11 +199,25 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
     - Firefox ignores `break-before:avoid`, `orphans` and `widows`
     - print drops `.tcard ol`'s `clip-path`, which in Firefox hid a Posts-card row past a page break (`604c314`)
 
+### Launch (2026-09-30)
+- **Steps.**
+  1. Pushed `theme` and `m18-print`. The other milestone branches stay local.
+  2. Opened PR #1, `m18-print` → `main`, as one PR rather than 18 stacked ones.
+  3. The PR's build passed on its first run and the deploy was skipped. The CI artifact matched the local build byte for byte, all 105 files, apart from the footer's build label.
+  4. Switched Pages to GitHub Actions (`gh api -X PUT …/pages -f build_type=workflow`); the domain and HTTPS carried over. `main`'s protection requires 1 review, so the PR was merged with `--merge --admin`, as `5c995f0`. Run `36699873815` deployed it.
+- **Live checks, all passing.**
+  - The footer reads `build 5c995f0`.
+  - `/nope/` returns 404 with the new page, and `/archive/`, `/page/1/`, `/page/2/`, `/tags/` and the tag pages redirect.
+  - The pages, feeds, sitemap, robots.txt, `index.json`, the favicons and the cards all return 200.
+  - All 49 URLs in the old sitemap (`origin/gh-pages:sitemap.xml`) return 200.
+  - The ids and `published` values of `/atom.xml` and the 26 tag feeds match the old Zola feeds on `gh-pages`.
+  - The colophon's source, commit and history links resolve.
+  - GitHub's history view detects the rename for all 17 posts (`renameHistory.hasRenameCommits`, `oldName` `blog/content/<file>`). The history ends at `6f2b864` with a link to the old path, which lists the earlier commits, so the `commits/1d1b39a/blog/content/<file>` fallback isn't needed.
+- **CI note.** `ubuntu-latest` moves to Ubuntu 26 from 2026-10-19. The workflow downloads its own Hugo, so it shouldn't matter; check the first run after that date.
+- **Firefox and `hugo serve`.** Firefox shows the status line's fallback, the title with no percentage and no current section: by design, since it has no CSS scroll tracking. Under `hugo serve` the footer reads `build serve` (`c4fa14b`).
+
 ### Needs the user
-- **Push and PRs.** Nothing is pushed. Git's SSH signing goes through 1Password and needs approval. `origin` is an SSH remote, so `git push` uses the SSH key, not a `gh` token, and the `workflow` scope doesn't apply. As of 2026-09-28 the active `gh` account is `mich-murphy`. To publish:
-  1. Push `theme` and each branch.
-  2. Open PRs in order: `m1-clear-ground`→`theme`, then each branch against the previous one, or retarget as each merges.
-  3. Watch CI on the first PR: the workflow changes have only been linted (actionlint), never run.
+- **Branches.** Delete `gh-pages`, the old Zola deploy, once the launch has settled. It's the rollback: to go back, set Pages' source to the branch again. Then delete the pushed `theme` and `m18-print`, the local milestone branches and the worktrees (see "Worktrees"). Local `main` is behind `origin/main`: `git branch -f main origin/main` from a checkout that isn't on `main`.
 - **`.git/modules`.** Leftover submodule clones under `.git/modules` need `rm -rf .git/modules`. The permission system blocked it during M1.
 - **A stray headless Chrome.** One test instance from this session, PID 8236 with a `cdp-*` temp profile, was orphaned. Stopping it was denied by the permission system, so run `kill 8236`.
 - **Safari's favicon in dark mode.** WKWebView drew `favicon.svg`, as an `<img>`, in its light variant while the page reported dark. Safari's own tab icon couldn't be checked from the harness. It stays legible either way.
