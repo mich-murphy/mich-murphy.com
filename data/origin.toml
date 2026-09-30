@@ -1,0 +1,72 @@
+# Each post's last commit before the move from Zola (6f2b864), from git log -1 -- blog/content/<post>.md, keyed by
+# the post's file name. The move recorded every post as a rename, and Hugo's git info stops at a rename, so a post
+# whose later commits are all bulk ones falls back to this (layouts/_partials/origin.html). Dates are the commits'
+# author dates, all made in Sydney
+
+[backup-solutions-nixos]
+date = 2023-04-22
+hash = "ad9a0cc"
+
+[configure-nextcloud-nixos]
+date = 2023-02-24
+hash = "ac91bc2"
+
+[dev-containers-vscode]
+date = 2023-04-11
+hash = "f15b14e"
+
+[encrypting-secrets-nixos]
+date = 2023-02-23
+hash = "9dff3d8"
+
+[nix-useful-references]
+date = 2023-09-16
+hash = "ac2b1e0"
+
+[nixos-anywhere-and-disko]
+date = 2024-03-27
+hash = "dd4bcd2"
+
+[nixos-impermanence]
+date = 2023-02-24
+hash = "ac91bc2"
+
+[nixos-minecraft-server]
+date = 2024-04-03
+hash = "f1e46e8"
+
+[nixos-tmpfs-installation]
+date = 2024-04-02
+hash = "4723d0a"
+
+[proxmox-package-repositories]
+date = 2023-02-06
+hash = "438126e"
+
+[resolving-proxmox-installation-issues]
+date = 2025-10-30
+hash = "1d1b39a"
+
+[restore-nextcloud-from-backup-nixos]
+date = 2024-03-25
+hash = "468d201"
+
+[s3-object-storage-nixos]
+date = 2023-01-20
+hash = "71e966f"
+
+[s3-object-storage]
+date = 2023-01-13
+hash = "236e3f0"
+
+[syncing-plex-watch-state]
+date = 2024-04-08
+hash = "2f348a3"
+
+[systemd-services-and-timers-nixos]
+date = 2023-02-13
+hash = "6b027b1"
+
+[zfs-useful-references]
+date = 2023-03-06
+hash = "0b01f92"

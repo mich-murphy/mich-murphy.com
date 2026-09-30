@@ -1,0 +1,30 @@
+{{- /* Tag pages send readers to the index, where search replaced them: /tags/nixos/ goes to /#nixos, which opens with
+  the tag menu set (the fragment is the tag's slug, decoded, like the ids there), and /tags/ goes to /. Hugo looks up
+  this template for both. An alias can't carry a fragment, so each is a page of its own, outside the site's shell: a
+  0-second meta refresh, which keeps the fragment, a canonical link to the index, noindex, and a link for when the
+  refresh doesn't happen. Only the HTML redirects, so a term's other outputs, like its feed, stay. A tag's page links
+  to its feed, so a reader given /tags/nixos/ finds /tags/nixos/atom.xml: readers don't follow the refresh. A term's
+  title is its slug, #nixos, as the menu shows it, not Hugo's title-cased Nixos */}}
+{{- $to := "/" }}
+{{- $title := .Title }}
+{{- if eq .Kind "term" }}
+  {{- $s := path.Base (urls.Parse .RelPermalink).Path }}
+  {{- $to = print "/#" $s }}
+  {{- $title = print "#" $s }}
+{{- end -}}
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+<meta charset="utf-8">
+<title>{{ $title }} · {{ site.Title }}</title>
+<link rel="canonical" href="{{ site.Home.Permalink }}">
+{{- with .OutputFormats.Get "atom" }}
+<link rel="alternate" type="application/atom+xml" href="{{ .Permalink }}" title="{{ $title }} · {{ site.Title }}">
+{{- end }}
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url={{ $to }}">
+</head>
+<body>
+<p>Redirecting to <a href="{{ $to }}">{{ $to }}</a></p>
+</body>
+</html>

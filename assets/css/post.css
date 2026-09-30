@@ -1,0 +1,139 @@
+/* a post's code windows (render-codeblock.html), colophon (colophon.html), Older and Newer (pn.html) and status line
+   (status-line.html). The head, the prose and the colophon's keyed list are in prose.css, which About and Feeds share,
+   and callouts (render-blockquote.html) in main.css, apart from how a code window sits in one */
+/* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
+   just enough room for its own label under the note's */
+.callout .frame>:last-child{margin-bottom:1.15em}
+.callout .frame>.win:first-child{margin-top:.6em}
+
+/* code windows: a heavy frame on the code ground, with no dither. A file's path goes in an inverted title bar, and a
+   block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
+   ground */
+.win{position:relative;margin:1.7em 0;border:2px solid var(--fg);background:var(--code)}
+.win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+/* long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed to
+   the box, which the local layers in code cover at each end */
+.win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--edge) var(--code);
+  background:linear-gradient(to right,var(--code) 30%,transparent) left/28px 100% no-repeat local,
+    linear-gradient(to left,var(--code) 30%,transparent) right/28px 100% no-repeat local,
+    linear-gradient(to right,color-mix(in srgb,var(--fg) 22%,transparent),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,color-mix(in srgb,var(--fg) 22%,transparent),transparent) right/10px 100% no-repeat scroll;
+  background-color:var(--code)}
+.win.lgw pre.code{padding-top:20px}
+/* the pre scrolls from the keyboard. Its ring goes inside the frame: in light both are fg, so a ring on the frame
+   would vanish */
+.win pre.code:focus-visible{outline-offset:-4px}
+/* two-tone syntax: comments and strings, and everything else plain */
+.win :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
+.win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
+
+/* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
+   the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
+   code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
+.colo{margin-top:56px;max-width:74ch}
+.colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
+.colo .cm{grid-column:2}
+.colo .hist{grid-column:3;text-align:right}
+.comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge);color:var(--mute)}
+.comp span{white-space:nowrap}
+.comp .n{color:var(--fg)}
+.comp .sep{padding-inline:.6ch}
+
+/* Older and Newer (pn.html): the neighbours' file names at the two ends of the text column, in mute. They invert on
+   hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav keeps the
+   body size, so its 74ch matches the colophon's. Only when the two don't fit do they give way, and then the name's
+   span takes the ellipsis, so the arrow always shows; on phones they stack. 32px under the colophon's frame (about
+   24px to the eye, past the dither), and main's bottom padding drops from 56px to 28px, so the footer's rule sits
+   28px under them */
+.pn{margin-top:32px;max-width:74ch}
+.pn-file{display:flex;column-gap:3ch}
+.pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap}
+.pn-file span{overflow:hidden;text-overflow:ellipsis}
+.pn-file a:hover{color:var(--bg)}
+.pn-file .newer{margin-left:auto}
+main:has(.pn-file){padding-bottom:28px}
+
+/* the status line (status-line.html): the header's ruled strip, fixed to the bottom of the window at every width,
+   on the 820px wrap. It shows the post title, or the current section (h2 › h3) with the 7px square, then how far
+   through and the minutes left, and its 2px top rule fills as you read. The page ends 40px lower, about the strip's
+   height, so the strip never covers the footer, and focus scrolls clear of it. --g is main's gutter, 24px and 16px on
+   phones, which the strip and the box keep below 820px */
+.stat{position:fixed;left:0;right:0;bottom:0;z-index:20;--g:24px}
+body:has(.stat){padding-bottom:40px}
+:root:has(.stat){scroll-padding-bottom:40px}
+.stat-bar{position:relative;display:flex;align-items:center;gap:16px;background:var(--bg);border-top:2px solid var(--edge);padding:8px max(var(--g),calc((100% - 772px) / 2));font-size:12px;color:var(--mute)}
+.stat-where{flex:1;display:grid;min-width:0}
+.stat-where>*{grid-area:1/1;min-width:0}
+.stat-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-cur,.clist{margin:0;padding:0;list-style:none}
+/* one anchor per heading, stacked, and only the current one shows. The head's anchor reads as the title. They're
+   scroll markers, so the pointer passes through them to the strip; the Contents links are the ones that go */
+.stat-cur{display:grid;scroll-target-group:auto;pointer-events:none}
+.stat-cur li{grid-area:1/1;min-width:0;opacity:0}
+.stat-cur a{display:block;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-cur a::before{content:"";display:inline-block;width:7px;height:7px;background:var(--fg);margin-right:1ch;vertical-align:1px}
+.stat-cur .sl-hd a{color:var(--mute)}
+.stat-cur .sl-hd a::before{content:none}
+/* the current section comes from :target-current (Chrome and Edge 140+). Its rules stay on their own, because a
+   browser that doesn't know it drops the whole rule; there the title shows and Contents marks nothing */
+.stat-cur li:has(>a:target-current){opacity:1}
+.stat-where:has(a:target-current) .stat-title{opacity:0}
+.stat-num{display:none;flex:none;font-variant-numeric:tabular-nums}
+.stat-num .sep{padding-inline:.6ch}
+.stat-prog{position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--fg);transform-origin:0 50%;transform:scaleX(0)}
+/* the percentage, the minutes left and the rule follow the page's scroll (Chrome and Edge 115+, Safari 26+).
+   Without scroll timelines (Firefox) the numbers would stay at 0% and the whole reading time, so they only show
+   where they move. calc() makes Safari round the animated value; without it the counter reads 0. On a post too short
+   to scroll the timeline is inactive, so --left falls back to the whole reading time */
+@property --pct{syntax:"<integer>";inherits:false;initial-value:0}
+@property --left{syntax:"<integer>";inherits:false;initial-value:0}
+@supports (animation-timeline:scroll()){
+  .stat-num{display:block}
+  .stat-pct{counter-reset:pct calc(var(--pct));animation:statpct linear both;animation-timeline:scroll(root)}
+  .stat-pct::after{content:counter(pct) "%"}
+  .stat-left{--left:var(--min);counter-reset:left calc(var(--left));animation:statleft linear both;animation-timeline:scroll(root)}
+  .stat-left::after{content:counter(left) " min left"}
+  .stat-prog{animation:statprog linear both;animation-timeline:scroll(root)}
+}
+@keyframes statprog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes statpct{from{--pct:0}to{--pct:100}}
+/* status-line.html sets --min on .stat-left to the post's reading time */
+@keyframes statleft{from{--left:var(--min)}to{--left:0}}
+
+/* the Contents box opens upward from the strip: the label, a heavy frame, no dither. It's hidden with opacity, not
+   visibility, so its links stay focusable and focusing one opens it. A long list scrolls inside the window */
+.stat-pop{position:absolute;bottom:100%;left:max(var(--g),calc((100% - 772px) / 2));width:min(calc(38ch + 36px),calc(100% - 2*var(--g)));padding-bottom:14px;opacity:0;pointer-events:none;transition:opacity .12s}
+.stat:is(:hover,:focus-within) .stat-pop{opacity:1;pointer-events:auto}
+/* on touch, a tap on the strip opens the box. iOS sets :hover only on what looks clickable, which cursor:pointer marks,
+   and .stat-where takes focus (tabindex=-1, no tab stop) for :focus-within. A tap elsewhere closes it */
+@media (hover:none){.stat-bar{cursor:pointer}}
+.pbox,.pbox>.frame{position:relative}
+.stat-pop .frame{max-height:calc(100vh - 80px);max-height:calc(100svh - 80px);overflow:auto;padding:18px 16px 8px;font-size:13.5px;line-height:1.45}
+.clist{scroll-target-group:auto}
+.clist li{position:relative;margin:0 0 .6em;padding-left:2.2ch}
+.clist .l3{padding-left:4.4ch}
+.clist a{text-decoration:none;color:var(--mute)}
+.clist li a:hover{background:var(--fg);color:var(--bg)}
+.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
+.clist a:target-current{color:var(--fg)}
+.clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:.45em;width:7px;height:7px;background:var(--fg)}
+.clist .l3:has(>a:target-current)::before{left:2.2ch}
+
+/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, Older and Newer
+   stack, older at the left and newer at the right, and the strip and its box take main's 16px gutter */
+@media (max-width:600px){
+  .colo .frame{padding-top:38px}
+  .colo .hist{grid-column:2/-1;text-align:left}
+  .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
+  .pn-file a{max-width:100%}
+  .stat{--g:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .stat-pop{transition:none}
+}
+/* forced colours drop backgrounds, and the squares are backgrounds. The progress rule would turn into Canvas over the
+   strip's rule, so it takes Highlight, as a native progress bar does */
+@media (forced-colors:active){
+  .stat-cur a::before,.clist li::before{background:CanvasText;forced-color-adjust:none}
+  .stat-prog{background:Highlight;forced-color-adjust:none}
+}

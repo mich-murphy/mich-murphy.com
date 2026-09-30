@@ -1,0 +1,7 @@
+{{- /* An alert (> [!NOTE]) is a callout: a plain frame, labelled with its title or its type, and no dither. Any other
+  blockquote stays one */ -}}
+{{- if eq .Type "alert" -}}
+<div class="callout"><span class="legend">{{ or .AlertTitle (title .AlertType) }}</span><div class="frame">{{ .Text }}</div></div>
+{{- else -}}
+<blockquote>{{ .Text }}</blockquote>
+{{- end }}

@@ -1,0 +1,22 @@
+{{- /* Older and Newer, under the colophon: the neighbouring posts named by their source files, older at the left and
+  newer at the right. They're taken by index from the posts oldest first, so i-1 is older and i+1 is newer, rather
+  than from .Prev and .Next, whose direction is easy to get backwards. The newest post has no newer and the oldest no
+  older, with no placeholder: newer keeps to the right on its own. The name is the file under posts/, so a bundle
+  shows its folder too (nixos-impermanence/index.md). It has a span of its own, which takes the ellipsis, so the
+  arrow always shows. Each link's name has the title and ends with the visible file name. Styles are in post.css */}}
+{{- $posts := (where site.RegularPages "Section" "posts").ByDate }}
+{{- $older := false }}
+{{- $newer := false }}
+{{- range $i, $p := $posts }}
+  {{- if $p.Eq $ }}
+    {{- if gt $i 0 }}{{ $older = index $posts (sub $i 1) }}{{ end }}
+    {{- if lt (add $i 1) (len $posts) }}{{ $newer = index $posts (add $i 1) }}{{ end }}
+    {{- break }}
+  {{- end }}
+{{- end }}
+{{- if or $older $newer }}
+<nav class="pn pn-file" aria-label="Newer and older posts">
+{{- with $older }}{{ $f := strings.TrimPrefix "posts/" .File.Path }}<a class="older" href="{{ .RelPermalink }}" aria-label="Older post: {{ .Title }}, {{ $f }}">‹ <span>{{ $f }}</span></a>{{ end }}
+{{- with $newer }}{{ $f := strings.TrimPrefix "posts/" .File.Path }}<a class="newer" href="{{ .RelPermalink }}" aria-label="Newer post: {{ .Title }}, {{ $f }}"><span>{{ $f }}</span> ›</a>{{ end }}
+</nav>
+{{- end }}

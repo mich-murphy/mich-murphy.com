@@ -1,0 +1,38 @@
+{{- /* A code window (C1B), with no line numbers, line count or dither. A block with a file path gets a title bar,
+  "Nix · /etc/nixos/configuration.nix"; one without has its language cut into the border as a label. The path is the
+  fence's file attribute, or else a first line that is only a path comment, like "# flake.nix". That line comes out of
+  the code, with any blank lines under it. A block that is only a path comment stays as it is */ -}}
+{{- $lang := or .Type "txt" }}
+{{- $name := index (dict "nix" "Nix" "yaml" "YAML" "bash" "Bash" "json" "JSON" "txt" "Text") $lang }}
+{{- /* a language with no name here warns, so CI (--panicOnWarning) fails until it gets one */}}
+{{- if not $name }}
+  {{- $name = strings.FirstUpper $lang }}
+  {{- warnf "code block language %q has no label in layouts/_markup/render-codeblock.html (%s:%d)" $lang .Page.File.Path .Position.LineNumber }}
+{{- end }}
+{{- $code := .Inner }}
+{{- $path := .Attributes.file }}
+{{- /* a path has a "/" or ends in a dot and letters, so "# v1.2" stays; one starting "!" is a shebang and stays */}}
+{{- $re := `^(?:#|//) ?((?:[^!\s]\S*)?(?:/\S*|\.[A-Za-z]+))\n+` }}
+{{- if not $path }}
+  {{- with findRESubmatch $re $code 1 }}
+    {{- $path = index . 0 1 }}
+    {{- $code = replaceRE $re "" $code 1 }}
+  {{- end }}
+{{- end }}
+{{- /* keyed by ordinal, so a second render of the page can't count a block twice. The colophon reads it */}}
+{{- .Page.Store.SetInMap "code" (string .Ordinal) $name }}
+{{- /* print keeps a window whole on one page (main.css), so one taller than a page gets class long and may split. An
+  A4 page at 1cm margins is 1047px tall and 718px wide. Code prints 13.5px on a 21.6px line, and 0xProto's 8.37px
+  columns give 75 to the code's 634px, so each line counts as the lines it wraps to at 75. Under a title bar (57px of
+  frame, bar and padding) a page holds 45 lines, and under a label (46px) 46, so 45 does for both */}}
+{{- $lines := 0 }}
+{{- range split (strings.TrimRight "\n" $code) "\n" }}
+  {{- $lines = add $lines (math.Max 1 (math.Ceil (div (strings.RuneCount .) 75.0))) }}
+{{- end }}
+{{- /* hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
+  own pre and code replace */}}
+{{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" -}}
+<figure class="win{{ if not $path }} lgw{{ end }}{{ if gt $lines 45 }} long{{ end }}">
+{{- with $path }}<figcaption><span class="path">{{ $name }} · {{ . }}</span></figcaption>
+{{- else }}<span class="legend">{{ $name }}</span>{{ end -}}
+<pre class="code" tabindex="0"><code>{{ $h | safeHTML }}</code></pre></figure>

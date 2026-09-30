@@ -1,0 +1,41 @@
+{{- /* Where a post's updated date and commit come from (E1): its last commit that isn't a bulk one. A commit is bulk if
+  params.bulkCommits lists a prefix of its hash, at least 7 characters long, or its message has a "Bulk: true"
+  trailer. Shorter entries, the empty string included, are ignored, so no entry can match every commit. The walk
+  starts at the file's last commit and goes back through its ancestors, so a bulk commit on top of a real edit
+  doesn't hide it. Hugo's git info stops at the move from Zola, which is bulk, so a post with no real edit since
+  falls back to data/origin.toml by its file name. The date is the author date in the site's timeZone
+  (Australia/Sydney). Returns a dict with date (a time.Time), hash (abbreviated, to show) and full (the whole hash,
+  to link to; a fallback only has the abbreviated one, so full is that), or an empty one for an uncommitted post.
+  The colophon, the feeds (feed.xml) and the sitemap use it: call it with partialCached "origin.html" . .Path. No
+  template reads .Lastmod, which git info sets to the last commit, bulk or not */}}
+{{- $o := dict }}
+{{- /* time.AsTime reads a date with no offset in the site's timeZone */}}
+{{- $tz := (time.AsTime "2000-01-01").Location }}
+{{- $prefixes := slice }}
+{{- range site.Params.bulkCommits }}
+  {{- $p := lower (strings.TrimSpace .) }}
+  {{- if ge (len $p) 7 }}{{ $prefixes = $prefixes | append $p }}{{ end }}
+{{- end }}
+{{- with .GitInfo }}
+  {{- $commits := slice . }}
+  {{- range .Ancestors }}{{ $commits = $commits | append . }}{{ end }}
+  {{- range $commits }}
+    {{- $c := . }}
+    {{- $bulk := gt (len (findRE `(?im)^bulk:[ \t]*true[ \t]*$` .Body 1)) 0 }}
+    {{- range $prefixes }}
+      {{- if strings.HasPrefix $c.Hash . }}{{ $bulk = true }}{{ end }}
+    {{- end }}
+    {{- if not $bulk }}
+      {{- $o = dict "date" (.AuthorDate.In $tz) "hash" .AbbreviatedHash "full" .Hash }}
+      {{- break }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if not $o }}
+  {{- with .File }}
+    {{- with index hugo.Data.origin .ContentBaseName }}
+      {{- $o = dict "date" (time.AsTime .date) "hash" .hash "full" .hash }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- return $o }}

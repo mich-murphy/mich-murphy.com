@@ -1,0 +1,34 @@
+{{- /* The colophon: the post's one dither, as wide as the text column, with the source file as its label. One keyed
+  list: created is the front-matter date, and updated and commit come from the origin partial, with history at the
+  end of the commit row. An uncommitted post has neither yet. Under a dotted rule, the words and the code blocks by
+  their title-bar names, most first. It reads the code map render-codeblock.html fills, so it goes after .Content.
+  Styles are in post.css, and the keyed list, which the keyed boxes share, in prose.css */}}
+{{- $gh := site.Params.repo }}
+{{- $file := printf "content/%s" .File.Path }}
+{{- $o := partialCached "origin.html" . .Path }}
+{{- /* words: the Markdown without its fenced code (in or out of a callout), and without the markers that open a line
+  (headings, list items, quotes and alert types), counted by countwords */}}
+{{- $md := replaceRE "(?ms)^[ \t>]*```.*?^[ \t>]*```[ \t]*$" "" .RawContent }}
+{{- $md = replaceRE `(?m)^(?:[ \t]*(?:[>*+-]|#{1,6}|\d+\.|\[!\w+\])(?:[ \t]+|$))+` "" $md }}
+{{- $code := .Store.Get "code" }}
+{{- $langs := newScratch }}
+{{- range $code }}{{ $langs.Add . 1 }}{{ end }}
+<div class="dz colo"><span class="legend"><a href="{{ $gh }}/blob/main/{{ $file }}">{{ $file }}</a></span><div class="frame">
+<dl>
+<dt>created</dt><dd>{{ .Date.Format "2006-01-02" }}</dd>
+{{- with $o }}
+<dt>updated</dt><dd>{{ .date.Format "2006-01-02" }}</dd>
+<dt>commit</dt><dd class="cm"><a class="h" href="{{ $gh }}/commit/{{ .full }}">{{ .hash }}</a></dd><dd class="hist"><a href="{{ $gh }}/commits/main/{{ $file }}" aria-label="History of {{ strings.TrimPrefix "posts/" $.File.Path }}">history</a></dd>
+{{- end }}
+</dl>
+{{- /* a map ranges in key order, so counting down gives most first, then by name. Each item is a nowrap span, so it
+  never breaks inside, and the dot after it is in the same span, so a line never starts with one. The line can only
+  break at the wbr after the dot. The span's close tag comes with the next item, or at the end */}}
+<p class="comp"><span>words <span class="n">{{ countwords $md }}</span>
+{{- with $code }}<span class="sep">·</span></span><wbr><span>code blocks <span class="n">{{ len . }}</span>
+  {{- range seq (len .) 1 }}
+    {{- $n := . }}
+    {{- range $name, $c := $langs.Values }}{{ if eq $c $n }}<span class="sep">·</span></span><wbr><span>{{ $name }} <span class="n">{{ $n }}</span>{{ end }}{{ end }}
+  {{- end }}
+{{- end }}</span></p>
+</div></div>

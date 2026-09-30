@@ -1,0 +1,3 @@
+{{- /* Mermaid renders at build time, so it never ships to readers. Until that pipeline exists, a mermaid fence fails
+  the build rather than showing its source as code */ -}}
+{{- errorf "mermaid diagrams aren't supported yet (%s:%d)" .Page.File.Path .Position.LineNumber }}

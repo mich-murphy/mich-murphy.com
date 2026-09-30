@@ -1,0 +1,2 @@
+{{- /* The site's feed, /atom.xml: every post (_partials/feed.xml) */}}
+{{- partial "feed.xml" (dict "page" . "pages" site.RegularPages) }}

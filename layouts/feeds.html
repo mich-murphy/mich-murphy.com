@@ -1,0 +1,43 @@
+{{ define "main" }}
+{{- /* Feeds (content/feeds/index.md): the bare head, then the Subscribe box, the page's one dither. It keys the feed's
+  full address, from home's atom output as the head's alternate link takes it, which one click selects whole
+  (pages.css), and the post count and newest date from the build. The <wbr> lets a phone break the address before
+  atom.xml rather than at mich-murphy's hyphen.
+  Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic in the file's order:
+  each feed's name, linked, and its host, the URL's without www. unless the file sets one. The space between them keeps
+  them apart in reader mode and without CSS. A feed with no name, with a URL that has no host (noted.lol/ rather than
+  https://noted.lol/), or whose topic isn't listed fails the build rather than show a broken row or go missing from the
+  card. Styles are prose.css and pages.css */}}
+{{- $roll := hugo.Data.blogroll }}
+{{- range $roll.feed }}
+  {{- $url := string .url }}
+  {{- if not .name }}{{ errorf "data/blogroll.toml: the feed with the url %q has no name" $url }}{{ end }}
+  {{- if not (urls.Parse $url).Host }}{{ errorf "data/blogroll.toml: %q has the url %q, which has no host" .name $url }}{{ end }}
+  {{- if not (in $roll.topics .topic) }}{{ errorf "data/blogroll.toml: %q has the topic %q, which isn't in topics" .name .topic }}{{ end }}
+{{- end }}
+<header class="ph bare"><h1>{{ .Title }}</h1></header>
+<div class="dz kv"><span class="legend">Subscribe</span><div class="frame">
+<dl>
+<dt>feed</dt><dd>{{ $u := (site.Home.OutputFormats.Get "atom").Permalink }}{{ $f := path.Base $u }}<code class="url">{{ strings.TrimSuffix $f $u }}<wbr>{{ $f }}</code></dd>
+<dt>format</dt><dd>Atom 1.0, full post text</dd>
+{{- with (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+<dt>posts</dt><dd>{{ len . }}, newest {{ (index . 0).Date.Format "2006-01-02" }}</dd>
+{{- end }}
+<dt>by tag</dt><dd>/tags/&lt;tag&gt;/atom.xml, one per tag</dd>
+</dl>
+</div></div>
+{{ partial "prose.html" . }}
+<div class="roll"><span class="legend">Feeds I read · {{ len $roll.feed }}</span><div class="frame">
+<dl>
+{{- range $topic := $roll.topics }}
+{{- with where $roll.feed "topic" $topic }}
+<dt>{{ lower $topic }}</dt><dd><ul role="list">
+{{- range . }}
+<li><a href="{{ .url }}">{{ .name }}</a> <span class="dm">{{ or .host (strings.TrimPrefix "www." (urls.Parse .url).Host) }}</span></li>
+{{- end }}
+</ul></dd>
+{{- end }}
+{{- end }}
+</dl>
+</div></div>
+{{ end }}

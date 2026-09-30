@@ -1,0 +1,41 @@
+/* the page head and the prose, on posts (page.html) and the other pages (about.html, feeds.html), and the keyed list
+   the colophon (post.css) and the keyed boxes (pages.css) share. Callouts (render-blockquote.html) are in main.css,
+   since 404 has one too */
+/* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
+   width. A bare head has no meta line */
+.ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
+.ph h1{margin:0 0 10px}
+.ph.bare h1{margin:0}
+.ph .meta{margin:0;color:var(--mute);font-size:13.5px}
+
+/* headings in full fg over body text in the body mix. The ids are there for Contents and search, so a jump
+   to one leaves some room above it */
+.prose{max-width:74ch}
+.prose :is(p,li){color:var(--body)}
+.prose h2{margin:2.3em 0 .75em}
+.prose h3{margin:1.9em 0 .6em}
+.prose :is(h2,h3){scroll-margin-top:24px}
+
+/* ul gets the 7px square used by the nav marker and Contents; ol keeps its numbers, in fg */
+.prose :is(ul,ol){margin:0 0 1.15em}
+.prose ul{padding-left:22px;list-style:none}
+.prose li{position:relative;margin:.2em 0}
+.prose ul>li::before{content:"";position:absolute;left:-22px;top:10px;width:7px;height:7px;background:var(--fg)}
+.prose ol{padding-left:3ch}
+.prose ol>li{padding-left:.6ch}
+.prose ol>li::marker{color:var(--fg)}
+
+/* a quote is set off by a rule */
+.prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
+
+/* a keyed list, in a framed box: keys in mute in a max-content column, values in fg, at 13.5px. The third column is
+   for the colophon's history; other values span it */
+.kv .frame,.colo .frame{padding:20px 18px 14px;font-size:13.5px;line-height:1.55}
+.kv dl,.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;column-gap:2ch;align-items:baseline;margin:0}
+.kv dt,.colo dt{color:var(--mute)}
+.kv dd,.colo dd{grid-column:2/-1;min-width:0;margin:0}
+
+/* forced colours drop backgrounds, and the squares are backgrounds */
+@media (forced-colors:active){
+  .prose ul>li::before{background:CanvasText;forced-color-adjust:none}
+}
