@@ -1,7 +1,7 @@
 /* the boxes on the pages that aren't posts (about.html, feeds.html), as wide as the text column. A keyed box's list
    is laid out in prose.css, as the colophon's is, with 2px between its rows. A value that can't break, like a URL,
    breaks anywhere rather than run out of the box. The last box sits as far above the footer as any page's */
-.kv,.pcard,.roll{position:relative;max-width:74ch}
+.kv,.pcard,.roll{position:relative}
 .kv{margin-block:32px 40px}
 .kv:last-child{margin-bottom:0}
 .kv dl{row-gap:2px}

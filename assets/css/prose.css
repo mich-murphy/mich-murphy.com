@@ -3,14 +3,13 @@
    since 404 has one too */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
-.ph{max-width:74ch;margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
+.ph{margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
 .ph h1{margin:0 0 10px}
 .ph.bare h1{margin:0}
 .ph .meta{margin:0;color:var(--mute);font-size:13.5px}
 
 /* headings in full fg over body text in the body mix. The ids are there for Contents and search, so a jump
    to one leaves some room above it */
-.prose{max-width:74ch}
 .prose :is(p,li){color:var(--body)}
 .prose h2{margin:2.3em 0 .75em}
 .prose h3{margin:1.9em 0 .6em}

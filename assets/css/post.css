@@ -30,7 +30,7 @@
 /* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
    the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
    code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
-.colo{margin-top:56px;max-width:74ch}
+.colo{margin-top:56px}
 .colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
 .colo .cm{grid-column:2}
 .colo .hist{grid-column:3;text-align:right}
@@ -40,12 +40,12 @@
 .comp .sep{padding-inline:.6ch}
 
 /* Older and Newer (pn.html): the neighbours' file names at the two ends of the text column, in mute. They invert on
-   hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav keeps the
-   body size, so its 74ch matches the colophon's. Only when the two don't fit do they give way, and then the name's
+   hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav spans the
+   column, as the colophon does. Only when the two don't fit do they give way, and then the name's
    span takes the ellipsis, so the arrow always shows; on phones they stack. 32px under the colophon's frame (about
    24px to the eye, past the dither), and main's bottom padding drops from 56px to 28px, so the footer's rule sits
    28px under them */
-.pn{margin-top:32px;max-width:74ch}
+.pn{margin-top:32px}
 .pn-file{display:flex;column-gap:3ch}
 .pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap}
 .pn-file span{overflow:hidden;text-overflow:ellipsis}
