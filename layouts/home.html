@@ -7,7 +7,7 @@
   (filters.css), and the script takes them over. <b> stays empty: CSS writes all, or the applied value without the
   script, and the script writes the value. filters.css finds an entry by data-f, its target's id, since Hugo
   percent-encodes the href, so café's is #caf%c3%a9. Styles are in index.css */}}
-<div class="sfr"><span class="legend">Filter</span><div class="frame">
+<div class="sfr"><h2 class="legend">Filter</h2><div class="frame">
 <search class="sb" hidden><span class="pr" aria-hidden="true">&gt;</span><input type="search" class="sq" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="kc" title="Press / to search">/</kbd><span class="sc" aria-hidden="true"></span></search>
 <div class="ff ff-menus"><span class="k">filter</span>
 {{- $fs := partial "filters.html" . }}

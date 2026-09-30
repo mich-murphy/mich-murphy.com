@@ -5,7 +5,7 @@
   so a fragment filters the list without a script (filters.css), and a hidden target doesn't make the page jump. Then
   the status line the script fills with how many posts match, for screen readers */}}
 {{- $posts := where site.RegularPages "Section" "posts" }}
-<div class="dz tcard idx"><span class="legend">Posts · <span class="lc">{{ len $posts }}</span></span><div class="frame">
+<div class="dz tcard idx"><h2 class="legend">Posts · <span class="lc">{{ len $posts }}</span></h2><div class="frame">
 {{- if .IsHome }}<i id="all" hidden></i>{{ range partial "filters.html" . }}<i id="{{ .id }}" class="{{ cond (eq .k "t") "tg" "yt" }}" hidden></i>{{ end }}{{ end }}<ol role="list">
 {{- range $posts.ByDate.Reverse }}
 <li class="tr" data-t="{{ with .GetTerms "tags" }}{{ range $i, $t := . }}{{ if $i }} {{ end }}{{ path.Base (urls.Parse $t.RelPermalink).Path }}{{ end }}{{ end }}" data-y="{{ .Date.Year }}"><span class="t"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></span><span class="d">{{ .Date.Format "2006-01-02" }}</span></li>

@@ -46,7 +46,9 @@ pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
   -webkit-mask:var(--m);mask:var(--m)}
 .dz>*{position:relative}
 .frame{border:2px solid var(--fg);background:var(--bg)}
-.legend{position:absolute;top:-.8em;left:12px;z-index:1;padding:0 6px;background:var(--bg);font-size:12px;line-height:1.5}
+/* a page's own boxes (home, 404, About, Feeds) are labelled with an h2, so a screen reader's list of headings finds
+   them; a box inside a post (code windows, callouts, the colophon) and Contents keep a span */
+.legend{position:absolute;top:-.8em;left:12px;z-index:1;margin:0;padding:0 6px;background:var(--bg);font-size:12px;line-height:1.5}
 /* a callout is a plain frame with its label cut into the border: an alert in a post (render-blockquote.html), or
    404's box */
 .callout{position:relative;margin-block:2em 2.2em}

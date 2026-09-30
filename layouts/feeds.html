@@ -16,7 +16,7 @@
   {{- if not (in $roll.topics .topic) }}{{ errorf "data/blogroll.toml: %q has the topic %q, which isn't in topics" .name .topic }}{{ end }}
 {{- end }}
 <header class="ph bare"><h1>{{ .Title }}</h1></header>
-<div class="dz kv"><span class="legend">Subscribe</span><div class="frame">
+<div class="dz kv"><h2 class="legend">Subscribe</h2><div class="frame">
 <dl>
 <dt>feed</dt><dd>{{ $u := (site.Home.OutputFormats.Get "atom").Permalink }}{{ $f := path.Base $u }}<code class="url">{{ strings.TrimSuffix $f $u }}<wbr>{{ $f }}</code></dd>
 <dt>format</dt><dd>Atom 1.0, full post text</dd>
@@ -27,7 +27,7 @@
 </dl>
 </div></div>
 {{ partial "prose.html" . }}
-<div class="roll"><span class="legend">Feeds I read · {{ len $roll.feed }}</span><div class="frame">
+<div class="roll"><h2 class="legend">Feeds I read · {{ len $roll.feed }}</h2><div class="frame">
 <dl>
 {{- range $topic := $roll.topics }}
 {{- with where $roll.feed "topic" $topic }}
