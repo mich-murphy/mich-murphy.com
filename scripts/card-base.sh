@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Draws the social card's bases, assets/images/card-base-1.png, -2.png and
 # -3.png: scripts/card-base.sh
-# Each fills scripts/card-base.html with 0xProto Regular (static/fonts), the
+# Each fills scripts/card-base.html with Argon Regular (static/fonts), the
 # header's mark (layouts/_partials/mark.html) and its number of title lines,
 # which sizes the box, and screenshots it with headless Chrome at exactly
 # 1200x630. Rerun it after changing any of those, and commit the PNGs: the
@@ -19,7 +19,7 @@ trap 'if [ -n "$pid" ]; then kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev
 # The font goes in as a data URI, since Chrome won't load a font into a file://
 # page from another file. The mark is the partial's <svg>, without its comment
 sed -n '/^<svg/,/^<\/svg>/p' layouts/_partials/mark.html >"$tmp/mark.svg"
-font=$(base64 <static/fonts/0xProto-Regular.woff2 | tr -d '\n')
+font=$(base64 <static/fonts/MMAr-Regular.woff2 | tr -d '\n')
 
 for lines in 1 2 3; do
   out=assets/images/card-base-$lines.png

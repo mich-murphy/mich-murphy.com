@@ -8,12 +8,12 @@
 <meta charset="utf-8">
 <title>Social card base</title>
 <style>
-/* 0xProto Regular, the site's subset (static/fonts) */
-@font-face{font-family:"0xProto";font-weight:400;src:url(@FONT@) format("woff2")}
+/* the reading face, Argon Regular ("MM Ar"), the site's subset (static/fonts) */
+@font-face{font-family:"MM Ar";font-weight:400;src:url(@FONT@) format("woff2")}
 /* the site's dark tokens (assets/css/main.css) */
 :root{--bg:#0f1214;--fg:#e6e2d6;--mute:#a39f93}
 *,::before{box-sizing:border-box}
-body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg);color:var(--fg);font:22px/1 "0xProto",monospace}
+body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg);color:var(--fg);font:22px/1 "MM Ar",monospace}
 /* the ruled header: the mark at 48px (3 pixels to each of its 16) and the name, and the address in mute */
 .hd{display:flex;justify-content:space-between;align-items:center;height:114px;padding:34px 58px 29px;border-bottom:3px solid var(--fg)}
 .brand{display:flex;align-items:center;gap:16px;text-transform:uppercase;letter-spacing:.08em}

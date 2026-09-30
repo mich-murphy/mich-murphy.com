@@ -231,6 +231,18 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
     - The 512KB and 14KB Clubs count uncompressed, about 72 KB here.
     - The font is 73% of the homepage's 37.5 KB, so it's the lever for going smaller.
     - The second is the site's one script, the index's. `scripts/postbuild.sh` writes both into `__HOME__` and `__JS__`, repeating until the homepage's own figure is stable, and still fails any page over 14 KB.
+  - **Type (2026-10-01).** 0xProto gave way to four faces from Monaspace 1.400 (GitHub Next, drawn by Lettermatic). They share one grid: 0xProto's 0.62em advance, a 0.50em x-height and a 0.73em cap height. Picked in the Monaspace lab (https://claude.ai/artifact/WbP9RoqPAm4G6JdyFDu35L), which showed the built pages with every role switchable.
+    - **Roles**, one per face, as the designers meant them:
+      - Argon (humanist): prose, UI and code.
+      - Xenon (slab serif): h1, h2 and h3.
+      - Radon (handwriting): comments in code windows. Hashbangs and preprocessor lines keep the comment colour but not the face.
+      - Krypton (mechanical): what the build writes, namely the meta line, dates, the colophon, This site and Subscribe, code-window paths, Older/Newer, the status line, counts and the footer.
+      - Neon, the fifth, sits out: it's too close to Argon to earn a file of its own. Italics are Argon's; post titles and box labels are the reading face; home's `.vh` h1 stays in Argon, so home loads no Xenon.
+    - **Ligatures.** Only texture healing (`calt`) is kept. The coding ligatures (ss01–ss10) aren't in the files, after Butterick: they draw characters other than the ones people copy.
+    - **Sizes.** 13.5, 15, 17, 21.5 and 27px, up from 12, 13.5, 15, 19 and 24. At 15px Monaspace looked 9% smaller than 0xProto, and its 7.5px x-height is about 0.16° at CSS's reference pixel, under the 0.2° critical print size below which reading slows (Legge and Bigelow 2011). 17px gives 0.18° and 73 characters a line. Phones keep 17px; the 14.5px rule is gone. The status line reserves 42px, list squares sit at 13px, and print's `long` code windows are over 41 lines of 68 columns.
+    - **Files.** `scripts/fonts.py` (in `nix develop`, which now has fontTools) downloads the release, checks its hash, and cuts each face at a fixed weight and slant: 7 woff2 subsets in `static/fonts` (the site's 318 characters) and Xenon Bold and Krypton for the cards in `assets/fonts`. Monaspace reserves its names, and a subset is a Modified Version (OFL FAQ 2.6), so they're renamed after their symbols: "MM Ar", "MM Xe", "MM Rn", "MM Kr".
+    - **Weight.** Every page preloads Argon and Krypton Regular, and home loads nothing else: its figure went from 37.5 KB to 35.0 KB. A post with h3s and comments loads 5 files, about 79 KB, against 55 KB of 0xProto.
+    - **Social cards.** The title is Xenon Bold and the meta line Krypton. Monaspace's ascent is 0.945em to 0xProto's 1.13em, so the partial adds the difference as line spacing and moves the text down by as much, which keeps every baseline where it was. The bases are redrawn in Argon, and the title check allows exactly the cards' characters.
 - **Known.**
   - Safari's favicon in dark mode: WKWebView drew `favicon.svg`, as an `<img>`, in its light variant while the page reported dark. Safari's own tab icon couldn't be checked from the harness. It stays legible either way.
   - Feed readers may show the 12 entries whose `updated` changed at launch as updated once. The ids, `published` values and feed URLs didn't change.
@@ -347,7 +359,7 @@ No notes came with them. Baking the picks into the lab found one bug in `menus` 
 
 **Principles.** Brutalist, zero JavaScript except the index's search (rev 13, its footer states the weight), HTML plus inlined CSS under 14 KB compressed per page, one font file on most pages. Structural devices carry real data: the commit, the source file and the history. Nothing is decoration for its own sake, and no cue may be false on launch day.
 
-**Type.** 0xProto everywhere, both body and code. It's OFL, by 0xType, release 2.502. Metrics: advance 0.62em, x-height 0.55em, cap height 0.71em.
+**Type.** Replaced by Monaspace on 2026-10-01, with new sizes; see "After launch". As launched: 0xProto everywhere, both body and code. It's OFL, by 0xType, release 2.502. Metrics: advance 0.62em, x-height 0.55em, cap height 0.71em.
 - **Scale.** The only sizes are 12, 13.5, 15, 19 and 24px:
   - labels, nav and footer: 12
   - code, meta and colophon: 13.5

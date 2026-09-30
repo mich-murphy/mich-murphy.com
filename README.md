@@ -7,7 +7,7 @@ Created to document my personal projects, for my own reference and hopefully to 
 This is a static site built using [Hugo](https://gohugo.io/) with my own templates rather than a theme. A Nix flake provides the local development environment (`nix develop`). The flake and the GitHub Actions workflow pin the same Hugo version. GitHub Actions builds every pull request and deploys `main` to [GitHub Pages](https://pages.github.com/).
 
 ## Checks
-CI runs `scripts/postbuild.sh` after every build. It writes two figures into every page's footer: what a browser fetches to load the homepage (the page gzipped, its preloaded font and its SVG icon), and the site's script. It fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory. `hugo server` doesn't run it, so there the footer reads `build serve` with neither figure.
+CI runs `scripts/postbuild.sh` after every build. It writes two figures into every page's footer: what a browser fetches to load the homepage (the page gzipped, its preloaded fonts and its SVG icon), and the site's script. It fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory. `hugo server` doesn't run it, so there the footer reads `build serve` with neither figure.
 
 Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
 
@@ -23,5 +23,7 @@ Because the build reads git history, it only runs in a git checkout. In a copy w
 ## Social cards
 Each post has a 1200×630 card for link previews at `/<slug>/card.png`. The build draws the post's title and date onto one of `assets/images/card-base-1.png`, `-2.png` and `-3.png`, which hold the header and an empty framed box sized for a title of 1, 2 or 3 lines. A title too long for 3 lines at the smallest size, or with a character the card's font can't draw, fails the build. To change the bases, edit `scripts/card-base.html`, run `scripts/card-base.sh` (it needs Google Chrome), and commit the new PNGs.
 
-## Font
-The site uses the [0xProto](https://github.com/0xType/0xProto) font, which is licensed under the SIL Open Font License 1.1. The pages load subsets from `static/fonts`, and the social cards are drawn with the release's TTF files in `assets/fonts`. A copy of the license, `LICENSE-0xProto.txt`, sits in both folders.
+## Fonts
+The site uses four faces from GitHub Next's [Monaspace](https://monaspace.githubnext.com/), which is licensed under the SIL Open Font License 1.1. Each has one role: Argon for prose, UI and code, Xenon for headings, Radon for comments in code, and Krypton for what the build writes, like dates, commits, file paths, the status line and the footer. `assets/css/main.css` declares them.
+
+`scripts/fonts.py` makes the font files from Monaspace's release: the subsets the pages load in `static/fonts`, and the TTFs the social cards are drawn with in `assets/fonts`. Run it with `nix develop -c scripts/fonts.py`, then commit what it writes. Monaspace reserves its names, and the license doesn't let a subset use them, so the files are named after each element's symbol: MM Ar, MM Xe, MM Rn and MM Kr. A copy of the license, `LICENSE-Monaspace.txt`, sits in both folders.
