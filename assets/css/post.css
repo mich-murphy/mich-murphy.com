@@ -10,7 +10,7 @@
    block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
    ground */
 .win{position:relative;margin:1.7em 0;border:2px solid var(--fg);background:var(--code)}
-.win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+.win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-family:var(--mach);font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
 /* long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed to
    the box, which the local layers in code cover at each end */
 .win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--thumb) var(--code);
@@ -25,12 +25,15 @@
 .win pre.code:focus-visible{outline-offset:-4px}
 /* two-tone syntax: comments and strings, and everything else plain */
 .win :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
+/* a comment is a note in the author's hand. A hashbang and preprocessor lines take the comments' colour, but they're
+   instructions to the machine, so they stay in the code's face */
+.win :is(.c,.c1,.cm,.cs){font-family:var(--hand)}
 .win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
 
-/* the colophon: the post's one dither, as wide as the text column. The source file is its label, which wraps inside
-   the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
+/* the colophon: the post's one dither, as wide as the text column, all of it in the machine face. The source file is
+   its label, which wraps inside the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
    code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
-.colo{margin-top:56px}
+.colo{margin-top:56px;font-family:var(--mach)}
 .colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
 .colo .cm{grid-column:2}
 .colo .hist{grid-column:3;text-align:right}
@@ -47,7 +50,7 @@
    28px under them */
 .pn{margin-top:32px}
 .pn-file{display:flex;column-gap:3ch}
-.pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-size:13.5px;text-decoration:none;white-space:nowrap}
+.pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-family:var(--mach);font-size:15px;text-decoration:none;white-space:nowrap}
 .pn-file span{overflow:hidden;text-overflow:ellipsis}
 .pn-file a:hover{color:var(--bg)}
 .pn-file .newer{margin-left:auto}
@@ -55,13 +58,13 @@ main:has(.pn-file){padding-bottom:28px}
 
 /* the status line (status-line.html): the header's ruled strip, fixed to the bottom of the window at every width,
    on the 820px wrap. It shows the post title, or the current section (h2 › h3) with the 7px square, then how far
-   through and the minutes left, and its 2px top rule fills as you read. The page ends 40px lower, about the strip's
-   height, so the strip never covers the footer, and focus scrolls clear of it. --g is main's gutter, 24px and 16px on
-   phones, which the strip and the box keep below 820px */
+   through and the minutes left, and its 2px top rule fills as you read. It's in the machine face, as the colophon is.
+   The page ends 42px lower, about the strip's height, so the strip never covers the footer, and focus scrolls clear
+   of it. --g is main's gutter, 24px and 16px on phones, which the strip and the box keep below 820px */
 .stat{position:fixed;left:0;right:0;bottom:0;z-index:20;--g:24px}
-body:has(.stat){padding-bottom:40px}
-:root:has(.stat){scroll-padding-bottom:40px}
-.stat-bar{position:relative;display:flex;align-items:center;gap:16px;background:var(--bg);border-top:2px solid var(--edge);padding:8px max(var(--g),calc((100% - 772px) / 2));font-size:12px;color:var(--mute)}
+body:has(.stat){padding-bottom:42px}
+:root:has(.stat){scroll-padding-bottom:42px}
+.stat-bar{position:relative;display:flex;align-items:center;gap:16px;background:var(--bg);border-top:2px solid var(--edge);padding:8px max(var(--g),calc((100% - 772px) / 2));font-family:var(--mach);font-size:13.5px;color:var(--mute)}
 .stat-where{flex:1;display:grid;min-width:0}
 .stat-where>*{grid-area:1/1;min-width:0}
 .stat-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -108,7 +111,7 @@ body:has(.stat){padding-bottom:40px}
    and .stat-where takes focus (tabindex=-1, no tab stop) for :focus-within. A tap elsewhere closes it */
 @media (hover:none){.stat-bar{cursor:pointer}}
 .pbox,.pbox>.frame{position:relative}
-.stat-pop .frame{max-height:calc(100vh - 80px);max-height:calc(100svh - 80px);overflow:auto;padding:18px 16px 8px;font-size:13.5px;line-height:1.45}
+.stat-pop .frame{max-height:calc(100vh - 80px);max-height:calc(100svh - 80px);overflow:auto;padding:18px 16px 8px;font-size:15px;line-height:1.45}
 .clist{scroll-target-group:auto}
 .clist li{position:relative;margin:0 0 .6em;padding-left:2.2ch}
 .clist .l3{padding-left:4.4ch}

@@ -38,6 +38,8 @@
         # The Nix packages provided in the environment
         packages = [
           pkgs.hugo
+          # scripts/fonts.py cuts the site's fonts from Monaspace's release; brotli writes woff2
+          (pkgs.python3.withPackages (p: [p.fonttools p.brotli]))
         ];
       };
     });

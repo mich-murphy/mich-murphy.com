@@ -11,7 +11,7 @@ main>.vh:first-child+.callout{margin-top:10px}
 .tcard ol{margin:0;padding:0;list-style:none;clip-path:inset(1px -12px -12px)}
 .tr{display:grid;grid-template-columns:minmax(0,1fr) 11ch;gap:4px 2ch;align-items:baseline;padding-block:8px}
 .tcard .tr+.tr{border-top:1px dotted var(--edge)}
-.tr .d{color:var(--mute);font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
+.tr .d{color:var(--mute);font-family:var(--mach);font-size:15px;font-variant-numeric:tabular-nums;text-align:right}
 /* a word longer than the row, like an option path, breaks rather than run out of the card */
 .tr .t{overflow-wrap:anywhere}
 /* titles don't invert, and are underlined only while their row is hovered */

@@ -30,7 +30,10 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
 <meta name="color-scheme" content="dark light">
-<link rel="preload" href="/fonts/0xProto-Regular.woff2" as="font" type="font/woff2" crossorigin>
+{{- /* every page sets text in the reading face and the machine face (the footer, at least), so both load early. The
+  other faces and styles load on the pages that use them (main.css) */}}
+<link rel="preload" href="/fonts/MMAr-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/MMKr-Regular.woff2" as="font" type="font/woff2" crossorigin>
 {{- /* scripts/favicons.py draws the icons. sizes keeps Chrome on the SVG, which follows the colour scheme */}}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" sizes="32x32">

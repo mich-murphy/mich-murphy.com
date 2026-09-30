@@ -17,7 +17,7 @@
 <dt>source</dt><dd><a href="{{ $gh }}">{{ strings.TrimPrefix "https://github.com/" $gh }}</a></dd>
 <dt>built</dt><dd>Hugo {{ hugo.Version }} on GitHub Actions</dd>
 <dt>hosted</dt><dd>GitHub Pages</dd>
-<dt>type</dt><dd>0xProto 2.502 by 0xType, <a href="/fonts/LICENSE-0xProto.txt">SIL Open Font License</a></dd>
+<dt>type</dt><dd>Argon, Xenon, Radon and Krypton from Monaspace 1.400 by GitHub Next, <a href="/fonts/LICENSE-Monaspace.txt">SIL Open Font License</a></dd>
 {{- with (where site.RegularPages "Section" "posts").ByDate }}
 <dt>posts</dt><dd>{{ len . }} since {{ (index . 0).Date.Format "2006-01-02" }}</dd>
 {{- end }}

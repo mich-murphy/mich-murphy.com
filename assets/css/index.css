@@ -14,17 +14,16 @@ search[hidden],.tr[hidden]{display:none}
 .sq::placeholder{color:var(--mute);opacity:1}
 .sq::-webkit-search-cancel-button{display:none}
 .sb .pr,.sc{flex:none;color:var(--mute)}
-.kc{flex:none;font:12px/1.4 var(--mono);color:var(--mute);border:1px solid var(--edge);padding:0 5px}
+.kc{flex:none;font:13.5px/1.4 var(--read);color:var(--mute);border:1px solid var(--edge);padding:0 5px}
 .sb:is(:focus-within,:has(.sq:not(:placeholder-shown),.sc:not(:empty))) .kc,.sc:empty{display:none}
-.sc{font-size:13.5px;font-variant-numeric:tabular-nums}
-/* iOS zooms into a field set under 16px */
-@media (pointer:coarse){.sq{font-size:16px}}
+/* the count is the machine's. The box takes the body's 17px, over the 16px under which iOS zooms into a field */
+.sc{font-family:var(--mach);font-size:15px;font-variant-numeric:tabular-nums}
 
 /* under a dotted rule, the filters: two menus, "tag: all" and "year: all". Each is a details, named so only one is
    open at a time, whose list opens under the row, over the posts. Each choice has its count, how many posts the list
    would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
    clears it, and so is its choice, or all while it isn't set. filters.css does the same without the script */
-.ff{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 2.5ch;margin:9px 0 11px;font-size:13.5px;line-height:1.6}
+.ff{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 2.5ch;margin:9px 0 11px;font-size:15px;line-height:1.6}
 .ff .k{color:var(--mute)}
 /* a value too long for its row, like three tags typed at 390px, ellipsises and keeps the × in view */
 .fr{display:flex;max-width:100%}
@@ -44,7 +43,7 @@ search[hidden],.tr[hidden]{display:none}
 .fo{display:grid;grid-template-columns:repeat(auto-fill,minmax(19ch,1fr));gap:2px 2ch}
 .fr-y .fo{grid-template-columns:repeat(auto-fill,minmax(12ch,1fr))}
 .fb{display:flex;justify-content:space-between;border:1px solid transparent;padding:0 .8ch;text-decoration:none;white-space:nowrap}
-.fb .n{margin-left:.8ch;color:var(--mute);font-variant-numeric:tabular-nums}
+.fb .n{margin-left:.8ch;color:var(--mute);font-family:var(--mach);font-variant-numeric:tabular-nums}
 /* a name too long for its column, like nixos-anywhere at 375px, ellipsises and keeps its count in view */
 .fb>span:first-child{overflow:hidden;text-overflow:ellipsis}
 .fb:hover{border-color:var(--fg);background:var(--bg);color:var(--fg)}
@@ -54,7 +53,7 @@ search[hidden],.tr[hidden]{display:none}
 
 /* a match in the Posts card: its words marked in the title and, when the title lacks one, the line that has it,
    linking to its section. When nothing matches, the card says so */
-.tr .ex{grid-column:1/-1;margin-top:1px;color:var(--body);font-size:13.5px;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .ex{grid-column:1/-1;margin-top:1px;color:var(--body);font-size:15px;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex .br{margin-right:1ch;color:var(--mute)}
 .tcard mark{background:var(--acc);color:var(--on)}
 .tcard .none{margin:0;padding:12px 0 14px;color:var(--mute)}

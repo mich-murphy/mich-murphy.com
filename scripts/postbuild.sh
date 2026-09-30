@@ -3,7 +3,7 @@
 # (default public). Every page's footer shows the same two figures, for the
 # site rather than the page: in place of __HOME__, what a browser fetches to
 # load the homepage, as the 10 KB and 250KB Clubs measure a site (the page,
-# gzipped, and the files its head fetches: the preloaded font and the SVG icon),
+# gzipped, and the files its head fetches: the preloaded fonts and the SVG icon),
 # and in place of __JS__, the site's script, which only the index has. It fails
 # if any page other than the index has a script, or if any page is over
 # MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB). Sizes are
@@ -89,8 +89,8 @@ index=$dir/index.html
 home='' js=''
 if [ -f "$index" ] && grep -q "$home_token" "$index"; then
   # The files the index's head makes a browser fetch as it loads: preloads and
-  # the SVG icon. A font the page only uses later (Bold, Italic) isn't preloaded
-  # and doesn't load on the index, and search's /index.json waits for the box
+  # the SVG icon. A face or style the index doesn't use (Xenon, Bold) isn't
+  # preloaded and doesn't load there, and search's /index.json waits for the box
   assets=0
   while IFS= read -r href; do
     a=$dir$href
