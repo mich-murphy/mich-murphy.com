@@ -5,10 +5,10 @@
 </head>
 <body>
 {{ partial "header.html" . }}
-{{- /* A post's status line comes before main, so the keyboard reaches Contents before the post; it's fixed to the
-  bottom of the window, so where it sits in the page doesn't move anything */}}
+{{- /* A post's Contents comes before main, so the keyboard reaches it before the post; it's fixed to the window, so
+  where it sits in the page doesn't move anything */}}
 {{- if and .IsPage (eq .Section "posts") }}
-{{ partial "status-line.html" . }}
+{{ partial "contents.html" . }}
 {{- end }}
 <main id="main" tabindex="-1">
 {{ block "main" . }}{{ end }}

@@ -1,5 +1,5 @@
-/* a post's code windows (render-codeblock.html), colophon (colophon.html), Older and Newer (pn.html) and status line
-   (status-line.html). The head, the prose and the colophon's keyed list are in prose.css, which About and Feeds share,
+/* a post's code windows (render-codeblock.html), colophon (colophon.html), Older and Newer (pn.html) and Contents
+   (contents.html). The head, the prose and the colophon's keyed list are in prose.css, which About and Feeds share,
    and callouts (render-blockquote.html) in main.css, apart from how a code window sits in one */
 /* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
    just enough room for its own label under the note's */
@@ -56,87 +56,103 @@
 .pn-file .newer{margin-left:auto}
 main:has(.pn-file){padding-bottom:28px}
 
-/* the status line (status-line.html): the header's ruled strip, fixed to the bottom of the window at every width,
-   on the 820px wrap. It shows the post title, or the current section (h2 › h3) with the 7px square, then how far
-   through and the minutes left, and its 2px top rule fills as you read. It's in the machine face, as the colophon is.
-   The page ends 42px lower, about the strip's height, so the strip never covers the footer, and focus scrolls clear
-   of it. --g is main's gutter, 24px and 16px on phones, which the strip and the box keep below 820px */
-.stat{position:fixed;left:0;right:0;bottom:0;z-index:20;--g:24px}
-body:has(.stat){padding-bottom:42px}
-:root:has(.stat){scroll-padding-bottom:42px}
-.stat-bar{position:relative;display:flex;align-items:center;gap:16px;background:var(--bg);border-top:2px solid var(--edge);padding:8px max(var(--g),calc((100% - 772px) / 2));font-family:var(--mach);font-size:13.5px;color:var(--mute)}
-.stat-where{flex:1;display:grid;min-width:0}
-.stat-where>*{grid-area:1/1;min-width:0}
-.stat-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat-cur,.clist{margin:0;padding:0;list-style:none}
-/* one anchor per heading, stacked, and only the current one shows. The head's anchor reads as the title. They're
-   scroll markers, so the pointer passes through them to the strip; the Contents links are the ones that go */
-.stat-cur{display:grid;scroll-target-group:auto;pointer-events:none}
-.stat-cur li{grid-area:1/1;min-width:0;opacity:0}
-.stat-cur a{display:block;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat-cur a::before{content:"";display:inline-block;width:7px;height:7px;background:var(--fg);margin-right:1ch;vertical-align:1px}
-.stat-cur .sl-hd a{color:var(--mute)}
-.stat-cur .sl-hd a::before{content:none}
-/* the current section comes from :target-current (Chrome and Edge 140+). Its rules stay on their own, because a
-   browser that doesn't know it drops the whole rule; there the title shows and Contents marks nothing */
-.stat-cur li:has(>a:target-current){opacity:1}
-.stat-where:has(a:target-current) .stat-title{opacity:0}
-.stat-num{display:none;flex:none;font-variant-numeric:tabular-nums}
-.stat-num .sep{padding-inline:.6ch}
-.stat-prog{position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--fg);transform-origin:0 50%;transform:scaleX(0)}
-/* the percentage, the minutes left and the rule follow the page's scroll (Chrome and Edge 115+, Safari 26+).
-   Without scroll timelines (Firefox) the numbers would stay at 0% and the whole reading time, so they only show
-   where they move. calc() makes Safari round the animated value; without it the counter reads 0. On a post too short
-   to scroll the timeline is inactive, so --left falls back to the whole reading time */
-@property --pct{syntax:"<integer>";inherits:false;initial-value:0}
-@property --left{syntax:"<integer>";inherits:false;initial-value:0}
-@supports (animation-timeline:scroll()){
-  .stat-num{display:block}
-  .stat-pct{counter-reset:pct calc(var(--pct));animation:statpct linear both;animation-timeline:scroll(root)}
-  .stat-pct::after{content:counter(pct) "%"}
-  .stat-left{--left:var(--min);counter-reset:left calc(var(--left));animation:statleft linear both;animation-timeline:scroll(root)}
-  .stat-left::after{content:counter(left) " min left"}
-  .stat-prog{animation:statprog linear both;animation-timeline:scroll(root)}
+
+/* Contents (contents.html). Narrow or touch, the default: a button fixed to the bottom-right corner, 16px in past the
+   safe area, that opens the Contents box above it while #toc is the target. Wide with a mouse, from 1360px, where the
+   box fits in the margin beside the text: the trace, a tick per heading fixed to the window's right edge, with the box
+   beside it on hover. The current section comes from :target-current (Chrome and Edge 140+): its tick turns fg, the box
+   marks it with the 7px square and the button counts up to it. Those rules stay on their own, because a browser that
+   doesn't know the pseudo-class drops the whole rule; there nothing is marked and the button shows no count */
+.toc{counter-reset:cur}
+.ticks,.clist{margin:0;padding:0;list-style:none;scroll-target-group:auto}
+/* the head's anchors stay in each group, hidden, so nothing is current above the first heading. Narrow, the ticks are
+   only scroll markers: rendered but clipped, so they still count for the button */
+.ticks,.tk-hd,.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
+/* the target that opens the box: empty and fixed to the top of the window, so following the button scrolls nothing */
+#toc{position:fixed;top:0;left:0}
+/* the button: the header's ruled frame as a 48px pill, the menu icon and the section count in the machine face. It
+   inverts on hover only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its place while the box is
+   open, and the dim layer under the box closes it on a tap outside, without the tap's grey flash */
+.topen,.tshut{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none}
+.topen svg,.tshut svg{display:block;flex:none;width:18px;height:14px}
+.topen path{fill:currentColor}
+.tshut path{fill:none;stroke:currentColor;stroke-width:2}
+.toc :is(.topen,.tshut):hover{background:var(--bg);color:var(--fg)}
+@media (hover:hover){.toc :is(.topen,.tshut):hover{background:var(--fg);color:var(--bg)}}
+.tshut,.tdim{display:none}
+.tdim{position:fixed;inset:0;z-index:20;-webkit-tap-highlight-color:transparent}
+.toc :is(.ticks a,.tdim):hover{background:none}
+.tnum{display:none}
+@supports selector(:target-current){
+  .tnum{display:inline;color:var(--mute)}
+  .tnum::before{content:counter(cur);color:var(--fg)}
+  .ticks li:not(.tk-hd):has(>a:target-current){counter-increment:cur}
+  .ticks li:not(.tk-hd):has(~li>a:target-current){counter-increment:cur}
 }
-@keyframes statprog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes statpct{from{--pct:0}to{--pct:100}}
-/* status-line.html sets --min on .stat-left to the post's reading time */
-@keyframes statleft{from{--left:var(--min)}to{--left:0}}
-
-/* the Contents box opens upward from the strip: the label, a heavy frame, no dither. It's hidden with opacity, not
-   visibility, so its links stay focusable and focusing one opens it. A long list scrolls inside the window */
-.stat-pop{position:absolute;bottom:100%;left:max(var(--g),calc((100% - 772px) / 2));width:min(calc(38ch + 36px),calc(100% - 2*var(--g)));padding-bottom:14px;opacity:0;pointer-events:none;transition:opacity .12s}
-.stat:is(:hover,:focus-within) .stat-pop{opacity:1;pointer-events:auto}
-/* on touch, a tap on the strip opens the box. iOS sets :hover only on what looks clickable, which cursor:pointer marks,
-   and .stat-where takes focus (tabindex=-1, no tab stop) for :focus-within. A tap elsewhere closes it */
-@media (hover:none){.stat-bar{cursor:pointer}}
+/* the box opens above the button: the label, a heavy frame, no dither. Narrow, a closed box is hidden with
+   visibility, which waits for the fade, so its links take no tap or focus; picking one hides it, and focus goes back to
+   the page at the heading. Rows are at least 44px, and a long list scrolls inside the frame */
+.tpop{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:21;width:min(calc(38ch + 36px),calc(100% - 32px));visibility:hidden;opacity:0;transform:translateY(8px);transition:opacity .14s,transform .14s,visibility 0s .14s}
 .pbox,.pbox>.frame{position:relative}
-.stat-pop .frame{max-height:calc(100vh - 80px);max-height:calc(100svh - 80px);overflow:auto;padding:18px 16px 8px;font-size:15px;line-height:1.45}
-.clist{scroll-target-group:auto}
-.clist li{position:relative;margin:0 0 .6em;padding-left:2.2ch}
+.tpop .frame{max-height:calc(100vh - 120px);max-height:calc(100svh - 120px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:18px 16px 8px}
+.clist li{position:relative;padding-left:2.2ch}
 .clist .l3{padding-left:4.4ch}
-.clist a{text-decoration:none;color:var(--mute)}
+.clist a{display:block;min-height:44px;padding:10px 0;line-height:1.4;text-decoration:none;color:var(--mute)}
 .clist li a:hover{background:var(--fg);color:var(--bg)}
-.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
 .clist a:target-current{color:var(--fg)}
-.clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:.45em;width:7px;height:7px;background:var(--fg)}
+.clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:calc(10px + .5em);width:7px;height:7px;background:var(--fg)}
 .clist .l3:has(>a:target-current)::before{left:2.2ch}
+/* the page ends lower by the button's height, so it never covers the footer, and focus scrolls clear of it */
+body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+:root:has(.toc){scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+/* open while #toc is the target. Only narrow, so a link to #toc does nothing to the trace */
+@media (max-width:1359.98px),(hover:none){
+  #toc:target~.topen{display:none}
+  #toc:target~.tshut{display:flex}
+  #toc:target~.tdim{display:block}
+  #toc:target~.tpop{visibility:visible;opacity:1;transform:none;transition:opacity .14s,transform .14s}
+}
 
-/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, Older and Newer
-   stack, older at the left and newer at the right, and the strip and its box take main's 16px gutter */
+/* wide, with a mouse: the trace. 60px (--tw) fixed to the right edge and centred top to bottom, without a transform, so
+   the 2px ticks stay on whole pixels. A tick is 20px for an h2 and 12px for an h3, every 14px, in dim; the current one
+   is fg. A long post's ticks close up evenly, so the trace fits the window. The box opens to the left, centred on the
+   window as the trace is, on hover or when the keyboard reaches its links. Closed, it's hidden only by opacity, so its
+   links stay focusable. Its width leaves 24px to the 772px text column, and a classic scrollbar's width besides, so it
+   never covers the text */
+@media (min-width:1360px) and (hover:hover){
+  .toc{--tw:60px;position:fixed;top:0;bottom:0;right:0;z-index:20;width:var(--tw);height:fit-content;margin-block:auto;padding:24px 16px}
+  body:has(.toc){padding-bottom:0}
+  :root:has(.toc){scroll-padding-bottom:0}
+  .ticks{position:static;display:flex;flex-direction:column;align-items:flex-end;width:auto;height:auto;overflow:visible;clip-path:none}
+  .ticks a{display:block;width:28px;padding:round(down,max(1px,min(6px,(100vh - 96px) / var(--n) / 2 - 1px)),1px) 0}
+  .ticks a::before{content:"";display:block;width:20px;height:2px;margin-left:auto;background:var(--dim)}
+  .ticks .l3 a::before{width:12px}
+  .ticks a:hover::before{background:var(--fg)}
+  .ticks a:target-current::before{background:var(--fg)}
+  .topen,.tshut,.tdim{display:none}
+  .tpop{top:0;bottom:0;right:var(--tw);width:min(280px,calc(50vw - 386px - var(--tw) - 32px));height:fit-content;margin-block:auto;visibility:visible;transform:none;pointer-events:none;transition:opacity .12s}
+  .toc:hover .tpop,.toc:has(.clist a:focus-visible) .tpop{opacity:1;pointer-events:auto}
+  .tpop .frame{max-height:calc(100vh - 48px);font-size:15px;line-height:1.45}
+  .clist li{margin:0 0 .6em}
+  .clist a{display:inline;min-height:0;padding:0;line-height:inherit}
+  .clist li:has(>a:target-current)::before{top:.45em}
+}
+
+/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, and Older and Newer
+   stack, older at the left and newer at the right */
 @media (max-width:600px){
   .colo .frame{padding-top:38px}
   .colo .hist{grid-column:2/-1;text-align:left}
   .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
   .pn-file a{max-width:100%}
-  .stat{--g:16px}
 }
 @media (prefers-reduced-motion:reduce){
-  .stat-pop{transition:none}
+  .tpop,#toc:target~.tpop{transition:none}
 }
-/* forced colours drop backgrounds, and the squares are backgrounds. The progress rule would turn into Canvas over the
-   strip's rule, so it takes Highlight, as a native progress bar does */
+/* forced colours drop backgrounds, and the squares and ticks are backgrounds. The ticks take GrayText, and the current
+   one Highlight, as a native control marks what's selected */
 @media (forced-colors:active){
-  .stat-cur a::before,.clist li::before{background:CanvasText;forced-color-adjust:none}
-  .stat-prog{background:Highlight;forced-color-adjust:none}
+  .clist li::before{background:CanvasText;forced-color-adjust:none}
+  .ticks a::before{background:GrayText;forced-color-adjust:none}
+  .ticks a:target-current::before{background:Highlight}
 }

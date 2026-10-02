@@ -1,0 +1,29 @@
+{{- /* Contents, on a post with 2 or more headings (h2 and h3 together); a post with fewer gets none. One nav, two ways
+  in, both CSS only (post.css):
+  - wide, with a mouse: the trace, a tick per heading fixed to the window's right edge, and the Contents box that opens
+    beside it on hover, or when the keyboard reaches its links
+  - narrow or touch: a button fixed to the bottom-right corner that opens the same box above it. The open state is
+    #toc:target. #toc is an empty element fixed to the top of the window, so following the button scrolls nothing.
+    Picking a heading changes the target, which closes the box; ✕ and a tap outside link to #_, which matches nothing,
+    so they close it without scrolling
+  The ticks are scroll markers for the current section, aria-hidden with tabindex=-1, and the Contents links are the
+  ones for keyboards and screen readers. The head's anchor comes first in both lists, empty and hidden, so nothing is
+  current until the first heading. The ticks also count the sections up to the current one for the button's 4/7.
+  role=list keeps Contents a list in WebKit, which drops the role from a list without markers. --n, the number of
+  headings, lets a long post's ticks close up so the trace always fits the window */}}
+{{- $hs := partial "headings.html" . }}
+{{- $n := len $hs }}
+{{- if ge $n 2 }}
+<nav class="toc" aria-label="Contents" style="--n:{{ $n }}">
+<i id="toc"></i>
+<ol class="ticks" aria-hidden="true"><li class="tk-hd"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}" tabindex="-1"></a></li>{{ end }}</ol>
+<a class="topen" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="vh">Contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
+<a class="tshut" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="vh">Close contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
+<a class="tdim" href="#_" tabindex="-1" aria-hidden="true"></a>
+<div class="tpop"><div class="pbox"><span class="legend">Contents · {{ $n }}</span><div class="frame">
+<ol class="clist" role="list"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
+</div></div></div>
+</nav>
+{{- end }}
