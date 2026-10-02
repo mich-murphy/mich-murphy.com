@@ -1,0 +1,9 @@
+# Opens a pull request when an action in .github/workflows has a new version.
+# Hugo isn't covered: its version is pinned in the flake, the workflow and
+# hugo.toml, which change together by hand (README)
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

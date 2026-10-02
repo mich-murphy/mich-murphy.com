@@ -6,7 +6,11 @@
   holds ⌊978 ÷ (0.62 × size)⌋ characters. The size steps 62, 54, 48 until the title fits in 3 lines. The lab balances
   its title (text-wrap:balance), so the lines are wrapped at the narrowest width that keeps as many lines; Chrome's
   balancing may break a title elsewhere. A title too long for 3 lines at 48px fails the build */}}
-{{- $text := replaceRE `\s+` " " (strings.TrimSpace .Title) }}
+{{- /* a card.png in the post's bundle would be published at the card's address, and replace it or be replaced */}}
+{{- with .Resources.Get "card.png" }}
+  {{- errorf "%s: the post's bundle has a card.png, which would take the social card's address; rename it" $.File.Path }}
+{{- end }}
+{{- $text :=replaceRE `\s+` " " (strings.TrimSpace .Title) }}
 {{- /* images.Text draws a character its font lacks as an empty box, so a title with one fails the build. These are the
   characters the card's TTFs keep, CARD in scripts/fonts.py: Latin-1 and Latin Extended-A, and some punctuation and
   symbols. Monaspace has many more, e.g. Vietnamese, Greek and Cyrillic: add any a title needs to both lists, and

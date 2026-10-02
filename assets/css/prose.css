@@ -29,6 +29,9 @@
 /* a quote is set off by a rule */
 .prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
 
+/* an image (render-image.html) shrinks to fit the column, keeping its shape */
+.prose img{max-width:100%;height:auto}
+
 /* a keyed list, in a framed box: keys in mute in a max-content column, values in fg, at 15px in the machine face,
    since what the colophon, This site and Subscribe list comes from the build. The third column is
    for the colophon's history; other values span it */

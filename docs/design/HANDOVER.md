@@ -5,7 +5,7 @@ Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m1
 ## Start here (next session)
 
 1. **Read "Launch" and "After launch"** below for what's live and how it was checked.
-2. **Make changes as ordinary PRs against `main`.** Run `hugo serve` in the main checkout to preview, then a real build and `scripts/postbuild.sh` for the footer's figures and the gates.
+2. **Make changes as ordinary PRs against `main`.** Run `hugo serve` in the main checkout to preview, then `scripts/build.sh` and `scripts/postbuild.sh` for a real build, the footer's figures and the gates.
 3. **Pushing `main` deploys**, and `main` requires a PR with 1 approving review. The owner merges as admin (`gh pr merge <n> --merge --admin`). Always use a merge commit: `params.bulkCommits` names commits by hash.
 
 To resume, paste this into a new session:
@@ -243,6 +243,20 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
     - **Files.** `scripts/fonts.py` (in `nix develop`, which now has fontTools) downloads the release, checks its hash, and cuts each face at a fixed weight and slant: 7 woff2 subsets in `static/fonts` (the site's 318 characters) and Xenon Bold and Krypton for the cards in `assets/fonts`. Monaspace reserves its names, and a subset is a Modified Version (OFL FAQ 2.6), so they're renamed after their symbols: "MM Ar", "MM Xe", "MM Rn", "MM Kr".
     - **Weight.** Every page preloads Argon and Krypton Regular, and home loads nothing else: its figure went from 37.5 KB to 35.0 KB. A post with h3s and comments loads 5 files, about 79 KB, against 55 KB of 0xProto.
     - **Social cards.** The title is Xenon Bold and the meta line Krypton. Monaspace's ascent is 0.945em to 0xProto's 1.13em, so the partial adds the difference as line spacing and moves the text down by as much, which keeps every baseline where it was. The bases are redrawn in Argon, and the title check allows exactly the cards' characters.
+  - **Hugo practices (2026-10-02).** The site was compared with Hugo's docs and release notes up to 0.167.0, and with Google's and GitHub's docs. It was mostly in line already. The changes:
+    - **Build.** `scripts/build.sh` holds the build flags for CI and local builds, so a warning fails a local build too.
+    - **Hugo version.** `module.hugoVersion` `min` is the pinned 0.166.0. The workflow checks Hugo's download against a pinned SHA-256. To update Hugo, change `min` first, then the flake, `HUGO_VERSION` and `HUGO_SHA256` (README). Hugo 0.167.0 (2026-09-28) waits for nixpkgs.
+    - **Workflow.**
+      - The Go and Node steps are gone, along with the history fetch that `fetch-depth: 0` made redundant.
+      - The cache steps and `[caches.images]` are gone too. They only kept the 17 social cards, which build in about 0.3 s cold.
+      - Checkout doesn't keep the token, and both jobs have timeouts.
+      - Dependabot updates the actions monthly.
+    - **JSON-LD.** Posts carry a JSON-LD `BlogPosting` (`jsonld.html`). `postbuild.sh` doesn't count it as a script.
+    - **New posts.** A post without a summary fails the build, and `archetypes/posts.md` starts new posts.
+    - **Images.** `render-image.html` resolves images in a post's bundle or `assets/` and adds their size. A remote image, missing alt text or a missing file fails the build, and so does a `card.png` in a bundle (`social-card.html`), which would take the card's address. No post has images yet.
+    - **Templates.** `layouts/list.html` is gone, so a new section with no template fails the build instead of rendering a bare list.
+    - **Config.** `locale` is `en-AU`. Hugo may run only git, and fetches nothing remote.
+    - **Links.** 9 dead links in 7 posts now point where the pages moved, at the Wayback Machine, or, for the owner's `nix-config`, at the commit the post describes, since that repo no longer has its NixOS config. The `nixos.wiki` links point at the official `wiki.nixos.org`. The edit changes only links, so its commit carries `Bulk: true` and the posts keep their updated dates. Stack Exchange and Linode answer bots with 403 but are live.
 - **Known.**
   - Safari's favicon in dark mode: WKWebView drew `favicon.svg`, as an `<img>`, in its light variant while the page reported dark. Safari's own tab icon couldn't be checked from the harness. It stays legible either way.
   - Feed readers may show the 12 entries whose `updated` changed at launch as updated once. The ids, `published` values and feed URLs didn't change.

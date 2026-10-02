@@ -4,14 +4,23 @@
 Created to document my personal projects, for my own reference and hopefully to help anyone else working on similar things.
 
 ## Components
-This is a static site built using [Hugo](https://gohugo.io/) with my own templates rather than a theme. A Nix flake provides the local development environment (`nix develop`). The flake and the GitHub Actions workflow pin the same Hugo version. GitHub Actions builds every pull request and deploys `main` to [GitHub Pages](https://pages.github.com/).
+This is a static site built using [Hugo](https://gohugo.io/) with my own templates rather than a theme. A Nix flake provides the local development environment (`nix develop`). GitHub Actions builds every pull request and deploys `main` to [GitHub Pages](https://pages.github.com/). Dependabot opens a pull request each month for any action in the workflow that has a new version.
+
+The flake and the workflow pin the same Hugo version, and `module.hugoVersion` in `hugo.toml` sets it as the minimum. To update Hugo, change `min` in `hugo.toml` first, then `nixpkgs` in `flake.nix`, and `HUGO_VERSION` and `HUGO_SHA256` in `.github/workflows/hugo.yaml`. A Hugo older than `min` fails the build, so if the flake or the workflow is left on the old version, its build fails. `HUGO_SHA256` comes from the release's `hugo_<version>_checksums.txt`. Take the line for `hugo_<version>_linux-amd64.tar.gz`, not an `extended` or `withdeploy` one.
 
 ## Checks
-CI runs `scripts/postbuild.sh` after every build. It writes two figures into every page's footer: what a browser fetches to load the homepage (the page gzipped, its preloaded fonts and its SVG icon), and the site's script. It fails if a page other than the index has a script or any page is over 14 KB gzipped. Run it after a local build too: `nix develop -c hugo build --gc --minify && scripts/postbuild.sh`. It checks `public` unless you pass another directory. `hugo server` doesn't run it, so there the footer reads `build serve` with neither figure.
+CI and local builds both run `scripts/build.sh`, so they use the same Hugo flags. One of them, `--panicOnWarning`, turns any warning into a failed build.
+
+CI then runs `scripts/postbuild.sh`. It writes two figures into every page's footer: what a browser fetches to load the homepage (the page gzipped, its preloaded fonts and its SVG icon), and the site's script. It fails if a page other than the index has a script, or if any page is over 14 KB gzipped. A post's JSON-LD doesn't count as a script, since it's data that a browser doesn't run. Build and check locally with `nix develop -c scripts/build.sh && scripts/postbuild.sh`. The checks run on `public` unless you pass another directory. `hugo server` doesn't run them, so there the footer reads `build serve` with neither figure.
 
 Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
 
 The search on the index reads `/index.json`, which the build writes from each post's Markdown source. It gives each `##` and `###` line the next heading id Hugo found, so write headings with `#`s: a post whose source and Hugo count a different number of them fails the build. A tag can't be called `all` or `main`, or look like `y2023`, since the index already uses those ids.
+
+## Writing a post
+`nix develop -c hugo new content posts/<name>.md` writes a new post from `archetypes/posts.md`. The post is titled from its name and dated today. Fill in its `summary`, which search results and link previews show. The build fails without one. Each post also gets structured data for search engines (`layouts/_partials/jsonld.html`) with its title, dates, author and social card.
+
+A post with images is a folder, `content/posts/<name>/index.md`, with the images beside it. Its URL is still `/<name>/`. Link an image by its file name, like `![What it shows](diagram.png)`, and the image hook adds its width and height. An image with no alt text, a remote image, or one that isn't in the folder or `assets/` fails the build. So does a file called `card.png` in the folder, since the post's social card uses that address. Make a post a folder when you start it. Hugo's git info doesn't follow renames, so moving an existing post into a folder would cut its colophon's history at the move.
 
 ## Updated dates
 Each post ends with a colophon that shows when the post was last updated and by which commit, taken from its git history. The same date is the post's `updated` in the Atom feeds and its `lastmod` in the sitemap. A commit that only reformats or moves posts shouldn't count as an update: end its message with a `Bulk: true` trailer, or add its hash (7 characters or more) to `bulkCommits` in `hugo.toml`. If every commit to a post since the move from Zola is a bulk one, the colophon shows the post's last Zola-era commit, from `data/origin.toml`.

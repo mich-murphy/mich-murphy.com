@@ -5,10 +5,11 @@
 # load the homepage, as the 10 KB and 250KB Clubs measure a site (the page,
 # gzipped, and the files its head fetches: the preloaded fonts and the SVG icon),
 # and in place of __JS__, the site's script, which only the index has. It fails
-# if any page other than the index has a script, or if any page is over
-# MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB). Sizes are
-# `gzip -9 -c <file> | wc -c` for text, and bytes on disk for woff2 and PNG,
-# which servers send as they are; shown as KB with one decimal (1 KB = 1024 B).
+# if any page other than the index has a script (a post's JSON-LD is data, not
+# code, so it doesn't count), or if any page is over MAX_GZIP_BYTES gzipped
+# (default 14336, i.e. 14 KB). Sizes are `gzip -9 -c <file> | wc -c` for
+# text, and bytes on disk for woff2 and PNG, which servers send as they are;
+# shown as KB with one decimal (1 KB = 1024 B).
 # It runs on macOS and Linux, and a second run only checks
 set -euo pipefail
 
@@ -69,14 +70,14 @@ script_text() {
   }' "$1"
 }
 
-# The first <script in a file, with up to 40 characters either side. Hugo's
-# minifier writes &lt; in an attribute as <, so it can be a meta description
-script_context() {
-  awk '{
-    i = index(tolower($0), "<script"); if (i == 0) next
-    a = i > 40 ? i - 40 : 1
-    print substr($0, a, i - a + 47); exit
-  }' "$1"
+# The opening tags of a file's scripts, one a line, except JSON-LD (a type
+# attribute of application/ld+json), which a browser doesn't run. A tag runs to
+# the first >, so one with a > in an attribute before its type counts as a
+# script, which fails safe. Hugo's minifier writes &lt; in an attribute as <, so
+# a match can also be "<script" in the text of a meta description
+code_scripts() {
+  tr '\n' ' ' <"$1" | grep -oiE '<script[^>]*>' |
+    grep -viE "<script([^>]*[[:space:]])?type=[\"']?application/ld\+json" || true
 }
 
 pages=0 written=0 big=0 bigf='' nfail=0 fails=''
@@ -116,8 +117,9 @@ fi
 
 while IFS= read -r f; do
   pages=$((pages + 1))
-  if grep -qi '<script' "$f" && [ "$f" != "$index" ]; then
-    fail "$f: <script> outside the index, at: $(script_context "$f")"
+  if [ "$f" != "$index" ]; then
+    s=$(code_scripts "$f")
+    if [ -n "$s" ]; then fail "$f: a script outside the index: ${s%%$'\n'*}"; fi
   fi
 
   if grep -q "$home_token" "$f"; then

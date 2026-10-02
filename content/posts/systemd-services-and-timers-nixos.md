@@ -5,7 +5,7 @@ summary = "Cronjobs are discouraged in Nixos, instead the recommendation is to u
 tags = ["nixos", "systemd", "cron"]
 +++
 
-Whilst migrating my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server. After doing a bit of research I discovered that rather than using a cron job, the preferred method is to [create a systemd service](https://paperless.blog/systemd-services-and-timers-in-nixos) and schedule it using a systemd timer. The major benefits of doing so are:
+Whilst migrating my [homelab](https://github.com/mich-murphy/nix-config/blob/939f3be13ded2a770ab542987a0a106e276f52b5/hosts/homelab/configuration.nix) from Ubuntu to Nixos I came across the need to schedule a cron job, which I had setup to sync my media collection from a remote server. After doing a bit of research I discovered that rather than using a cron job, the preferred method is to [create a systemd service](https://paperless.blog/systemd-services-and-timers-in-nixos) and schedule it using a systemd timer. The major benefits of doing so are:
 
 1. Jobs can be isolated to specific users
 2. Environment variables and paths can be explicitly declared

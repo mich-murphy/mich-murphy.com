@@ -4,8 +4,9 @@
   # Flake inputs
   inputs = {
     # nixos-unstable on 2026-09-26, which has hugo 0.166.0 in the binary cache.
-    # The Hugo version must match HUGO_VERSION in .github/workflows/hugo.yaml;
-    # change both together, and check `nix develop -c hugo version` afterwards.
+    # The Hugo version must match HUGO_VERSION in .github/workflows/hugo.yaml
+    # and module.hugoVersion in hugo.toml; the README says how to change them,
+    # and check `nix develop -c hugo version` afterwards.
     nixpkgs.url = "github:nixos/nixpkgs/e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa";
   };
 

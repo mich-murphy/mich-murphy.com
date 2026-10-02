@@ -7,7 +7,7 @@ tags = ["nixos", "homelab", "nextcloud", "nginx", "acme"]
 
 [Nextcloud](https://nextcloud.com/) provides a very polished experience when looking for a solution to self host your personal files, and replace tooling such as Google Drive or Dropbox. In this post I run through how I configured Nextcloud for use on NixOS.
 
-Jacob Neplokh wrote an incredibly helpful [blog post](https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/) which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The [NixOS Wiki](https://nixos.wiki/wiki/Nextcloud) also had some very helpful information.
+Jacob Neplokh wrote an incredibly helpful [blog post](https://web.archive.org/web/20221206033424/https://jacobneplokh.com/how-to-setup-nextcloud-on-nixos/) which forms the basis of this guide, I recommend having a read through for a more in depth explanation of everything. The [NixOS Wiki](https://wiki.nixos.org/wiki/Nextcloud) also had some very helpful information.
 
 There are several services that need to be configured to setup Nextcloud:
 
@@ -186,4 +186,4 @@ I pieced together this setup thanks to the [documentation in the NixOS Manual](h
 
 As you can see above, there are a few steps involved in properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.
 
-I ended up putting all of the above config into its own module, for reference you can view it [here](https://github.com/mich-murphy/nix-config/blob/master/common/nixos/nextcloud.nix).
+I ended up putting all of the above config into its own module, for reference you can view it [here](https://github.com/mich-murphy/nix-config/blob/82e8fd5f96a6960dfc9e29ef83b1c764ccc86bdd/common/nixos/nextcloud.nix).

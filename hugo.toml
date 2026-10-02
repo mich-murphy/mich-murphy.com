@@ -3,6 +3,9 @@ title = "Michael Murphy"
 baseURL = "https://mich-murphy.com"
 defaultContentLanguage = "en"
 
+# The language tag in each page's <html lang> and each feed's xml:lang
+locale = "en-AU"
+
 # Dates are built in the same time zone as CI (TZ in .github/workflows/hugo.yaml)
 timeZone = "Australia/Sydney"
 
@@ -44,10 +47,6 @@ enableRobotsTXT = true
 [minify]
   disableXML = true
 
-# Persist processed images (e.g. social cards) in the CI build cache
-[caches.images]
-  dir = ":cacheDir/images"
-
 # Syntax highlighting with CSS classes rather than inline styles, and no line
 # numbers. For why you'd want to avoid inline styles, see
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src#unsafe_inline_styles
@@ -55,6 +54,19 @@ enableRobotsTXT = true
   [markup.highlight]
     lineNos = false
     noClasses = false
+
+# The Hugo the site is built with, as the flake and the workflow pin it. An older Hugo warns that the project "is not
+# compatible with this Hugo version", which fails the build (--panicOnWarning in scripts/build.sh). To update Hugo,
+# change this first (README)
+[module.hugoVersion]
+  min = "0.166.0"
+
+# Hugo may run git, which git info needs, and nothing else, and fetches nothing remote. The defaults also allow Sass,
+# Go, Node and PostCSS, which the site doesn't use
+[security.exec]
+  allow = ["^git$"]
+[security.http]
+  urls = "none"
 
 [params]
   # The description of the site
