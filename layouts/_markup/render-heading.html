@@ -1,8 +1,10 @@
-{{- /* The heading with its id and nothing else: rev 11 picked anchors=off. The ids feed the Contents box and search.
-  The page head has the id top (page.html), so a heading with that id fails the build */ -}}
-{{- if eq .Anchor "top" -}}
-  {{- $where := .PageInner.Path -}}
-  {{- with .PageInner.File }}{{ $where = .Path }}{{ end -}}
-  {{- errorf "%s: heading %q has the id top, which the page head uses; give it another id with {#…}" $where .PlainText -}}
+{{- /* The heading with its id and nothing else: rev 11 picked anchors=off. The ids feed Contents and search. The page
+  head has the id top (page.html), Contents opens on #toc and closes on #_ (contents.html), so a heading with one of
+  those ids fails the build */ -}}
+{{- $taken := dict "top" "the page head uses" "toc" "opens Contents" "_" "closes Contents" -}}
+{{- with index $taken .Anchor -}}
+  {{- $where := $.PageInner.Path -}}
+  {{- with $.PageInner.File }}{{ $where = .Path }}{{ end -}}
+  {{- errorf "%s: heading %q has the id %s, which %s; give it another id with {#…}" $where $.PlainText $.Anchor . -}}
 {{- end -}}
 <h{{ .Level }} id="{{ .Anchor }}">{{ .Text }}</h{{ .Level }}>

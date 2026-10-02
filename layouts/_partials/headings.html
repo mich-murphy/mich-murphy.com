@@ -1,4 +1,4 @@
-{{- /* A page's h2 and h3 headings in document order, as a list of dicts: id, level and title. The status line uses it,
+{{- /* A page's h2 and h3 headings in document order, as a list of dicts: id, level and title. Contents uses it,
   and so can the search index. .Fragments.Identifiers is sorted, so it walks .Fragments.Headings instead, a tree: posts
   start at h2, so its top level is one placeholder with no id, the h2s under it and the h3s under those. A heading
   without an id, or at another level, is skipped, and its children still count. Hugo gives each title as HTML, so &

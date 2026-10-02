@@ -1,8 +1,8 @@
 {{ define "main" }}
 {{- /* A post's head is its title, then date · reading time · tags, over a rule. A page with no layout of its own gets
   a bare head, the title alone over the rule (prose.css). The summary stays out of the page: the head partial uses it
-  for the description. A post ends with its colophon, then Older and Newer (pn.html). The head's id is the status
-  line's first anchor (status-line.html) */}}
+  for the description. A post ends with its colophon, then Older and Newer (pn.html). The head's id is the first
+  anchor in Contents (contents.html) */}}
 {{- $post := eq .Section "posts" }}
 <article>
 <header class="ph{{ if not $post }} bare{{ end }}" id="top">
