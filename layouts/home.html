@@ -21,8 +21,9 @@
 </div>
 </div></div>
 {{ partial "posts-card.html" . }}
-{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page), inlined and minified. It loads
-  /index.json, home's JSON output, so the build fails without it there */}}
+{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page, apart from a post's JSON-LD,
+  which is data), inlined and minified. It loads /index.json, home's JSON output, so the build fails without it
+  there */}}
 {{- $json := .OutputFormats.Get "json" }}
 {{- if or (not $json) (ne $json.RelPermalink "/index.json") }}{{ errorf "search loads /index.json: keep json in outputs.home, and at /index.json" }}{{ end }}
 {{- with resources.Get "js/search.js" | js.Build (dict "minify" true) }}
