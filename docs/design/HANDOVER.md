@@ -1,6 +1,6 @@
 # Theme redesign: handover
 
-Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m18-print` → `main`) was merged as `5c995f0` with a merge commit, and GitHub Actions deployed it to https://mich-murphy.com/. See "Launch". On 2026-09-30 the open questions were answered and the cleanup done (see "Decisions" and "After launch"). Nothing is outstanding.
+Status as of 2026-09-30. **The redesign is live.** M1–M19 are done: PR #1 (`m18-print` → `main`) was merged as `5c995f0` with a merge commit, and GitHub Actions deployed it to https://mich-murphy.com/. See "Launch". On 2026-09-30 the open questions were answered and the cleanup done (see "Decisions" and "After launch"). Nothing is outstanding. On 2026-10-03 the status line gave way to the content trace: see "Content trace".
 
 ## Start here (next session)
 
@@ -21,11 +21,49 @@ The open questions from the build, as the user answered them:
   - the channel edit (`2a2721c`) is in `bulkCommits`, so 3 posts keep their old `updated` dates
   - the code block after `backup-solutions-nixos`' second note sits inside the callout
   - the path-comment typo fixes in `configure-nextcloud-nixos` count as bulk
-  - the status line's `nav` sits right after the header
+  - the status line's `nav` sits right after the header, and Contents' `nav` keeps that place
 - **About's bio** stays the same two sentences as the home intro.
 - **The code scrollbar thumb** is `--thumb`, the least mix of `--mute` into `--edge` that clears 3:1 on `--code`: 35% in dark (about 3.3:1) and 60% in light (about 3.1:1). `--edge` alone was 2.0:1 and 1.8:1.
 - **Box labels:** the labels of a page's own boxes are `h2`s, so a screen reader's heading list finds them: Filter/Search and Posts on home, 404 and Posts on 404, Projects and This site on About, and Subscribe and Feeds I read on Feeds. They render pixel for pixel as before. Code windows, callouts, the colophon and Contents keep a `span`.
 - **Scope** (social cards and print before launch) was settled by the launch.
+
+## Content trace (2026-10-03)
+
+The status line is gone. Posts get Contents in two forms instead, from one `nav` (`layouts/_partials/contents.html`, styled at the end of `assets/css/post.css`). The design was picked on a canvas, https://claude.ai/artifact/HvjDWGS6AjJP2wPspR4p8A: desktop A · Ticks, and phone 2 · Pop-up with its button moved to the bottom right.
+
+- **The trace (1360px and wider, with a mouse).**
+  - A tick per h2 and h3, fixed to the window's right edge and centred top to bottom: 2px bars every 14px, 20px for an h2 and 12px for an h3.
+  - Ticks are `--dim`, and the current one is `--fg`.
+  - Hovering the trace, or tabbing to its links, opens the Contents box to its left, in the margin.
+  - The box is `min(280px, 50vw - 386px - 60px - 32px)` wide. That leaves at least 24px to the text, plus a classic scrollbar's width. It comes to about 240px at 1440 and 200px at 1360, which is why the trace starts at 1360.
+  - On a post with many headings the ticks close up evenly (`--n`), down to 4px apart.
+- **The button (narrower windows and touch).**
+  - A 48px-tall pill fixed to the bottom-right corner, 16px in plus the safe-area inset. It holds the menu icon and the section count, `4/7`, in Krypton.
+  - It opens the same box above it, and ✕ takes its place.
+  - A tap outside closes the box. Picking a heading closes it and jumps there.
+  - The page ends 56px lower, so the pill never covers the footer.
+- **Why bottom right** (researched on 2026-10-03):
+  - Material 3 puts the FAB lower right on phones, and NN/g finds people expect floating buttons there.
+  - In Hoober's 2013 grip study, about 61% of taps come from the right hand.
+  - Readers look most at the start of lines, so a button on the right covers line ends instead.
+  - Against it: corners are the least accurate place to tap, on either side. Neither corner is safer from browser chrome.
+- **How it works without JavaScript.**
+  - The current section is `:target-current` on two `scroll-target-group` lists, the ticks and the box, as before.
+  - The ticks also feed the button's count: each heading at or before the current one increments a counter, and the button prints it.
+  - The button opens the box by linking to `#toc`, an empty element fixed to the top of the window, so nothing scrolls. `#toc:target ~ …` shows the box.
+  - ✕ and the tap-outside layer link to `#_`, which matches nothing, so they close the box without scrolling.
+  - A closed narrow box is `visibility:hidden`, so its links take no taps or focus. Screen readers and keyboards reach the list through the button.
+  - A heading with the id `top`, `toc` or `_` fails the build (`render-heading.html`).
+- **Trade-offs.**
+  - Each open and close of the phone box adds a history entry. Back closes an open box. After a pick, Back returns to the open box at the old place. Only a script could avoid this.
+  - Firefox and Safari don't support `:target-current` yet. They light no tick and mark nothing in the box, and the button shows only its icon.
+  - `env(safe-area-inset-*)` reads 0 on iOS without `viewport-fit=cover`, which the site doesn't set. Check the button against Safari's bottom bar and the home indicator on a phone.
+- **Checked** in headless Chrome 154, driven over the DevTools protocol, at 1440, 1360, 1300 and 390 wide, in dark, light and forced colours:
+  - hover, the click-through to a heading, and keyboard opening on the trace
+  - open, ✕, tap outside, pick and Back on the button, with no scroll from opening or closing
+  - keyboard on the button: Enter, Tab, Enter, after which focus continues from the heading
+  - print hides it all
+  - Post pages grew by about 0.2 KB gzipped. The largest, `nixos-anywhere-and-disko`, is 9.5 KB.
 
 ## Build progress (2026-09-28)
 
@@ -266,6 +304,7 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
 | What | Where |
 |---|---|
 | Design lab (rev 15, picked: opens on the final picks, and every option explored stays under "Every switch") | https://claude.ai/artifact/Tb4pePZ6AC5JNVCabTGQ7A |
+| Content trace canvas (2026-10-03, picked: desktop A · Ticks, phone 2 · Pop-up with the button bottom right) | https://claude.ai/artifact/HvjDWGS6AjJP2wPspR4p8A |
 | Rail lab (rev 9, picks made): six contents rails, the keyed colophon, commit message placement | https://claude.ai/artifact/NwYMmP5akxuJyZ5MQyAWq2, local copy `docs/design/rail-lab.html` |
 | Mark lab and design review (rev 7, picks made) | https://claude.ai/artifact/71VrwQCm6i1q16eKn1b55n, local copy `docs/design/mark-lab.html` |
 | First proposal (A/B/C directions, for history) | https://claude.ai/artifact/VFM7eMyvC5erWnZjwaEDpk |
@@ -391,9 +430,10 @@ No notes came with them. Baking the picks into the lab found one bug in `menus` 
 | bg | `#0f1214` | `#f5f4f0` | page |
 | fg | `#e6e2d6` | `#0f1214` | headings, frames, list markers, inline code |
 | body | `color-mix(fg 85%, bg)` | `color-mix(fg 74%, bg)` | paragraph and list text |
-| mute | `#a39f93` | `#67655d` | meta text, colophon keys, status line text |
+| mute | `#a39f93` | `#67655d` | meta text, colophon keys, the Contents button's count |
 | line | `#272c30` | `#dddbd3` | hairlines |
 | edge | `#3e454a` | `#b3b0a6` | dotted row separators, code scrollbar |
+| dim | `color-mix(mute 55%, edge)` | `color-mix(mute 55%, edge)` | the trace's ticks (4.1:1 and 3.3:1 on bg) |
 | code | `#0a0d0f` | `#ebe9e3` | code background |
 | acc | `#e7a15a` | `#e7a15a` | accent fill (selection) |
 | acct | `#e7a15a` | `#9f5510` | accent as text: commit hash in the colophon, build hash in the footer |
@@ -495,7 +535,7 @@ ffffffffffffff.d
   - Each link's `aria-label` is `Older post: <title>, <slug>.md` (or `Newer post: …`), so the accessible name has the title and ends with the visible text.
   - The names give way with an ellipsis only when both don't fit on one line. At 600px and below they stack, older at the left and newer at the right.
   - 32px under the colophon frame (about 24px to the eye, because of the dither) and 28px above the footer's rule: the post page's bottom padding drops from 56px to 28px. Measured in the lab on three posts.
-- **Status line** (the contents navigation, rev 9). The header's ruled strip, `position:fixed` at the bottom of the window on posts, at every width including phones. There's no margin rail and no narrow-screen companion.
+- **Status line** (the contents navigation, rev 9). **Superseded on 2026-10-03 by the content trace; see "Content trace".** The header's ruled strip, `position:fixed` at the bottom of the window on posts, at every width including phones. There's no margin rail and no narrow-screen companion.
   - **When it appears.** Only on posts with 2 or more headings (h2 and h3 counted together). A post with fewer gets no strip at all. Every current post has at least 2, and the fewest are `nix-useful-references`, `restore-nextcloud-from-backup-nixos` and `zfs-useful-references`, so today the rule only affects future posts.
   - **The strip.** It has a `bg` background and a 2px top rule in `edge`. The text is 12px `mute`, aligned to the 820px wrap with `padding-inline:max(16px,calc((100% - 772px) / 2))`.
   - **Left.** The post title by default. When a section is current, it shows `■ Syncing Watch Status › Adding Backend` (h2 › h3, in `fg`). This comes from a stack of anchors, one per heading, each carrying its breadcrumb text written at build time. Only the `:target-current` one is visible.
@@ -509,13 +549,13 @@ ffffffffffffff.d
 
 **Social card.** 1200×630, generated at build time. The ruled header strip with the Shadow stamp and the name, then a framed box with the dither, the "Post" label, the title in 0xProto Bold and `date · N min read`.
 
-**Accessibility floor.** Every text pair passes WCAG AA in both modes, and every non-text indicator (focus ring, progress rule) passes 3:1. There's also an `@media (forced-colors:active)` block: bullets, the Contents marker and the status line's square get `CanvasText` with `forced-color-adjust:none`, and `[aria-current]` is underlined.
+**Accessibility floor.** Every text pair passes WCAG AA in both modes, and every non-text indicator (focus ring, the trace's ticks) passes 3:1. There's also an `@media (forced-colors:active)` block: bullets and the Contents marker get `CanvasText` with `forced-color-adjust:none`, the trace's ticks `GrayText` and its current tick `Highlight`, and `[aria-current]` is underlined.
 
 ## How it works without JavaScript
 
-- **Status line and Contents box.** Plain CSS with `:hover` and `:focus-within`. The breadcrumb anchors are `aria-hidden` with `tabindex=-1`, and the Contents box links are the accessible ones.
-- **Current section.** Uses `scroll-target-group: auto` on each list, with `a:target-current` styles. It works in Chrome and Edge 140+ and was confirmed in local Chrome 153. Firefox and Safari don't support it yet, so the strip shows the post title and the box has no marker. Keep the `:target-current` rules separate from any other selector, because a browser that doesn't know the pseudo-class drops the whole rule.
-- **Progress, % and minutes left.** These use scroll-driven animations (`animation-timeline: scroll()`), supported in Chrome and Edge 115+ and Safari 26+ (MDN compatibility data, September 2026). Firefox still has them behind a flag, so the whole `@supports` block is skipped there. The labs have JS fallbacks for both features; the site doesn't ship them.
+- **Contents.** The trace opens its box on `:hover`, and on `:focus-visible` inside it. The button opens it through `#toc:target` (see "Content trace"). The ticks are `aria-hidden` with `tabindex=-1`, and the Contents box links are the accessible ones.
+- **Current section.** Uses `scroll-target-group: auto` on each list, with `a:target-current` styles. It works in Chrome and Edge 140+, and was confirmed in local Chrome 153 and headless Chrome 154. Firefox and Safari don't support it yet, so no tick is lit, the box has no marker and the button shows no count. Keep the `:target-current` rules separate from any other selector, because a browser that doesn't know the pseudo-class drops the whole rule.
+- **Progress, % and minutes left.** These went with the status line on 2026-10-03. They used scroll-driven animations (`animation-timeline: scroll()`); the rail lab still has them.
 - **Search.** The one exception. The index carries a small script (Rev 13), and its footer says how much. Without it, the box stays hidden, the frame is labelled "Filter", and the list shows every post. The two menus are `<details>`, so they still open. Their entries are links to `#nixos` or `#y2023` that filter the list through `:has(:target)`, one filter at a time, and `all` and `×` link to `#all`. In that state an open menu's list sits in the flow, because nothing closes it after a pick (Rev 15, "Found while baking").
 - **Mermaid.** Decided: render at build time. The standard mermaid bundle is 3.6 MB raw and 976 KB gzipped, so it never ships to readers.
 
