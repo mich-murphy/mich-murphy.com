@@ -22,7 +22,7 @@ I currently use Plex for management of my media, which includes:
 
 In addition to Plex, I setup [Tautulli](https://tautulli.com/) for tracking server usage and [Overseerr](https://overseerr.dev/) for managing media requests.
 
-Configuration for all of this is managed by NixOS - [as seen here](https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/plex.nix)
+Configuration for all of this is managed by NixOS - [as seen here](https://github.com/mich-murphy/nix-config/blob/a945a6ed39917bfbe51de433f2b51318db4ba885/nixos/modules/media/plex.nix)
 
 ## Jellyfin Configuration
 
@@ -37,7 +37,7 @@ I manage audiobooks via [Audiobookshelf](https://www.audiobookshelf.org/) as a
 dedicated service, as it does a much better job than Plex at managing audiobook
 librarires.
 
-My Jellyfin configuration is also managed by NixOS and is [available here](https://github.com/mich-murphy/nix-config/blob/main/nixos/modules/media/jellyfin.nix)
+My Jellyfin configuration is also managed by NixOS and is [available here](https://github.com/mich-murphy/nix-config/blob/a945a6ed39917bfbe51de433f2b51318db4ba885/nixos/modules/media/jellyfin.nix)
 
 > [!NOTE]
 > The Jellyfin setup is a bit more involved when it comes to hardware transcoding.

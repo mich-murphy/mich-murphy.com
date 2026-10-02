@@ -5,7 +5,7 @@ summary = "Guide explaining how I mounted S3 storage on NixOS. I set this up on 
 tags = ["nixos", "homelab", "s3"]
 +++
 
-I previously wrote about how I mounted s3 object storage to my [homelab running Ubuntu](s3-object-storage.md). I've since been configuring my [homelab](https://github.com/mich-murphy/nix-config/blob/master/hosts/homelab/configuration.nix) to run using [NixOS](https://nixos.org/). NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.
+I previously wrote about how I mounted s3 object storage to my [homelab running Ubuntu](s3-object-storage.md). I've since been configuring my [homelab](https://github.com/mich-murphy/nix-config/blob/939f3be13ded2a770ab542987a0a106e276f52b5/hosts/homelab/configuration.nix) to run using [NixOS](https://nixos.org/). NixOS has a major advantage over Ubuntu for me, in that the entire system is configured declaratively, meaning once you have a working configuration you can use it to rebuild everything exactly how it was setup before.
 
 ## Updating NixOS Configuration
 

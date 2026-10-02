@@ -5,7 +5,7 @@ summary = "Exploring 2 different methods of backing up NixOS systems: Duplicati 
 tags = ["nixos", "homelab", "duplicati", "borg"]
 +++
 
-One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of [Nextcloud](https://nextcloud.com/) when I don't know whether data will exist after a hardware fault. One common backup strategy is the [3-2-1 approach](https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/):
+One of my first consideration in setting up a homelab has been about a backup strategy - it's difficult to have trust in a self-hosted instance of [Nextcloud](https://nextcloud.com/) when I don't know whether data will exist after a hardware fault. One common backup strategy is the [3-2-1 approach](https://web.archive.org/web/20251230003356/https://www.seagate.com/au/en/blog/what-is-a-3-2-1-backup-strategy/):
 
 - 3 copies of the data being backup up
 - 2 different media types for storage

@@ -34,7 +34,7 @@ The first thing to understand is how to execute database commands from within
 the NixOS environment. My Nextcloud instance in NixOS is managed by the `nextcloud`
 user, this same user is configured for the database as shown in my [Nextcloud post](/posts/configure-nextcloud-nixos.md).
 
-I can execute [commands against the database](https://nixos.wiki/wiki/Nextcloud#Nextcloudcmd) ([PostgreSQL in my case](https://nixos.wiki/wiki/PostgreSQL)) like so:
+I can execute [commands against the database](https://wiki.nixos.org/wiki/Nextcloud#Nextcloudcmd) ([PostgreSQL in my case](https://wiki.nixos.org/wiki/PostgreSQL)) like so:
 
 ```bash
 sudo runuser -u nextcloud -- psql -U nextcloud <options>

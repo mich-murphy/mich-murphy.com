@@ -17,7 +17,7 @@ The end state for my homelab is to have a number of different Virtual Machines (
 2. Most VMs will be running NixOS - I want to manage them remotely and become more familiar with tools like [deploy-rs](https://github.com/serokell/deploy-rs) and [nixos-anywhere](https://github.com/numtide/nixos-anywhere/)
 3. I want to be able to use VMs from any machine to easily experiment with new Linux distributions
 
-I mostly want to use VMs over containers as currently [NixOS doesn't work so well with LXC](https://nixos.wiki/wiki/Proxmox_Linux_Container), it's possible, but I haven't been thrilled with the result. I will use LXC for running some services like [Home Assistant].
+I mostly want to use VMs over containers as currently [NixOS doesn't work so well with LXC](https://wiki.nixos.org/wiki/Proxmox_Linux_Container), it's possible, but I haven't been thrilled with the result. I will use LXC for running some services like [Home Assistant].
 
 ## Initial Boot
 

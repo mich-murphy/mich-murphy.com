@@ -7,7 +7,7 @@ tags = ["nixos", "homelab", "agenix"]
 
 After playing around with NixOS and creating declarative configurations I quickly came across a need to provide encrypted secrets, rather than clear text. This is a requirement to be able to save configurations on GitHub and is recommended anyway, given that clear text secrets are made available on the [world readable Nix store](https://github.com/NixOS/nixpkgs/issues/24288).
 
-There are a number of [solutions available](https://nixos.wiki/wiki/Comparison_of_secret_managing_schemes) to encrypt secrets in NixOS, I landed on [Agenix](https://github.com/ryantm/agenix), as it's relatively easy to configure and works with my deployment tool of choice - [Deploy-rs](https://github.com/serokell/deploy-rs).
+There are a number of [solutions available](https://wiki.nixos.org/wiki/Comparison_of_secret_managing_schemes) to encrypt secrets in NixOS, I landed on [Agenix](https://github.com/ryantm/agenix), as it's relatively easy to configure and works with my deployment tool of choice - [Deploy-rs](https://github.com/serokell/deploy-rs).
 
 ## How Agenix Works
 
@@ -82,7 +82,7 @@ Once the above has been completed you can now add secrets to your NixOS configur
 
 ### Secrets Folder Structure
 
-I discovered an interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem's [dotfiles](https://git.chvp.be/chvp/nixos-config/-/tree/main/secrets). I didn't see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.
+I discovered an interesting technique for organising Agenix secrets into directories, thanks to Charlotte Van Petegem's [dotfiles](https://git.chvp.be/chvp/nixos-config/src/branch/main/secrets). I didn't see this explained in the Agenix manual, but it looks like we can nest age secrets within the secrets directory e.g.
 
 ```txt
 # /etc/nixos/secrets
