@@ -5,7 +5,7 @@ Every page's footer shows the same two figures, for the site rather than the pag
 browser fetches to load the homepage, as the 10 KB and 250KB Clubs measure a site: the page, gzipped, and the files its
 head fetches, the preloaded fonts and the SVG icon. In place of __JS__ goes the site's script, the inline <script> that
 only the index has. It fails if any page other than the index has a script (a post's JSON-LD is data, not code, so it
-doesn't count), or if any page is over MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB).
+doesn't count), if any page is over MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB), or if a page isn't UTF-8.
 
 Text is measured gzipped at level 9, with no file name or time in the gzip header, so a size doesn't depend on the
 file's name or on which gzip a machine has. Fonts and images are measured as bytes on disk, since servers send them as
@@ -86,6 +86,15 @@ def kb(size: int) -> str:
     return f"{tenths // 10}.{tenths % 10} KB"
 
 
+def read_page(page: Path, failures: list[str]) -> str | None:
+    """A page's text, or None, with a failure noted, if it isn't UTF-8 as Hugo writes it."""
+    try:
+        return page.read_bytes().decode()
+    except UnicodeDecodeError as error:
+        failures.append(f"{page}: isn't UTF-8, at byte {error.start}")
+        return None
+
+
 def homepage_figures(index: Path, index_html: str, failures: list[str]) -> tuple[str, str]:
     """The footer's two figures: what loading the homepage fetches, and the site's script."""
     site = index.parent
@@ -123,16 +132,20 @@ def main() -> int:
         return 2
 
     failures: list[str] = []
+    # Every page is read first, so one that can't be is a failure like the others, not a crash part-way through
+    # writing the footers
+    paths = sorted(p for p in site.rglob("*.html") if p.is_file())
+    texts = {page: text for page in paths if (text := read_page(page, failures)) is not None}
+
     index = site / "index.html"
     home = script = None
-    if index.is_file() and HOME_PLACEHOLDER in (index_html := index.read_bytes().decode()):
+    if HOME_PLACEHOLDER in (index_html := texts.get(index, "")):
         home, script = homepage_figures(index, index_html, failures)
 
-    pages = written = largest = 0
+    pages = len(paths)
+    written = largest = 0
     largest_page = None
-    for page in sorted(p for p in site.rglob("*.html") if p.is_file()):
-        pages += 1
-        html = page.read_bytes().decode()
+    for page, html in texts.items():
         if page != index and (script_tags := parse(html).script_tags):
             failures.append(f"{page}: a script outside the index: {script_tags[0]}")
 
