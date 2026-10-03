@@ -6,10 +6,12 @@
   box are the tag and year menus. Their links go to the hidden targets in the Posts card, so they filter the list
   through :target without the script (home-filters.css), and the script takes them over. <b> stays empty: CSS writes
   all, or the applied value without the script, and the script writes the value. home-filters.css finds an entry by
-  data-filter, its target's id, since Hugo percent-encodes the href, so café's is #caf%c3%a9. Styles are in home.css */}}
+  data-filter, its target's id, since Hugo percent-encodes the href, so café's is #caf%c3%a9. The key hint shows the
+  shortcut that focuses the box, which aria-keyshortcuts gives screen readers, so the hint is hidden from them. Both
+  say Ctrl+K, and the script makes them ⌘K on Apple's platforms. Styles are in home.css */}}
 <div class="search-frame"><h2 class="legend" id="search-label">Filter</h2><div class="frame">
 <search aria-labelledby="search-label">
-<div class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="search-key" title="Press / to search">/</kbd><span class="search-count" aria-hidden="true"></span></div>
+<div class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" aria-keyshortcuts="Control+K" autocomplete="off" spellcheck="false"><kbd class="search-key" aria-hidden="true">Ctrl K</kbd><span class="search-count" aria-hidden="true"></span></div>
 <div class="filters"><span class="key">filter</span>
 {{- $filters := partialCached "filters.html" . }}
 {{- range $kind := slice "tag" "year" }}
