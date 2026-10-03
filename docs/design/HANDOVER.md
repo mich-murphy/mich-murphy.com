@@ -42,7 +42,7 @@ The status line is gone. Posts get Contents in two forms instead, from one `nav`
   - It opens the same box above it, and ✕ takes its place.
   - A tap outside closes the box. Picking a heading closes it and jumps there.
   - The page ends 56px lower, so the pill never covers the footer.
-  - The pill sits in an 8px ring of the ground. It's 16px in, as a code window's frame is, so without the ring a window scrolling past ran into its right edge and the two read as one box (box lab, button D).
+  - The pill sits in a 6px ring of the ground, rounded by its width at the outer corners so it keeps the same distance from the square pill all round (8px with square corners until 2026-10-03). It's 16px in, as a code window's frame is, so without the ring a window scrolling past ran into its right edge and the two read as one box (box lab, button D).
   - The page dims behind the open box, to the ground at 72%, so frames under the box fall back; the box is as wide as the text column and lined up with them too (box lab, box D). A tap on the dim closes the box. The dim fades with the box.
 - **Why bottom right** (researched on 2026-10-03):
   - Material 3 puts the FAB lower right on phones, and NN/g finds people expect floating buttons there.

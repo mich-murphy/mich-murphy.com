@@ -70,12 +70,15 @@ main:has(.pn-file){padding-bottom:28px}
 .ticks,.tk-hd,.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
 /* the target that opens the box: empty and fixed to the top of the window, so following the button scrolls nothing */
 #toc{position:fixed;top:0;left:0}
-/* the button: the header's ruled frame as a 48px pill, the menu icon and the section count in the machine face, in an
-   8px ring of the ground. It sits 16px in, as a code window's frame does, and the ring keeps a window scrolling past
-   from running into it. It inverts on hover only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its
-   place while the box is open. The page dims behind the open box, so frames under it fall back, and a tap on the dim
-   closes the box, without the tap's grey flash. Hidden, the dim waits for its fade */
-.topen,.tshut{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none;box-shadow:0 0 0 8px var(--bg)}
+/* the button: the header's ruled frame as a 48px pill, the menu icon and the section count in the machine face, in a
+   6px ring of the ground. It sits 16px in, as a code window's frame does, and the ring keeps a window scrolling past
+   from running into it. The ring is a border on ::before, rounded by its width at the outer corners, so it keeps the
+   same distance from the square pill all round; a box-shadow's corners would stand further off. It inverts on hover
+   only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its place while the box is open. The page dims
+   behind the open box, so frames under it fall back, and a tap on the dim closes the box, without the tap's grey flash.
+   Hidden, the dim waits for its fade */
+.topen,.tshut{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none}
+.topen::before,.tshut::before{content:"";position:absolute;inset:-8px;border:6px solid var(--bg);border-radius:6px;pointer-events:none}
 .topen svg,.tshut svg{display:block;flex:none;width:18px;height:14px}
 .topen path{fill:currentColor}
 .tshut path{fill:none;stroke:currentColor;stroke-width:2}
@@ -158,4 +161,5 @@ body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
   .clist li::before{background:CanvasText;forced-color-adjust:none}
   .ticks a::before{background:GrayText;forced-color-adjust:none}
   .ticks a:target-current::before{background:Highlight}
+  .topen::before,.tshut::before{display:none}
 }
