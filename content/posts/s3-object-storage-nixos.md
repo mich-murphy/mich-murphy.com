@@ -1,5 +1,5 @@
 +++
-title = "How To Mount S3 Object Storage in NixOS"
+title = "How to Mount S3 Object Storage in NixOS"
 date = 2022-12-14
 summary = "Guide explaining how I mounted S3 storage on NixOS. I set this up on Linode S3 storage, but it should be applicable to others."
 tags = ["nixos", "homelab", "s3"]

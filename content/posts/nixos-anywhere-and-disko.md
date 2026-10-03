@@ -1,5 +1,5 @@
 +++
-title = "Remote Deployment of NixOS Using Nixos-anywhere and Disko"
+title = "Remote Deployment of NixOS Using nixos-anywhere and Disko"
 date = 2024-03-27
 summary = "Nixos-anywhere allows migration from any Linux distro to NixOS, Disko declaratively sets up storage. This post explores both tools."
 tags = ["nixos", "nixos-anywhere", "disko"]
@@ -76,7 +76,7 @@ The following configuration is what I used to format an SSD drive, mounted at `/
 
 ```
 
-### Nixos Anywhere Configuration
+### NixOS Anywhere Configuration
 
 With the Disko configuration complete, we now need to update our flake and add inputs for Disko. We also need to add the Disko module within our `nixosConfiguration`.
 

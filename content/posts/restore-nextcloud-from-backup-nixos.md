@@ -1,5 +1,5 @@
 +++
-title = "Restoring Nextcloud From Backup on NixOS"
+title = "Restoring Nextcloud from Backup on NixOS"
 date = 2024-03-25
 summary = "Following an earlier post exploring Nextcloud backups on NixOS, this post explains how to restore from a backup."
 tags = ["nixos", "homelab", "postgresql", "nextcloud"]
