@@ -1,12 +1,12 @@
 {{- /* The copyright runs from the oldest post's year to the build year. CI sets HUGO_BUILD_SHA to the commit it
-  builds; local builds say so. After the build, scripts/postbuild.sh writes the same two figures into every page:
+  builds; local builds say so. After the build, scripts/postbuild.py writes the same two figures into every page:
   __HOME__, what a browser fetches to load the homepage, and __JS__, the site's script. hugo server never runs it, so
   there the footer says serve and leaves both out */}}
 {{- $first := now.Year }}
-{{- with (where site.RegularPages "Section" "posts").ByDate }}{{ $first = (index . 0).Date.Year }}{{ end }}
+{{- with (partialCached "posts.html" .).ByDate }}{{ $first = (index . 0).Date.Year }}{{ end }}
 <footer class="site-footer">
 <div class="footer-bar">
-<span>© {{ $first }}-{{ now.Year }} {{ site.Params.author.name }} · <a href="https://github.com/mich-murphy">github</a></span>
+<span>© {{ $first }}-{{ now.Year }} {{ site.Params.author.name }} · <a href="{{ site.Params.author.github }}">github</a></span>
 <span>build {{ if hugo.IsServer }}serve{{ else }}{{ with os.Getenv "HUGO_BUILD_SHA" }}<a class="hash" href="{{ site.Params.repo }}/commit/{{ . }}">{{ substr . 0 7 }}</a>{{ else }}local{{ end }} · home __HOME__ · __JS__ js{{ end }} · <a href="/atom.xml">atom.xml</a></span>
 </div>
 </footer>

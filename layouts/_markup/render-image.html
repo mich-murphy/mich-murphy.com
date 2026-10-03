@@ -1,12 +1,11 @@
 {{- /* An image is a file in the post's bundle (content/posts/<name>/index.md, with the image beside it, linked by its
   file name), or else in assets/. It gets its width and height, so the text doesn't move as it loads (an SVG has
-  neither), and loads lazily. prose.css keeps it inside the column. As with a broken link (render-link.html), the build
+  neither), and loads and decodes without holding up the page. prose.css keeps it inside the column. As with a broken link (render-link.html), the build
   fails on an image that:
   - is remote, since the build can't know its size
   - has no alt text
   - isn't in the bundle or assets/ */ -}}
-{{- $where := .PageInner.Path -}}
-{{- with .PageInner.File }}{{ $where = .Path }}{{ end -}}
+{{- $where := partial "hook-source.html" . -}}
 {{- $u := urls.Parse .Destination -}}
 {{- if or $u.IsAbs $u.Host -}}
   {{- errorf "%s: the image %q is remote; save it in the post's bundle, beside its index.md" $where .Destination -}}
@@ -16,7 +15,7 @@
   {{- $path := strings.TrimPrefix "./" $u.Path -}}
   {{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
 <img src="{{ .RelPermalink }}" alt="{{ $.PlainText }}" {{- with $.Title }} title="{{ . }}" {{- end }}
-    {{- if reflect.IsImageResourceWithMeta . }} width="{{ .Width }}" height="{{ .Height }}" {{- end }} loading="lazy">
+    {{- if reflect.IsImageResourceWithMeta . }} width="{{ .Width }}" height="{{ .Height }}" {{- end }} loading="lazy" decoding="async">
   {{- else -}}
     {{- errorf "%s: the image %q isn't in the post's bundle or assets/" $where .Destination -}}
   {{- end -}}

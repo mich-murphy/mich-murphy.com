@@ -30,7 +30,7 @@
     }
   }
 
-  search[hidden],
+  .search-box[hidden],
   .post-row[hidden] {
     display: none;
   }

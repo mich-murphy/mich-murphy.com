@@ -1,0 +1,12 @@
+{{- /* A page's head: its title over a rule, with the id top, the first anchor in Contents (contents.html). A post adds
+  its date, reading time and tags; any other page's head is bare. A tag links to the index filtered by it, /#<slug>,
+  where search replaced the tag pages. A post's summary stays out of the page: head/meta.html uses it for the
+  description. Styles are in prose.css */}}
+{{- $post := eq .Section "posts" }}
+<header class="page-head{{ if not $post }} bare{{ end }}" id="top">
+<h1>{{ .Title }}</h1>
+{{- if $post }}
+<p class="meta">{{ partial "date.html" .Date }} · {{ .ReadingTime }} min read
+  {{- with .GetTerms "tags" }} ·{{ range . }}{{ $slug := partial "tag-slug.html" . }} <a href="/#{{ $slug }}">#{{ $slug }}</a>{{ end }}{{ end }}</p>
+{{- end }}
+</header>

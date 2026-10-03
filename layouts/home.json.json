@@ -1,69 +1,59 @@
-{{- /* The search index that home's script loads: every post, newest first, as {s, t, d, g, l}, its slug, title, date,
-  tags (the slugs in the Posts card's data-tag) and lines. A line is [number, text, anchor, kind], kind 0 prose, 1 heading
-  and 2 code, read from the Markdown source as docs/design/build-grep-index.py does, so the number is the line in the
-  file. Blank lines and fence lines are skipped. Prose is what a reader sees: link text without its URL, no **, no list
-  or quote markers, and no line for an alert's [!NOTE]. A heading loses its #s, and code stays as written. The anchor
-  is the id of the h2 or h3 the line sits under: the source doesn't say what id Hugo gave a heading, so each h2 or h3
-  line takes the next one from headings.html, in document order, and the build fails if the two disagree on how many
-  there are */}}
+{{- /* The search index that home's script loads: every post, newest first, as {s, t, d, g, l}: its slug, title, date,
+  tags (as tag-slug.html gives them) and lines. A line is [text, anchor, kind], with kind 0 for prose, 1 for a
+  heading and 2 for code, read from the post's Markdown. Blank lines and fence lines are skipped. Prose is what a
+  reader sees: link text without its URL, no **, no list or quote markers, and no line for an alert's [!NOTE]. A
+  heading loses its #s, and code stays as written. The anchor is the id of the h2 or h3 the line sits under. The
+  Markdown doesn't say what id Hugo gave a heading, so each h2 or h3 line takes the next one from headings.html, in
+  document order, and the build fails if the two disagree on how many there are */}}
 {{- $posts := slice }}
-{{- range (where site.RegularPages "Section" "posts").ByDate.Reverse }}
-  {{- $f := printf "content/%s" .File.Path }}
-  {{- if not (os.FileExists $f) }}{{ errorf "search index: %s isn't there to read" $f }}{{ end }}
-  {{- $lines := split (os.ReadFile $f) "\n" }}
-  {{- /* the front matter ends at the next line that is its opening delimiter, +++ or --- */}}
-  {{- $fm := strings.TrimSpace (index $lines 0) }}
-  {{- $end := 0 }}
-  {{- range $i, $l := $lines }}
-    {{- if and $i (eq (strings.TrimSpace $l) $fm) }}{{ $end = $i }}{{ break }}{{ end }}
-  {{- end }}
-  {{- $hs := partial "headings.html" . }}
+{{- range (partialCached "posts.html" .).ByDate.Reverse }}
+  {{- $source := .File.Path }}
+  {{- $headings := partial "headings.html" . }}
   {{- $h := 0 }}
   {{- $anchor := "" }}
   {{- $fence := "" }}
   {{- $rows := slice }}
-  {{- range $i, $l := $lines }}
-    {{- if le $i $end }}{{ continue }}{{ end }}
-    {{- $t := strings.TrimSpace $l }}
-    {{- $m := "" }}
-    {{- with findRESubmatch "^ {0,3}(`{3,}|~{3,})" $l 1 }}{{ $m = index . 0 1 }}{{ end }}
+  {{- range $line := split .RawContent "\n" }}
+    {{- $text := strings.TrimSpace $line }}
+    {{- $marker := "" }}
+    {{- with findRESubmatch "^ {0,3}(`{3,}|~{3,})" $line 1 }}{{ $marker = index . 0 1 }}{{ end }}
     {{- $row := false }}
     {{- if $fence }}
       {{- /* a fence closes with a line of only its character, at least as many times as it opened */}}
-      {{- if and $m (eq (substr $m 0 1) (substr $fence 0 1)) (ge (len $m) (len $fence)) (eq $t $m) }}
+      {{- if and $marker (eq (substr $marker 0 1) (substr $fence 0 1)) (ge (len $marker) (len $fence)) (eq $text $marker) }}
         {{- $fence = "" }}
-      {{- else if $t }}
-        {{- $row = slice (add $i 1) (strings.TrimRight " \t\r\n\v\f" $l) $anchor 2 }}
+      {{- else if $text }}
+        {{- $row = slice (strings.TrimRight " \t\r\n\v\f" $line) $anchor 2 }}
       {{- end }}
-    {{- else if $m }}
-      {{- $fence = $m }}
-    {{- else if $t }}
-      {{- with findRESubmatch `^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$` $l 1 }}
-        {{- $h1 := index . 0 }}
-        {{- $lv := len (index $h1 1) }}
+    {{- else if $marker }}
+      {{- $fence = $marker }}
+    {{- else if $text }}
+      {{- with findRESubmatch `^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$` $line 1 }}
+        {{- $match := index . 0 }}
+        {{- $level := len (index $match 1) }}
         {{- /* headings.html has only h2 and h3, so a line under an h4 keeps the anchor above it */}}
-        {{- if and (ge $lv 2) (le $lv 3) }}
-          {{- if ge $h (len $hs) }}{{ errorf "search index: %s has more h2 and h3 lines than Hugo found headings" $f }}{{ end }}
-          {{- $anchor = (index $hs $h).id }}
+        {{- if and (ge $level 2) (le $level 3) }}
+          {{- if ge $h (len $headings) }}{{ errorf "search index: %s has more h2 and h3 lines than Hugo found headings" $source }}{{ end }}
+          {{- $anchor = (index $headings $h).id }}
           {{- $h = add $h 1 }}
         {{- end }}
-        {{- $row = slice (add $i 1) (strings.TrimSpace (index $h1 2)) $anchor 1 }}
+        {{- $row = slice (strings.TrimSpace (index $match 2)) $anchor 1 }}
       {{- else }}
-        {{- $p := replaceRE `^\s*>\s?` "" $l }}
-        {{- $p = replaceRE `^\s*(?:[-*+]|\d+\.)\s+` "" $p }}
-        {{- $p = replaceRE `!?\[([^\]]*)\]\([^)]*\)` "${1}" $p }}
-        {{- $p = replaceRE `<(https?://[^>]+)>` "${1}" $p }}
-        {{- $p = replaceRE `\*\*(.+?)\*\*` "${1}" $p }}
-        {{- $p = strings.TrimSpace $p }}
-        {{- if and $p (not (findRE `^\[!\w+\]$` $p 1)) }}{{ $row = slice (add $i 1) $p $anchor 0 }}{{ end }}
+        {{- $prose := replaceRE `^\s*>\s?` "" $line }}
+        {{- $prose = replaceRE `^\s*(?:[-*+]|\d+\.)\s+` "" $prose }}
+        {{- $prose = replaceRE `!?\[([^\]]*)\]\([^)]*\)` "${1}" $prose }}
+        {{- $prose = replaceRE `<(https?://[^>]+)>` "${1}" $prose }}
+        {{- $prose = replaceRE `\*\*(.+?)\*\*` "${1}" $prose }}
+        {{- $prose = strings.TrimSpace $prose }}
+        {{- if and $prose (not (findRE `^\[!\w+\]$` $prose 1)) }}{{ $row = slice $prose $anchor 0 }}{{ end }}
       {{- end }}
     {{- end }}
     {{- /* the first row starts a slice of rows; appended to an empty slice, it would be spread into it */}}
     {{- if $row }}{{ if $rows }}{{ $rows = $rows | append $row }}{{ else }}{{ $rows = slice $row }}{{ end }}{{ end }}
   {{- end }}
-  {{- if ne $h (len $hs) }}{{ errorf "search index: Hugo found %d h2 and h3 headings in %s, and its source has %d" (len $hs) $f $h }}{{ end }}
-  {{- $g := slice }}
-  {{- range .GetTerms "tags" }}{{ $g = $g | append (path.Base (urls.Parse .RelPermalink).Path) }}{{ end }}
-  {{- $posts = $posts | append (dict "s" .File.ContentBaseName "t" .Title "d" (.Date.Format "2006-01-02") "g" $g "l" $rows) }}
+  {{- if ne $h (len $headings) }}{{ errorf "search index: Hugo found %d h2 and h3 headings in %s, and its Markdown has %d" (len $headings) $source $h }}{{ end }}
+  {{- $tags := slice }}
+  {{- range .GetTerms "tags" }}{{ $tags = $tags | append (partial "tag-slug.html" .) }}{{ end }}
+  {{- $posts = $posts | append (dict "s" .File.ContentBaseName "t" .Title "d" (.Date.Format "2006-01-02") "g" $tags "l" $rows) }}
 {{- end }}
 {{- $posts | jsonify (dict "noHTMLEscape" true) }}

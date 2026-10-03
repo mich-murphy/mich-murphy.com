@@ -91,3 +91,5 @@ enableRobotsTXT = true
 
   [params.author]
     name = "Michael Murphy"
+    # The footer's github link, and the author's sameAs in each post's structured data (head/jsonld.html)
+    github = "https://github.com/mich-murphy"

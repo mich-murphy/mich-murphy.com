@@ -1,0 +1,33 @@
+{{- /* The page's title and description, and what search engines and link previews read. A post's summary is its
+  description, so a post without one fails the build rather than share the site's; the other pages use the site's */}}
+{{- $post := and .IsPage (eq .Section "posts") }}
+{{- if and $post (not .Params.summary) }}
+  {{- errorf "%s has no summary: add one to its front matter, for search results and link previews" .File.Path }}
+{{- end }}
+{{- $description := or .Params.summary site.Params.description }}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+<meta name="description" content="{{ $description }}">
+{{- /* GitHub Pages serves 404.html at any missing address, so it has no address of its own to name or share, and it's
+  kept out of search results, since it also answers 200 at /404.html */}}
+{{- if eq .Kind "404" }}
+<meta name="robots" content="noindex">
+{{- else }}
+{{- /* Link previews: Open Graph, plus X's twitter: tags. A post's preview shows its social card (social-card.html),
+  whose alt text is the post's title; other pages share their title and description without an image. A post also
+  gets structured data for search engines (head/jsonld.html) */}}
+<meta property="og:type" content="{{ cond $post "article" "website" }}">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{- if $post }}{{ with partial "social-card.html" . }}
+<meta property="og:image" content="{{ .Permalink }}">
+<meta property="og:image:width" content="{{ .Width }}">
+<meta property="og:image:height" content="{{ .Height }}">
+<meta property="og:image:alt" content="{{ $.Title }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ .Permalink }}">
+{{- partial "head/jsonld.html" (dict "page" $ "card" .) }}
+{{- end }}{{ end }}
+<link rel="canonical" href="{{ .Permalink }}">
+{{- end }}

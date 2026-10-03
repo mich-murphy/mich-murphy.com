@@ -19,7 +19,7 @@
 //   page is left, and a fragment typed into it sets the menus as following a menu's link to it would.
 const $ = (s, e = document) => e.querySelector(s);
 const $$ = (s, e = document) => [...e.querySelectorAll(s)];
-const box = $("search");
+const box = $(".search-box");
 const inp = $(".search-input", box);
 const sc = $(".search-count", box);
 const lg = $(".search-frame .legend");
@@ -74,13 +74,13 @@ const run = (T, Y, Q, res) => {
     for (const r of res) {
       let w = r.test(p.t) ? (inT++, 40) : p.g.some((x) => r.test(x)) ? 30 : 0;
       let c = 0;
-      for (const l of p.l) if (r.test(l[1])) c++, (w = Math.max(w, KIND[l[3]]));
+      for (const l of p.l) if (r.test(l[0])) c++, (w = Math.max(w, KIND[l[2]]));
       if (!w) continue next;
       s += w + Math.min(c, 5);
     }
     if (inT < res.length)
       for (const l of p.l) {
-        const k = res.filter((r) => r.test(l[1])).length * 50 + KIND[l[3]];
+        const k = res.filter((r) => r.test(l[0])).length * 50 + KIND[l[2]];
         if (k > 50 && k > best) (best = k), (ex = l);
       }
     out.push({ p, s, ex });
@@ -110,10 +110,10 @@ const draw = () => {
     $(".excerpt", r)?.remove();
     if (h?.ex) {
       // the excerpt keeps its first match in view
-      let x = h.ex[1].trimStart();
+      let x = h.ex[0].trimStart();
       const i = x.search(mk);
       if (i > 30) x = "…" + x.slice(i - 20);
-      r.insertAdjacentHTML("beforeend", `<a class="excerpt" href="${html(a.getAttribute("href") + (h.ex[2] && "#" + h.ex[2]))}"><span class="excerpt-branch" aria-hidden="true">└</span>${mark(x)}</a>`);
+      r.insertAdjacentHTML("beforeend", `<a class="excerpt" href="${html(a.getAttribute("href") + (h.ex[1] && "#" + h.ex[1]))}"><span class="excerpt-branch" aria-hidden="true">└</span>${mark(x)}</a>`);
     }
   }
   // moving a row takes focus from its link, which gets it back if it's still shown

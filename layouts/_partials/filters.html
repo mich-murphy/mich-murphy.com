@@ -1,16 +1,16 @@
 {{- /* The index's filters, for the tag and year menus: each tag, busiest first and then by name, then each year, newest
-  first. Each is a dict: k, the kind (tag or year, as in the rows' data-tag and data-year); v, the value (a tag's slug, decoded
-  from its URL as the Posts card's data-tag has it, or the year); id, the fragment that filters by it (the slug, or the
+  first. Each is a dict: k, the kind (tag or year, as in the rows' data-tag and data-year); v, the value (a tag's slug,
+  as tag-slug.html gives it, or the year); id, the fragment that filters by it (the slug, or the
   year after a y, so a year can't take a tag's id); and n, how many posts it has. home.html lists them in the menus,
   posts-card.html writes a hidden target for each, and home-filters.css writes the rules that filter without a script. A
-  tag can't take an id home already has */}}
+  tag can't take an id home already has. It depends only on the site, so call it as partialCached "filters.html" . */}}
 {{- $out := slice }}
 {{- range site.Taxonomies.tags.ByCount }}
-  {{- $s := path.Base (urls.Parse .Page.RelPermalink).Path }}
-  {{- if or (in (slice "all" "main") $s) (findRE `^y\d{4}$` $s 1) }}{{ errorf "the tag %q would clash with the id %q on home: rename it" .Page.Title $s }}{{ end }}
-  {{- $out = $out | append (dict "k" "tag" "v" $s "id" $s "n" .Count) }}
+  {{- $slug := partial "tag-slug.html" .Page }}
+  {{- if or (in (slice "all" "main") $slug) (findRE `^y\d{4}$` $slug 1) }}{{ errorf "the tag %q would clash with the id %q on home: rename it" .Page.Title $slug }}{{ end }}
+  {{- $out = $out | append (dict "k" "tag" "v" $slug "id" $slug "n" .Count) }}
 {{- end }}
-{{- range (where site.RegularPages "Section" "posts").GroupByDate "2006" }}
+{{- range (partialCached "posts.html" .).GroupByDate "2006" }}
   {{- $out = $out | append (dict "k" "year" "v" .Key "id" (print "y" .Key) "n" (len .Pages)) }}
 {{- end }}
 {{- return $out }}

@@ -1,5 +1,5 @@
 {{- /* Tag pages send readers to the index, where search replaced them: /tags/nixos/ goes to /#nixos, which opens with
-  the tag menu set (the fragment is the tag's slug, decoded, like the ids there), and /tags/ goes to /. Hugo looks up
+  the tag menu set (the fragment is the tag's slug, as tag-slug.html gives it, like the ids there), and /tags/ goes to /. Hugo looks up
   this template for both. An alias can't carry a fragment, so each is a page of its own, outside the site's shell: a
   0-second meta refresh, which keeps the fragment, a canonical link to the index, noindex, and a link for when the
   refresh doesn't happen, with a heading and main like any page. Only the HTML redirects, so a term's other outputs, like its feed, stay. A tag's page links
@@ -9,10 +9,10 @@
 {{- $title := .Title }}
 {{- $label := "every post" }}
 {{- if eq .Kind "term" }}
-  {{- $s := path.Base (urls.Parse .RelPermalink).Path }}
-  {{- $to = print "/#" $s }}
-  {{- $title = print "#" $s }}
-  {{- $label = printf "posts tagged %s" $s }}
+  {{- $slug := partial "tag-slug.html" . }}
+  {{- $to = print "/#" $slug }}
+  {{- $title = print "#" $slug }}
+  {{- $label = printf "posts tagged %s" $slug }}
 {{- end -}}
 <!doctype html>
 <html lang="{{ site.Language.Locale }}">

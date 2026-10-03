@@ -5,7 +5,7 @@
   on a page loaded at /#nixos. This file is a Go template: head.html runs it to write the rules for each tag and year
   that filters.html lists.
 */ -}}
-{{- $on := "body:has(search[hidden])" }}
+{{- $on := "body:has(.search-box[hidden])" }}
 {{- $inverted := "{background:var(--fg);color:var(--bg);border-color:var(--fg);--muted:var(--bg)}" }}
 @layer components {
   /*

@@ -1,28 +1,28 @@
 {{ define "main" }}
 <h1 class="visually-hidden">{{ site.Title }}</h1>
 <div class="intro">{{ .Content }}</div>
-{{- /* Search: a plain frame above the Posts card. The box needs the script, so it ships hidden and the frame is
-  labelled Filter until the script shows the box and renames it Search. Under the box are the tag and year menus.
-  Their links go to the hidden targets in the Posts card, so they filter the list through :target without the script
-  (home-filters.css), and the script takes them over. <b> stays empty: CSS writes all, or the applied value without the
-  script, and the script writes the value. home-filters.css finds an entry by data-filter, its target's id, since Hugo
-  percent-encodes the href, so café's is #caf%c3%a9. Styles are in home.css */}}
-<div class="search-frame"><h2 class="legend">Filter</h2><div class="frame">
-<search class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="search-key" title="Press / to search">/</kbd><span class="search-count" aria-hidden="true"></span></search>
+{{- /* Search: a plain frame above the Posts card, a search landmark named by its label. The box needs the script, so
+  it ships hidden and the frame is labelled Filter until the script shows the box and renames it Search. Under the
+  box are the tag and year menus. Their links go to the hidden targets in the Posts card, so they filter the list
+  through :target without the script (home-filters.css), and the script takes them over. <b> stays empty: CSS writes
+  all, or the applied value without the script, and the script writes the value. home-filters.css finds an entry by
+  data-filter, its target's id, since Hugo percent-encodes the href, so café's is #caf%c3%a9. Styles are in home.css */}}
+<div class="search-frame"><h2 class="legend" id="search-label">Filter</h2><div class="frame">
+<search aria-labelledby="search-label">
+<div class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="search-key" title="Press / to search">/</kbd><span class="search-count" aria-hidden="true"></span></div>
 <div class="filters"><span class="key">filter</span>
-{{- $fs := partial "filters.html" . }}
-{{- range slice "tag" "year" }}
-  {{- $k := . }}
-<div class="filter filter-{{ $k }}"><details class="filter-menu" name="filters"><summary><span class="key">{{ $k }}:</span><b></b></summary><div class="filter-popover" role="group" aria-label="Filter by {{ $k }}"><span class="filter-choices"><a href="#all" class="filter-choice all">all</a>
-  {{- range where $fs "k" $k }}<a href="{{ print "#" .id | safeURL }}" class="filter-choice" data-filter="{{ .id }}"><span>{{ .v }}</span><span class="count">{{ .n }}</span></a>{{ end -}}
-</span></div></details><a href="#all" class="filter-clear" aria-label="Clear the {{ $k }} filter">×</a></div>
+{{- $filters := partialCached "filters.html" . }}
+{{- range $kind := slice "tag" "year" }}
+<div class="filter filter-{{ $kind }}"><details class="filter-menu" name="filters"><summary><span class="key">{{ $kind }}:</span><b></b></summary><div class="filter-popover" role="group" aria-label="Filter by {{ $kind }}"><span class="filter-choices"><a href="#all" class="filter-choice all">all</a>
+  {{- range where $filters "k" $kind }}<a href="{{ print "#" .id | safeURL }}" class="filter-choice" data-filter="{{ .id }}"><span>{{ .v }}</span><span class="count">{{ .n }}</span></a>{{ end -}}
+</span></div></details><a href="#all" class="filter-clear" aria-label="Clear the {{ $kind }} filter">×</a></div>
 {{- end }}
 </div>
+</search>
 </div></div>
 {{ partial "posts-card.html" . }}
-{{- /* the site's one script (scripts/postbuild.sh fails a script on any other page, apart from a post's JSON-LD,
-  which is data), inlined and minified. It loads /index.json, home's JSON output, so the build fails without it
-  there */}}
+{{- /* the site's one script, inlined and minified (scripts/postbuild.py fails a script on any other page, apart from a
+  post's JSON-LD, which is data). It loads /index.json, home's JSON output, so the build fails without it there */}}
 {{- $json := .OutputFormats.Get "json" }}
 {{- if or (not $json) (ne $json.RelPermalink "/index.json") }}{{ errorf "search loads /index.json: keep json in outputs.home, and at /index.json" }}{{ end }}
 {{- with resources.Get "js/search.js" | js.Build (dict "minify" true) }}
