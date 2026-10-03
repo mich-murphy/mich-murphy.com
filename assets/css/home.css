@@ -76,12 +76,17 @@
     }
   }
 
+  /* a phone or tablet with only a touchscreen has no key to press, so it shows no hint */
   .search-key {
     flex: none;
     padding: 0 5px;
     border: 1px solid var(--edge);
     color: var(--muted);
     font: var(--text-xs) / 1.4 var(--font-read);
+
+    @media (hover: none) and (pointer: coarse) {
+      display: none;
+    }
   }
 
   /* the count is the machine's */
