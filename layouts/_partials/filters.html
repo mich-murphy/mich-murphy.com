@@ -7,7 +7,7 @@
 {{- $out := slice }}
 {{- range site.Taxonomies.tags.ByCount }}
   {{- $slug := partial "tag-slug.html" .Page }}
-  {{- if or (in (slice "all" "main") $slug) (findRE `^y\d{4}$` $slug 1) }}{{ errorf "the tag %q would clash with the id %q on home: rename it" .Page.Title $slug }}{{ end }}
+  {{- if or (in (slice "all" "main" "search-label") $slug) (findRE `^y\d{4}$` $slug 1) }}{{ errorf "the tag %q would clash with the id %q on home: rename it" .Page.Title $slug }}{{ end }}
   {{- $out = $out | append (dict "k" "tag" "v" $slug "id" $slug "n" .Count) }}
 {{- end }}
 {{- range (partialCached "posts.html" .).GroupByDate "2006" }}
