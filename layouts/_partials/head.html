@@ -47,10 +47,10 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 {{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
 {{- $names := slice "main" }}
-{{- /* card.css styles the Posts card, on home and on 404, which shows it under its box */}}
-{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "card" }}{{ end }}
-{{- /* index.css styles home's intro and Search, and filters.css filters the card without a script */}}
-{{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
+{{- /* posts-card.css styles the Posts card, on home and on 404, which shows it under its box */}}
+{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "posts-card" }}{{ end }}
+{{- /* home.css styles home's intro and Search, and home-filters.css filters the card without a script */}}
+{{- if .IsHome }}{{ $names = $names | append "home" "home-filters" }}{{ end }}
 {{- /* prose.css styles the page head, the prose and keyed lists, on posts and on the other pages (About, Feeds).
   post.css adds a post's code windows, colophon, Older/Newer and Contents, and pages.css the other pages' keyed
   boxes, Projects card and Feeds I read card */}}
@@ -58,8 +58,8 @@
 {{- $files := slice }}
 {{- range $names }}
   {{- $f := resources.Get (printf "css/%s.css" .) }}
-  {{- /* filters.css is a template, with a rule for each tag and year */}}
-  {{- if eq . "filters" }}{{ $f = $f | resources.ExecuteAsTemplate "css/filters-built.css" $ }}{{ end }}
+  {{- /* home-filters.css is a template, with a rule for each tag and year */}}
+  {{- if eq . "home-filters" }}{{ $f = $f | resources.ExecuteAsTemplate "css/home-filters-built.css" $ }}{{ end }}
   {{- $files = $files | append $f }}
 {{- end }}
 {{- $css := $files | resources.Concat (printf "css/inline-%s.css" (delimit $names "-")) | minify }}

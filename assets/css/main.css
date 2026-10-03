@@ -1,166 +1,620 @@
-/* Monaspace 1.400 by GitHub Next and Lettermatic, SIL Open Font License 1.1 (static/fonts/LICENSE-Monaspace.txt), cut
-   by scripts/fonts.py to Latin, general punctuation and box drawing. Monaspace reserves its names and a subset may not
-   use them, so each face is named after its element's symbol. The faces share one grid, so each takes one role:
-   - Argon ("MM Ar", --read), a humanist sans: prose, UI and code
-   - Xenon ("MM Xe", --head), a slab serif: headings
-   - Radon ("MM Rn", --hand), a handwriting face: the author's comments in code
-   - Krypton ("MM Kr", --mach), a mechanical sans: the machine talking, what the build writes, like dates, commits,
-     paths and sizes
-   A browser only downloads a face, or a weight or style of one, that the page uses */
-@font-face{font-family:"MM Ar";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/MMAr-Regular.woff2) format("woff2")}
-@font-face{font-family:"MM Ar";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/MMAr-Bold.woff2) format("woff2")}
-@font-face{font-family:"MM Ar";font-style:italic;font-weight:400;font-display:swap;src:url(/fonts/MMAr-Italic.woff2) format("woff2")}
-@font-face{font-family:"MM Xe";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/MMXe-Regular.woff2) format("woff2")}
-@font-face{font-family:"MM Xe";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/MMXe-Bold.woff2) format("woff2")}
-@font-face{font-family:"MM Rn";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/MMRn-Regular.woff2) format("woff2")}
-@font-face{font-family:"MM Kr";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/MMKr-Regular.woff2) format("woff2")}
+/*
+ * Every page's styles: the fonts, the palette and type scale, element defaults, the header and footer, the framed
+ * boxes, and print. head.html inlines this file first, then only the files for the page's type, in this order:
+ * posts-card.css, home.css and home-filters.css; or prose.css, then post.css or pages.css.
+ *
+ * Cascade layers decide which rules win, so no selector has to be made more specific just to override another file:
+ * base < layout < components < utilities < print.
+ */
+@layer base, layout, components, utilities, print;
 
-/* the tuned palette, dark first. Light follows prefers-color-scheme: a toggle would need a script. Print always takes
-   light, whatever the scheme, and the print block at the end turns its grounds white */
-:root{color-scheme:dark;
-  --bg:#0f1214;--fg:#e6e2d6;--body:color-mix(in srgb,var(--fg) 85%,var(--bg));--mute:#a39f93;--line:#272c30;--edge:#3e454a;--code:#0a0d0f;
-  --thumb:color-mix(in srgb,var(--mute) 35%,var(--edge));--dim:color-mix(in srgb,var(--mute) 55%,var(--edge));--acc:#e7a15a;--on:#0f1214;--acct:#e7a15a;--focus:#e7a15a;--com:#75818b;--str:#e7a15a;
-  --fb:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --read:"MM Ar",var(--fb);--head:"MM Xe",var(--fb);--hand:"MM Rn",var(--fb);--mach:"MM Kr",var(--fb)}
-/* acc is only 1.98:1 on the light ground, so accent text and the focus ring get their own values. The scrollbar
-   thumb is the least mix of mute into edge that shows 3:1 on the code ground: about 3.3:1 in dark, 3.1:1 in light.
-   dim, for the trace's ticks, mixes in more mute: about 4.1:1 on the ground in dark and 3.3:1 in light, with fg at
-   3.5:1 and 5.2:1 on it, so the current tick stands out */
-@media print,(prefers-color-scheme:light){
-  :root{color-scheme:light;
-    --bg:#f5f4f0;--fg:#0f1214;--body:color-mix(in srgb,var(--fg) 74%,var(--bg));--mute:#67655d;--line:#dddbd3;--edge:#b3b0a6;--code:#ebe9e3;
-    --thumb:color-mix(in srgb,var(--mute) 60%,var(--edge));--acct:#9f5510;--focus:#0f1214;--com:#5f6a72;--str:#9f5510}
+/*
+ * Monaspace 1.400 by GitHub Next and Lettermatic, SIL Open Font License 1.1 (static/fonts/LICENSE-Monaspace.txt),
+ * subset by scripts/fonts.py. Monaspace reserves its names and a subset may not use them, so each face is named after
+ * its element's symbol. The faces share one grid, and each has one role:
+ * - Argon ("MM Ar", --font-read), a humanist sans: prose, UI and code
+ * - Xenon ("MM Xe", --font-head), a slab serif: headings
+ * - Radon ("MM Rn", --font-hand), a handwriting face: the author's comments in code
+ * - Krypton ("MM Kr", --font-machine), a mechanical sans: what the build writes, like dates, commits, paths and sizes
+ * A browser only downloads a face, weight or style that the page uses.
+ */
+@font-face {
+  font-family: "MM Ar";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/MMAr-Regular.woff2") format("woff2");
 }
 
-*,::before,::after{box-sizing:border-box}
-/* the only sizes are 13.5, 15, 17, 21.5 and 27px. The body is 17px on every screen: Monaspace's x-height is 0.5em,
-   so that's an 8.5px x-height, about 0.18° at the reference pixel's viewing distance, near the 0.2° under which
-   reading slows (Legge and Bigelow, 2011). font-synthesis:style so the browser never fakes a bold */
-body{margin:0;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:17px/1.7 var(--read);font-synthesis:style}
-::selection{background:var(--acc);color:var(--on)}
-a{color:inherit;text-decoration:underline 1px;text-underline-offset:3px}
-a:hover{background:var(--fg);color:var(--bg);text-decoration:none}
-/* a commit hash (the footer's build, the colophon's commit) is accent text. a:hover is more specific, so it still
-   inverts */
-.hash{color:var(--acct)}
-:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-h1,h2,h3{font-weight:400;text-wrap:balance}
-h1{font-size:27px;line-height:1.25}
-h2{font-size:21.5px;line-height:1.35}
-h3{font-size:1em;line-height:1.4}
-h3,strong,b{font-weight:700}
-p{margin:0 0 1.15em}
-code{font-family:var(--read);font-size:.9em;color:var(--fg);background:var(--code);padding:.08em .35em;overflow-wrap:anywhere}
-pre{font-family:var(--read);font-size:15px;line-height:1.6;overflow-x:auto}
-pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
-
-/* framed boxes: a label cut into the border, and the dither, an offset shadow in fg through our own 4x6 tile.
-   One dither per page */
-.dithered{position:relative}
-.dithered::before{content:"";position:absolute;inset:8px -8px -8px 8px;background:var(--fg);opacity:.5;pointer-events:none;
-  --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E") 0 0/4px 6px repeat;
-  -webkit-mask:var(--m);mask:var(--m)}
-.dithered>*{position:relative}
-.frame{border:2px solid var(--fg);background:var(--bg)}
-/* a page's own boxes (home, 404, About, Feeds) are labelled with an h2, so a screen reader's list of headings finds
-   them; a box inside a post (code windows, callouts, the colophon) and Contents keep a span */
-.legend{position:absolute;top:-.8em;left:12px;z-index:1;margin:0;padding:0 6px;background:var(--bg);font-size:13.5px;line-height:1.5}
-/* a callout is a plain frame with its label cut into the border: an alert in a post (render-blockquote.html), or
-   404's box */
-.callout{position:relative;margin-block:2em 2.2em}
-.callout .frame{padding:18px 16px 2px}
-/* a long label wraps inside the frame. It floats, drawn on the border by its relative offsets, and the text clears
-   it, so a wrapped label pushes the text down by its extra lines. Only the callout's own label: a code window's label
-   inside it stays on the window's border */
-.callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
-.callout .frame>:first-child{clear:left}
-
-.visually-hidden,.skip-link:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.skip-link{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:13.5px}
-
-/* the ruled header and footer run the full width; their contents and main sit on the 820px wrap, and every page's
-   content fills it, so a page lines up with the header and footer */
-.header-bar,main,.footer-bar{max-width:820px;margin-inline:auto;padding-inline:24px}
-main{flex:1 0 auto;width:100%;padding-block:36px 56px}
-/* the skip link focuses main (tabindex=-1), which needs no ring */
-main:focus{outline:none}
-.site-header{border-bottom:2px solid var(--fg)}
-.header-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;padding-block:12px;font-size:13.5px}
-.header-bar a{text-decoration:none}
-/* only the name is set in capitals; nav items are paths, so they read as written */
-.brand{display:inline-flex;align-items:center;gap:10px;min-width:0;overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:.08em}
-.brand:hover{background:none;color:inherit}
-.mark{display:block;flex:none;width:24px;height:24px;fill:currentColor}
-.mark .knockout{fill:var(--bg)}
-.header-bar nav{display:flex;flex-wrap:wrap;gap:4px 3ch}
-/* the current section takes the Contents box's 7px square, outside the flow so nothing shifts; inversion is for hover */
-.header-bar nav a{position:relative}
-.header-bar nav a[aria-current]::before{content:"";position:absolute;top:50%;left:calc(-7px - .8ch);width:7px;height:7px;transform:translateY(-50%);background:var(--fg)}
-.header-bar nav a:hover{padding:2px 5px;margin:-2px -5px}
-/* that padding moves the link's box 5px left, so the square moves back by as much */
-.header-bar nav a[aria-current]:hover::before{left:calc(-2px - .8ch)}
-/* the page's address (header.html) is for print, where it takes the nav's place */
-.print-url{display:none}
-/* bigger hit areas without moving anything */
-.footer-bar a{position:relative}
-.header-bar nav a::after,.footer-bar a::after{content:"";position:absolute;inset:-12px -6px}
-.site-footer{border-top:2px solid var(--fg)}
-.footer-bar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:14px 28px;color:var(--mute);font-family:var(--mach);font-size:13.5px}
-
-@media (max-width:600px){
-  .header-bar,main,.footer-bar{padding-inline:16px}
+@font-face {
+  font-family: "MM Ar";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/MMAr-Bold.woff2") format("woff2");
 }
-/* forced colours drop backgrounds, and the current marker is one. The mark's M is knocked out of the system ground */
-@media (forced-colors:active){
-  .header-bar nav a[aria-current]::before{background:CanvasText;forced-color-adjust:none}
-  .header-bar nav a[aria-current]{text-decoration:underline}
-  .mark .knockout{fill:Canvas}
-}
-/* reduced motion: nothing here animates. Components scope their own rules: the Contents box's fade is off (post.css) */
 
-/* print: the light palette on white, with body text in full fg. No nav, Contents (nor the room kept for it under the
-   footer), Older/Newer, Search, dither or build line; the header shows the page's address where the nav was. Code
-   wraps, and title bars are outlined rather than filled, since printers drop backgrounds; for the same reason labels
-   and bullets are made to print theirs, or a frame's border would run through its label and the squares would go.
-   Prose and Projects card links print their address, unless their text already is it (render-link.html). Headings stay
-   with what follows them, a box that fits on a page isn't split, and the footer asks not to start a page. A label sits
-   across its frame's top border, above the box, where a page break just above the box would cut it in two or push it
-   under the border, so a labelled box takes a clear 10px border on top to hold it; a code window moves its own frame
-   onto its code to make room. main.css comes first on every page, so a rule that overrides another file's is qualified
-   by its element to outrank it */
-@media print{
-  :root{--bg:#fff;--code:#fff;--body:var(--fg)}
-  /* a plain block: the screen's flex column, which holds the footer at the foot of the window, breaks badly across
-     pages. Firefox prints a page with only the header, or with nothing, drops main's bottom padding and can leave the
-     footer's rule a page before its text */
-  body{display:block;min-height:0}
-  /* the 28px over the footer, as under a post's Older/Newer, is the footer's margin rather than main's padding. The
-     screen's 56px pushed /feeds/'s footer to a page of its own, and Firefox won't break in padding: when main's content
-     fits but its padding runs over, it moves all of main to the next page and leaves one with only the header. A margin
-     at a break is just dropped. The footer asks not to start a page; Chrome then takes the last row or lines with it
-     when it can, and Firefox ignores it */
-  main,body main:has(.post-nav){padding-bottom:0}
-  .site-footer{margin-top:28px;break-before:avoid}
-  .header-bar nav,nav.contents,nav.post-nav,.search-frame,.footer-bar>span+span,.dithered::before{display:none}
-  body:has(nav.contents){padding-bottom:0}
-  .print-url{display:inline;color:var(--mute)}
-  .legend,.prose ul>li::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  figure.code-window figcaption{background:var(--bg);color:var(--fg);break-after:avoid}
-  figure.code-window pre.code{white-space:pre-wrap;background:none;orphans:4;widows:4}
-  .code-window code{overflow-wrap:anywhere}
-  .prose a:is([href^="http"],[href^="/"]):not(.no-print-url)::after,.projects a[href^="http"]::after{content:" <" attr(href) ">";
-    color:var(--mute);font-size:13.5px;overflow-wrap:anywhere}
-  /* an internal link's href is a path, so the site's host (baseURL in hugo.toml) goes in front, as in the header's
-     address */
-  .prose a[href^="/"]:not(.no-print-url)::after{content:" <mich-murphy.com" attr(href) ">"}
-  .prose :is(h2,h3){break-after:avoid}
-  /* a code window taller than a page (class long, render-codeblock.html) would be pushed to a new page and split there
-     anyway, so it splits where it falls, keeping its title bar with its code and at least 4 lines on each side
-     (orphans and widows, which Firefox ignores) */
-  .code-window:not(.long),.callout,.colophon,.key-values{break-inside:avoid}
-  :has(>.legend+.frame){border-top:10px solid transparent}
-  .code-window.with-legend{border-width:10px 0 0;border-color:transparent}
-  .code-window.with-legend pre.code{border:2px solid var(--fg)}
-  /* the Posts card's clip (card.css) hides, in Firefox, a row that falls past a page break */
-  div.posts-card ol{clip-path:none}
+@font-face {
+  font-family: "MM Ar";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/MMAr-Italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "MM Xe";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/MMXe-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "MM Xe";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/MMXe-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "MM Rn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/MMRn-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "MM Kr";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/MMKr-Regular.woff2") format("woff2");
+}
+
+@layer base {
+  /*
+   * The palette, as light-dark(light, dark). The page follows the reader's colour scheme (a toggle would need a
+   * script), and print always takes light.
+   * - accent is only 1.98:1 on the light ground, so accent text and the focus ring have their own values.
+   * - body text is fg mixed into the ground, softer than headings.
+   * - scrollbar-thumb is the least mix of muted into edge that shows 3:1 on the code ground (3.3:1 dark, 3.1:1 light).
+   * - tick, for the Contents trace, mixes in more muted: 4.1:1 on the ground in dark and 3.3:1 in light, with fg on
+   *   it at 3.5:1 and 5.2:1, so the current tick stands out.
+   */
+  :root {
+    color-scheme: light dark;
+    --bg: light-dark(#f5f4f0, #0f1214);
+    --fg: light-dark(#0f1214, #e6e2d6);
+    --body: light-dark(
+      color-mix(in srgb, var(--fg) 74%, var(--bg)),
+      color-mix(in srgb, var(--fg) 85%, var(--bg))
+    );
+    --muted: light-dark(#67655d, #a39f93);
+    --edge: light-dark(#b3b0a6, #3e454a);
+    --code-bg: light-dark(#ebe9e3, #0a0d0f);
+    --scrollbar-thumb: light-dark(
+      color-mix(in srgb, var(--muted) 60%, var(--edge)),
+      color-mix(in srgb, var(--muted) 35%, var(--edge))
+    );
+    --tick: color-mix(in srgb, var(--muted) 55%, var(--edge));
+    --accent: #e7a15a;
+    --on-accent: #0f1214;
+    --accent-text: light-dark(#9f5510, #e7a15a);
+    --focus: light-dark(#0f1214, #e7a15a);
+    --comment: light-dark(#5f6a72, #75818b);
+    --string: light-dark(#9f5510, #e7a15a);
+
+    /* the only type sizes: 13.5, 15, 17, 21.5 and 27px at the browser's default 16px, and in proportion to it */
+    --text-xs: 0.84375rem;
+    --text-sm: 0.9375rem;
+    --text-base: 1.0625rem;
+    --text-lg: 1.34375rem;
+    --text-xl: 1.6875rem;
+
+    --font-fallback: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --font-read: "MM Ar", var(--font-fallback);
+    --font-head: "MM Xe", var(--font-fallback);
+    --font-hand: "MM Rn", var(--font-fallback);
+    --font-machine: "MM Kr", var(--font-fallback);
+
+    /* the column the header, main and footer share, and its gutter */
+    --wrap: 820px;
+    --gutter: 24px;
+
+    @media (width <= 37.5em) {
+      --gutter: 16px;
+    }
+  }
+
+  @media print {
+    :root {
+      color-scheme: light;
+    }
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  /*
+   * The body is 17px on every screen. Monaspace's x-height is 0.5em, so that's an 8.5px x-height, about 0.18° at the
+   * reference pixel's viewing distance, near the 0.2° under which reading slows (Legge and Bigelow, 2011). The browser
+   * may fake an italic but never a bold.
+   */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: var(--text-base) / 1.7 var(--font-read);
+    font-synthesis: style;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline 1px;
+    text-underline-offset: 3px;
+
+    &:hover {
+      background: var(--fg);
+      color: var(--bg);
+      text-decoration: none;
+    }
+  }
+
+  /* a commit hash (the footer's build, the colophon's commit) is accent text; a:hover outranks it, so it still inverts */
+  .hash {
+    color: var(--accent-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--text-xl);
+    line-height: 1.25;
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+    line-height: 1.35;
+  }
+
+  h3 {
+    font-size: 1em;
+    line-height: 1.4;
+  }
+
+  h3,
+  strong,
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 1.15em;
+  }
+
+  code {
+    padding: 0.08em 0.35em;
+    background: var(--code-bg);
+    color: var(--fg);
+    font-family: var(--font-read);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  pre {
+    overflow-x: auto;
+    font-family: var(--font-read);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+
+    & code {
+      padding: 0;
+      background: none;
+      font-size: inherit;
+      overflow-wrap: normal;
+    }
+  }
+}
+
+/* the ruled header and footer run the full width; their contents and main share one column, so every page lines up */
+@layer layout {
+  .skip-link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    padding: 4px 8px;
+    border: 2px solid var(--fg);
+    background: var(--bg);
+    font-size: var(--text-xs);
+
+    /* its ground outranks a:hover's, so it inverts here like any link */
+    &:hover {
+      background: var(--fg);
+    }
+  }
+
+  .header-bar,
+  main,
+  .footer-bar {
+    max-width: var(--wrap);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  main {
+    flex: 1 0 auto;
+    width: 100%;
+    padding-block: 36px 56px;
+
+    /* the skip link focuses main (tabindex=-1), which needs no ring */
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .site-header {
+    border-bottom: 2px solid var(--fg);
+  }
+
+  .header-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 24px;
+    padding-block: 12px;
+    font-size: var(--text-xs);
+
+    & a {
+      text-decoration: none;
+    }
+
+    & nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 3ch;
+    }
+
+    & nav a {
+      position: relative;
+
+      &:hover {
+        margin: -2px -5px;
+        padding: 2px 5px;
+      }
+
+      /* the current section is marked with the 7px square Contents uses, outside the flow so nothing shifts */
+      &[aria-current]::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: calc(-7px - 0.8ch);
+        width: 7px;
+        height: 7px;
+        transform: translateY(-50%);
+        background: var(--fg);
+      }
+
+      /* hover's padding moves the link's box 5px left, so the square moves back by as much */
+      &[aria-current]:hover::before {
+        left: calc(-2px - 0.8ch);
+      }
+    }
+  }
+
+  /* only the name is in capitals; nav items are paths, so they read as written */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    &:hover {
+      background: none;
+      color: inherit;
+    }
+  }
+
+  .mark {
+    display: block;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+
+    & .knockout {
+      fill: var(--bg);
+    }
+  }
+
+  /* the page's address (header.html), shown only in print, where it takes the nav's place */
+  .print-url {
+    display: none;
+  }
+
+  .site-footer {
+    border-top: 2px solid var(--fg);
+  }
+
+  .footer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    padding-block: 14px 28px;
+    color: var(--muted);
+    font-family: var(--font-machine);
+    font-size: var(--text-xs);
+
+    & a {
+      position: relative;
+    }
+  }
+
+  /* bigger hit areas without moving anything */
+  .header-bar nav a::after,
+  .footer-bar a::after {
+    content: "";
+    position: absolute;
+    inset: -12px -6px;
+  }
+
+  /* forced colours drop backgrounds, and the current marker is one. The mark's M is knocked out of the system ground */
+  @media (forced-colors: active) {
+    .header-bar nav a[aria-current] {
+      text-decoration: underline;
+
+      &::before {
+        background: CanvasText;
+        forced-color-adjust: none;
+      }
+    }
+
+    .mark .knockout {
+      fill: Canvas;
+    }
+  }
+}
+
+@layer components {
+  /* a framed box's dither: an offset shadow in fg through our own 4x6 tile. One per page */
+  .dithered {
+    position: relative;
+
+    &::before {
+      --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E");
+
+      content: "";
+      position: absolute;
+      inset: 8px -8px -8px 8px;
+      background: var(--fg);
+      opacity: 0.5;
+      pointer-events: none;
+      mask: var(--tile) 0 0 / 4px 6px repeat;
+    }
+
+    & > * {
+      position: relative;
+    }
+  }
+
+  .frame {
+    border: 2px solid var(--fg);
+    background: var(--bg);
+  }
+
+  /*
+   * A box's label, cut into its top border. A page's own boxes (home, 404, About, Feeds) are labelled with an h2, so
+   * a screen reader's list of headings finds them; a box inside a post (code windows, callouts, the colophon) and
+   * Contents keep a span.
+   */
+  .legend {
+    position: absolute;
+    top: -0.8em;
+    left: 12px;
+    z-index: 1;
+    margin: 0;
+    padding: 0 6px;
+    background: var(--bg);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+  }
+
+  /* a callout is a plain frame with a label: an alert in a post (render-blockquote.html), or 404's box */
+  .callout {
+    position: relative;
+    margin-block: 2em 2.2em;
+
+    & .frame {
+      padding: 18px 16px 2px;
+    }
+
+    /*
+     * A long label wraps inside the frame: it floats, drawn on the border by its relative offset, and the text clears
+     * it. Only the callout's own label: a code window's label inside it stays on the window's border.
+     */
+    & > .legend {
+      position: relative;
+      float: left;
+      max-width: calc(100% - 24px);
+      margin-bottom: 2px;
+      overflow-wrap: anywhere;
+    }
+
+    & .frame > :first-child {
+      clear: left;
+    }
+  }
+}
+
+@layer utilities {
+  .visually-hidden,
+  .skip-link:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/*
+ * Print: the light palette on white, with body text in full fg. No nav, Contents (nor the room kept for it under the
+ * footer), Older/Newer, Search, dither or build line; the header shows the page's address where the nav was.
+ * - Printers drop backgrounds, so code wraps, title bars are outlined rather than filled, and labels and bullets are
+ *   made to print theirs, or a frame's border would run through its label and the squares would go.
+ * - Prose and Projects links print their address, unless their text already is it (render-link.html).
+ * - Headings stay with what follows them, a box that fits on a page isn't split, and the footer asks not to start a
+ *   page.
+ * - A label sits across its frame's top border, where a page break just above the box would cut it in two, so a
+ *   labelled box takes a clear 10px border on top to hold it; a code window moves its own frame onto its code.
+ */
+@layer print {
+  @media print {
+    :root {
+      --bg: #fff;
+      --code-bg: #fff;
+      --body: var(--fg);
+    }
+
+    /*
+     * A plain block: the screen's flex column, which holds the footer at the foot of the window, breaks badly across
+     * pages. Firefox prints a page with only the header, or nothing, and can leave the footer's rule a page before
+     * its text.
+     */
+    body {
+      display: block;
+      min-height: 0;
+    }
+
+    /*
+     * The 28px over the footer is the footer's margin rather than main's padding: Firefox won't break inside padding,
+     * so when main's content fits but its padding doesn't, it moves all of main to the next page. A margin at a break
+     * is just dropped. Chrome then takes the last lines with the footer when it can; Firefox ignores break-before.
+     */
+    main {
+      padding-bottom: 0;
+    }
+
+    .site-footer {
+      margin-top: 28px;
+      break-before: avoid;
+    }
+
+    .header-bar nav,
+    .contents,
+    .post-nav,
+    .search-frame,
+    .footer-bar > span + span,
+    .dithered::before {
+      display: none;
+    }
+
+    body:has(.contents) {
+      padding-bottom: 0;
+    }
+
+    .print-url {
+      display: inline;
+      color: var(--muted);
+    }
+
+    .legend,
+    .prose ul > li::before {
+      print-color-adjust: exact;
+    }
+
+    .code-window figcaption {
+      background: var(--bg);
+      color: var(--fg);
+      break-after: avoid;
+    }
+
+    .code-window pre.code {
+      white-space: pre-wrap;
+      background: none;
+      orphans: 4;
+      widows: 4;
+    }
+
+    .code-window code {
+      overflow-wrap: anywhere;
+    }
+
+    .prose a:is([href^="http"], [href^="/"]):not(.no-print-url)::after,
+    .projects a[href^="http"]::after {
+      content: " <" attr(href) ">";
+      color: var(--muted);
+      font-size: var(--text-xs);
+      overflow-wrap: anywhere;
+    }
+
+    /* an internal link's href is a path, so the site's host (baseURL in hugo.toml) goes in front, as in the header */
+    .prose a[href^="/"]:not(.no-print-url)::after {
+      content: " <mich-murphy.com" attr(href) ">";
+    }
+
+    .prose :is(h2, h3) {
+      break-after: avoid;
+    }
+
+    /*
+     * A code window taller than a page (class long, render-codeblock.html) would be pushed to a new page and split
+     * there anyway, so it splits where it falls, keeping its title bar with its code and at least 4 lines on each side
+     * (orphans and widows, which Firefox ignores).
+     */
+    .code-window:not(.long),
+    .callout,
+    .colophon,
+    .key-values {
+      break-inside: avoid;
+    }
+
+    :has(> .legend + .frame) {
+      border-top: 10px solid transparent;
+    }
+
+    .code-window.with-legend {
+      border-width: 10px 0 0;
+      border-color: transparent;
+
+      & pre.code {
+        border: 2px solid var(--fg);
+      }
+    }
+
+    /* the Posts card's clip (posts-card.css) hides, in Firefox, a row that falls past a page break */
+    .posts-card ol {
+      clip-path: none;
+    }
+  }
 }

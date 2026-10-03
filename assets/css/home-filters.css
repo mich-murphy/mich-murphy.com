@@ -1,0 +1,63 @@
+{{- /*
+  Home without the script: the search box stays hidden, and the menus' links filter the list through :target, one
+  filter at a time. Each goes to a hidden target in the Posts card (#nixos with class tag-target, #y2023 with class
+  year-target, or #all). Every rule is gated on the box being hidden, so none applies once the script shows it, even
+  on a page loaded at /#nixos. This file is a Go template: head.html runs it to write the rules for each tag and year
+  that filters.html lists.
+*/ -}}
+{{- $on := "body:has(search[hidden])" }}
+{{- $inverted := "{background:var(--fg);color:var(--bg);border-color:var(--fg);--muted:var(--bg)}" }}
+@layer components {
+  /*
+   * Nothing closes a menu after a pick, so its open list would stay over the posts it just filtered. It joins the
+   * flow instead, on a line of its own under both menus, and the posts move down; a closed one takes no line, or its
+   * row gap would pad the frame. On phones the menus wrap rather than stack.
+   */
+  {{ $on }} .filters {
+    display: flex;
+  }
+
+  {{ $on }} :is(.filter, .filter-menu) {
+    display: contents;
+  }
+
+  {{ $on }} .filter-menu::details-content {
+    flex: 1 1 100%;
+    order: 1;
+  }
+
+  {{ $on }} .filter-menu:not([open])::details-content {
+    display: none;
+  }
+
+  {{ $on }} .filter-popover {
+    position: static;
+  }
+
+  {{ $on }} .filter-clear {
+    margin-left: -2.5ch;
+  }
+
+  /*
+   * The kind that's the target shows its value and its ×, and its menu and its entry are inverted. all is inverted
+   * while its kind isn't the target, and the count reads 11 of 17. A target is found by its id as a string, since a
+   * tag like node.js, c++ or 2fa isn't an identifier, and its entry by data-filter, since the href is
+   * percent-encoded. Each target has rules of its own, so a browser that rejects one drops only that target's.
+   */
+  {{ $on }}:has(.tag-target:target) .filter-tag .filter-clear,
+  {{ $on }}:has(.year-target:target) .filter-year .filter-clear {
+    display: block;
+  }
+
+  {{ $on }}:has(.tag-target:target) .filter-tag summary,
+  {{ $on }}:has(.year-target:target) .filter-year summary,
+  {{ $on }}:not(:has(.tag-target:target)) .filter-tag .all,
+  {{ $on }}:not(:has(.year-target:target)) .filter-year .all {{ $inverted }}
+  {{- range partial "filters.html" . }}
+    {{- $target := printf "%s:has([id=\"%s\"]:target)" $on .id }}
+  {{ $target }} .post-row:not([data-{{ .k }}~="{{ .v }}"]){display:none}
+  {{ $target }} .posts-count::before{content:"{{ .n }} of "}
+  {{ $target }} .filter-{{ .k }} b::before{content:"{{ .v }}"}
+  {{ $target }} .filter-popover a[data-filter="{{ .id }}"]{{ $inverted }}
+  {{- end }}
+}

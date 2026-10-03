@@ -2,7 +2,7 @@
   first. Each is a dict: k, the kind (tag or year, as in the rows' data-tag and data-year); v, the value (a tag's slug, decoded
   from its URL as the Posts card's data-tag has it, or the year); id, the fragment that filters by it (the slug, or the
   year after a y, so a year can't take a tag's id); and n, how many posts it has. home.html lists them in the menus,
-  posts-card.html writes a hidden target for each, and filters.css writes the rules that filter without a script. A
+  posts-card.html writes a hidden target for each, and home-filters.css writes the rules that filter without a script. A
   tag can't take an id home already has */}}
 {{- $out := slice }}
 {{- range site.Taxonomies.tags.ByCount }}

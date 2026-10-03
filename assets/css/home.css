@@ -1,0 +1,342 @@
+/*
+ * Home only: the intro, the Search frame with its filter menus, and search's matches in the Posts card. The card
+ * itself is posts-card.css, which 404 shares, and filtering without the script is home-filters.css.
+ */
+@layer components {
+  .intro {
+    max-width: 64ch;
+  }
+
+  /*
+   * Search: a plain frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the key
+   * that focuses it, which gives way to the 3/17 count while there's a query. The box needs the script, so it ships
+   * hidden. It's a flex row, which would beat the hidden attribute, so hidden takes a rule of its own, as do the rows
+   * the script hides.
+   */
+  .search-frame {
+    position: relative;
+    margin-top: 30px;
+
+    & .frame {
+      padding: 12px 18px 2px;
+
+      @media (width <= 37.5em) {
+        padding-inline: 12px;
+      }
+    }
+
+    & + .posts-card {
+      margin-top: 34px;
+    }
+  }
+
+  search[hidden],
+  .post-row[hidden] {
+    display: none;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2ch;
+    padding: 8px 0 10px;
+    border-bottom: 1px dotted var(--edge);
+
+    & .search-prompt {
+      flex: none;
+      color: var(--muted);
+    }
+
+    /* the key hint shows only while the box is idle: no focus, no words, no count */
+    &:is(:focus-within, :has(.search-input:not(:placeholder-shown), .search-count:not(:empty))) .search-key {
+      display: none;
+    }
+  }
+
+  /* the box takes the body's 17px, over the 16px under which iOS zooms into a field */
+  .search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    appearance: none;
+    outline-offset: 4px;
+
+    &::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  .search-key {
+    flex: none;
+    padding: 0 5px;
+    border: 1px solid var(--edge);
+    color: var(--muted);
+    font: var(--text-xs) / 1.4 var(--font-read);
+  }
+
+  /* the count is the machine's */
+  .search-count {
+    flex: none;
+    color: var(--muted);
+    font-family: var(--font-machine);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /*
+   * Under a dotted rule, the filters: two menus, "tag: all" and "year: all". Each is a details, named so only one is
+   * open at a time, whose list opens under the row, over the posts. Each choice has its count, how many posts the list
+   * would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
+   * clears it, and so is its choice, or all while it isn't set. home-filters.css does the same without the script.
+   */
+  .filters {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 2.5ch;
+    margin: 9px 0 11px;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+
+    & .key {
+      color: var(--muted);
+    }
+
+    /* phones: the menus stack beside the filter key */
+    @media (width <= 37.5em) {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      justify-items: start;
+      column-gap: 2ch;
+    }
+  }
+
+  /* a value too long for its row, like three tags typed at 390px, ellipsises and keeps the × in view */
+  .filter {
+    display: flex;
+    max-width: 100%;
+
+    @media (width <= 37.5em) {
+      grid-column: 2;
+    }
+  }
+
+  .filter-menu {
+    min-width: 0;
+
+    & > summary {
+      display: flex;
+      align-items: baseline;
+      gap: 1ch;
+      padding: 0 1ch;
+      border: 1px solid var(--edge);
+      list-style: none;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      /* a 7x4 triangle, which flips while the menu is open */
+      &::after {
+        content: "";
+        align-self: center;
+        width: 7px;
+        height: 4px;
+        background: currentColor;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+      }
+
+      &:hover {
+        border-color: var(--fg);
+      }
+    }
+
+    &[open] > summary {
+      border-color: var(--fg);
+
+      &::after {
+        transform: scaleY(-1);
+      }
+    }
+
+    & b {
+      overflow: hidden;
+      font-weight: 400;
+      text-overflow: ellipsis;
+
+      &:empty::before {
+        content: "all";
+      }
+    }
+  }
+
+  .filter-clear {
+    display: none;
+    padding: 0 0.9ch;
+    border: 1px solid var(--fg);
+    border-left-color: var(--bg);
+    background: var(--fg);
+    color: var(--bg);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--bg);
+      color: var(--fg);
+    }
+  }
+
+  .filter:has(b:not(:empty)) .filter-clear {
+    display: block;
+  }
+
+  .filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 30;
+    padding: 10px 12px;
+    border: 2px solid var(--fg);
+    background: var(--bg);
+  }
+
+  .filter-choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19ch, 1fr));
+    gap: 2px 2ch;
+  }
+
+  .filter-year .filter-choices {
+    grid-template-columns: repeat(auto-fill, minmax(12ch, 1fr));
+  }
+
+  .filter-tag .filter-choices {
+    @media (width <= 37.5em) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .filter-choice {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.8ch;
+    border: 1px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+
+    & .count {
+      margin-left: 0.8ch;
+      color: var(--muted);
+      font-family: var(--font-machine);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* a name too long for its column, like nixos-anywhere at 375px, ellipsises and keeps its count in view */
+    & > span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      border-color: var(--fg);
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    &[aria-disabled] {
+      border-style: dashed;
+      color: var(--muted);
+      cursor: default;
+
+      &:hover {
+        border-color: var(--edge);
+      }
+    }
+  }
+
+  /* a menu that's set, and the choice that's applied, are inverted */
+  .filter-menu > summary:has(b:not(:empty)),
+  .filter-choice[aria-current] {
+    --muted: var(--bg);
+
+    border-color: var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  /*
+   * A match in the Posts card: its words marked in the title and, when the title lacks one, the line that has it,
+   * linking to its section. An excerpt inverts on hover like any link. When nothing matches, the card says so.
+   */
+  .post-row .excerpt {
+    grid-column: 1 / -1;
+    margin-top: 1px;
+    overflow: hidden;
+    color: var(--body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    & .excerpt-branch {
+      margin-right: 1ch;
+      color: var(--muted);
+    }
+
+    &:hover,
+    &:hover .excerpt-branch {
+      color: var(--bg);
+    }
+  }
+
+  .posts-card {
+    & mark {
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+
+    & .no-match {
+      margin: 0;
+      padding: 12px 0 14px;
+      color: var(--muted);
+    }
+  }
+
+  /* forced colours drop backgrounds, so the menus keep their inversion in system colours, and marks take the system's */
+  @media (forced-colors: active) {
+    .filters {
+      --fg: CanvasText;
+      --bg: Canvas;
+      --muted: GrayText;
+      --edge: GrayText;
+      --focus: Highlight;
+
+      color: var(--fg);
+      forced-color-adjust: none;
+    }
+
+    .posts-card mark {
+      background: Mark;
+      color: MarkText;
+      forced-color-adjust: none;
+    }
+  }
+}

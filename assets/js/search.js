@@ -1,5 +1,5 @@
 // Search on the index, the site's one script: home.html inlines it, minified by js.Build. Without it, the box stays
-// hidden, the frame is labelled Filter, and the menus filter the list through :target (filters.css). With it, the box
+// hidden, the frame is labelled Filter, and the menus filter the list through :target (home-filters.css). With it, the box
 // shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. The line
 // index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, on Esc in the frame, on
 // a filter's fragment typed into the address, or when the page opens at ?q= or #tag. If it doesn't load, the page
@@ -161,9 +161,9 @@ addEventListener("pagehide", () => {
 });
 
 // without the index, the page goes back to working as it does without the script: the box hides, the frame is
-// labelled Filter, and the menus' links go to their fragments, where filters.css filters the list. When the server
+// labelled Filter, and the menus' links go to their fragments, where home-filters.css filters the list. When the server
 // answered badly, the address is cleared of words, and a filter that was set is followed there, so a pick made
-// meanwhile still applies: only one, since filters.css applies one at a time, and the tag wins over the year. When the
+// meanwhile still applies: only one, since home-filters.css applies one at a time, and the tag wins over the year. When the
 // request failed instead, the page may be being left, where following would cancel leaving and clearing would lose
 // what Back returns to, so the address stays as it is, with any update pending for it
 const off = (bad) => {
@@ -307,7 +307,7 @@ addEventListener("keydown", (e) => {
 // a fragment typed into the address, while the box shows
 addEventListener("hashchange", () => box.hidden || (hash() && go()));
 
-// an address with #nixos, #y2023 or ?q= opens with them set, once the index has loaded. Until then, filters.css keeps
+// an address with #nixos, #y2023 or ?q= opens with them set, once the index has loaded. Until then, home-filters.css keeps
 // filtering by the fragment, and the menus' links change it, so it's read again when the box shows
 ol.after(none);
 const q = new URLSearchParams(location.search).get("q");

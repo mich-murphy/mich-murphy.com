@@ -4,9 +4,9 @@
 {{- /* Search: a plain frame above the Posts card. The box needs the script, so it ships hidden and the frame is
   labelled Filter until the script shows the box and renames it Search. Under the box are the tag and year menus.
   Their links go to the hidden targets in the Posts card, so they filter the list through :target without the script
-  (filters.css), and the script takes them over. <b> stays empty: CSS writes all, or the applied value without the
-  script, and the script writes the value. filters.css finds an entry by data-filter, its target's id, since Hugo
-  percent-encodes the href, so café's is #caf%c3%a9. Styles are in index.css */}}
+  (home-filters.css), and the script takes them over. <b> stays empty: CSS writes all, or the applied value without the
+  script, and the script writes the value. home-filters.css finds an entry by data-filter, its target's id, since Hugo
+  percent-encodes the href, so café's is #caf%c3%a9. Styles are in home.css */}}
 <div class="search-frame"><h2 class="legend">Filter</h2><div class="frame">
 <search class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="search-key" title="Press / to search">/</kbd><span class="search-count" aria-hidden="true"></span></search>
 <div class="filters"><span class="key">filter</span>

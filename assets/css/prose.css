@@ -1,46 +1,141 @@
-/* the page head and the prose, on posts (page.html) and the other pages (about.html, feeds.html), and the keyed list
-   the colophon (post.css) and the keyed boxes (pages.css) share. Callouts (render-blockquote.html) are in main.css,
-   since 404 has one too */
-/* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
-   width. A bare head has no meta line */
-.page-head{margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
-.page-head h1{margin:0 0 10px}
-.page-head.bare h1{margin:0}
-.page-head .meta{margin:0;color:var(--mute);font-family:var(--mach);font-size:15px}
+/*
+ * The page head and the prose, on posts (page.html) and the other pages (about.html, feeds.html), and the keyed list
+ * that the colophon (post.css) and the keyed boxes (pages.css) share. Callouts are in main.css, since 404 has one too.
+ */
+@layer components {
+  /* the head: the title, a meta line in muted (a bare head has none) and a 1px rule at the column's width */
+  .page-head {
+    margin: 0 0 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--fg);
 
-/* headings in the headings' face, Xenon, and full fg over body text in the body mix. Home's h1 is only for screen
-   readers (.visually-hidden) and stays in the body's face, which spares home a font it would load for nothing. The ids are there for Contents and search, so a jump
-   to one leaves some room above it */
-.page-head h1,.prose :is(h2,h3){font-family:var(--head)}
-.prose :is(p,li){color:var(--body)}
-.prose h2{margin:2.3em 0 .75em}
-.prose h3{margin:1.9em 0 .6em}
-.prose :is(h2,h3){scroll-margin-top:24px}
+    & h1 {
+      margin: 0 0 10px;
+      font-family: var(--font-head);
+    }
 
-/* ul gets the 7px square used by the nav marker and Contents; ol keeps its numbers, in fg */
-.prose :is(ul,ol){margin:0 0 1.15em}
-.prose ul{padding-left:22px;list-style:none}
-.prose li{position:relative;margin:.2em 0}
-.prose ul>li::before{content:"";position:absolute;left:-22px;top:13px;width:7px;height:7px;background:var(--fg)}
-.prose ol{padding-left:3ch}
-.prose ol>li{padding-left:.6ch}
-.prose ol>li::marker{color:var(--fg)}
+    &.bare h1 {
+      margin: 0;
+    }
 
-/* a quote is set off by a rule */
-.prose blockquote{margin:0 0 1.15em;padding-left:2ch;border-left:2px solid var(--edge)}
+    & .meta {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--font-machine);
+      font-size: var(--text-sm);
+    }
+  }
 
-/* an image (render-image.html) shrinks to fit the column, keeping its shape */
-.prose img{max-width:100%;height:auto}
+  /*
+   * Headings in Xenon and full fg, over body text in the softer body colour. Home's h1 is only for screen readers and
+   * stays in the body's face, which spares home a font it would load for nothing. The ids are for Contents and
+   * search, so a jump to one leaves some room above it.
+   */
+  .prose {
+    & :is(h2, h3) {
+      font-family: var(--font-head);
+      scroll-margin-top: 24px;
+    }
 
-/* a keyed list, in a framed box: keys in mute in a max-content column, values in fg, at 15px in the machine face,
-   since what the colophon, This site and Subscribe list comes from the build. The third column is
-   for the colophon's history; other values span it */
-.key-values .frame,.colophon .frame{padding:20px 18px 14px;font-family:var(--mach);font-size:15px;line-height:1.55}
-.key-values dl,.colophon dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;column-gap:2ch;align-items:baseline;margin:0}
-.key-values dt,.colophon dt{color:var(--mute)}
-.key-values dd,.colophon dd{grid-column:2/-1;min-width:0;margin:0}
+    & h2 {
+      margin: 2.3em 0 0.75em;
+    }
 
-/* forced colours drop backgrounds, and the squares are backgrounds */
-@media (forced-colors:active){
-  .prose ul>li::before{background:CanvasText;forced-color-adjust:none}
+    & h3 {
+      margin: 1.9em 0 0.6em;
+    }
+
+    & :is(p, li) {
+      color: var(--body);
+    }
+
+    /* ul is marked with the 7px square the nav marker and Contents use; ol keeps its numbers, in fg */
+    & :is(ul, ol) {
+      margin: 0 0 1.15em;
+    }
+
+    & ul {
+      padding-left: 22px;
+      list-style: none;
+    }
+
+    & li {
+      position: relative;
+      margin: 0.2em 0;
+    }
+
+    & ul > li::before {
+      content: "";
+      position: absolute;
+      top: calc(13em / 17);
+      left: -22px;
+      width: 7px;
+      height: 7px;
+      background: var(--fg);
+    }
+
+    & ol {
+      padding-left: 3ch;
+    }
+
+    & ol > li {
+      padding-left: 0.6ch;
+
+      &::marker {
+        color: var(--fg);
+      }
+    }
+
+    & blockquote {
+      margin: 0 0 1.15em;
+      padding-left: 2ch;
+      border-left: 2px solid var(--edge);
+    }
+
+    /* an image (render-image.html) shrinks to fit the column, keeping its shape */
+    & img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  /*
+   * A keyed list in a framed box: keys in muted in a max-content column and values in fg, in the machine face, since
+   * what the colophon, This site and Subscribe list comes from the build. The third column is for the colophon's
+   * history; other values span it.
+   */
+  :is(.key-values, .colophon) {
+    & .frame {
+      padding: 20px 18px 14px;
+      font-family: var(--font-machine);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    & dl {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr) auto;
+      column-gap: 2ch;
+      align-items: baseline;
+      margin: 0;
+    }
+
+    & dt {
+      color: var(--muted);
+    }
+
+    & dd {
+      grid-column: 2 / -1;
+      min-width: 0;
+      margin: 0;
+    }
+  }
+
+  /* forced colours drop backgrounds, and the squares are backgrounds */
+  @media (forced-colors: active) {
+    .prose ul > li::before {
+      background: CanvasText;
+      forced-color-adjust: none;
+    }
+  }
 }
