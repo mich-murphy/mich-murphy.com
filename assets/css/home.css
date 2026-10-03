@@ -47,6 +47,20 @@
       color: var(--muted);
     }
 
+    /*
+     * Focused, the box shows it as the frame's own parts do: the dotted rule under it turns solid in the focus colour,
+     * 1px thicker with 1px less padding so nothing moves, and the prompt takes the accent, as a terminal's wakes up.
+     * The input drops its ring for them (below).
+     */
+    &:has(.search-input:focus-visible) {
+      padding-bottom: 9px;
+      border-bottom: 2px solid var(--focus);
+
+      & .search-prompt {
+        color: var(--accent-text);
+      }
+    }
+
     /* the key hint shows only while the box is idle: no focus, no words, no count */
     &:is(:focus-within, :has(.search-input:not(:placeholder-shown), .search-count:not(:empty))) .search-key {
       display: none;
@@ -66,6 +80,13 @@
     appearance: none;
     outline-offset: 4px;
 
+    /* the box's rule shows focus instead; forced colours, which recolour the rule, keep the ring */
+    @media (forced-colors: none) {
+      &:focus-visible {
+        outline: none;
+      }
+    }
+
     &::placeholder {
       color: var(--muted);
       opacity: 1;
@@ -76,12 +97,17 @@
     }
   }
 
+  /* a phone or tablet with only a touchscreen has no key to press, so it shows no hint */
   .search-key {
     flex: none;
     padding: 0 5px;
     border: 1px solid var(--edge);
     color: var(--muted);
     font: var(--text-xs) / 1.4 var(--font-read);
+
+    @media (hover: none) and (pointer: coarse) {
+      display: none;
+    }
   }
 
   /* the count is the machine's */
@@ -206,9 +232,13 @@
     display: block;
   }
 
+  /*
+   * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 11px
+   * margin and the frame's 2px padding), so the two read as one line rather than two a few pixels apart.
+   */
   .filter-popover {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 13px);
     right: 0;
     left: 0;
     z-index: 30;

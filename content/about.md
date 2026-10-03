@@ -3,4 +3,4 @@ title = "About"
 layout = "about"
 +++
 
-Full-time data engineer and part-time GNU/Linux enthusiast. This blog documents the personal projects I work on, which I would otherwise undoubtedly forget.
+I'm a data engineer by day. Outside work I run a small homelab on NixOS and Proxmox, with Nextcloud, Jellyfin and backups to BorgBase, and I write up each piece here as I build it, mostly so I can find it again.

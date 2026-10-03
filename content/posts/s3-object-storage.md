@@ -1,5 +1,5 @@
 +++
-title = "How To Mount S3 Compatible Object Storage in Ubuntu"
+title = "How to Mount S3-Compatible Object Storage on Ubuntu"
 date = 2022-11-29
 summary = "Guide to mounting S3 storage on Ubuntu. I've also written a separate post on how to accomplish the same using NixOS."
 tags = ["ubuntu", "homelab", "s3"]

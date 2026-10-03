@@ -127,6 +127,8 @@
    * script), and print always takes light.
    * - accent is only 1.98:1 on the light ground, so accent text and the focus ring have their own values.
    * - body text is fg mixed into the ground, softer than headings.
+   * - code-chip grounds inline code. In light it's the code ground; in dark the code ground is darker than the page
+   *   and all but vanishes behind a word, so the chip is as much lighter than the page as light's is darker.
    * - scrollbar-thumb is the least mix of muted into edge that shows 3:1 on the code ground (3.3:1 dark, 3.1:1 light).
    * - tick, for the Contents trace, mixes in more muted: 4.1:1 on the ground in dark and 3.3:1 in light, with fg on
    *   it at 3.5:1 and 5.2:1, so the current tick stands out.
@@ -139,6 +141,7 @@
     --muted: light-dark(#67655d, #a39f93);
     --edge: light-dark(#b3b0a6, #3e454a);
     --code-bg: light-dark(#ebe9e3, #0a0d0f);
+    --code-chip: light-dark(#ebe9e3, #1b1e20);
     --scrollbar-thumb: light-dark(
       color-mix(in srgb, var(--muted) 60%, var(--edge)),
       color-mix(in srgb, var(--muted) 35%, var(--edge))
@@ -260,9 +263,14 @@
     margin: 0 0 1.15em;
   }
 
+  /* a date (date.html) is one token, so a narrow column never breaks it at a hyphen */
+  time {
+    white-space: nowrap;
+  }
+
   code {
     padding: 0.08em 0.35em;
-    background: var(--code-bg);
+    background: var(--code-chip);
     color: var(--fg);
     font-family: var(--font-read);
     font-size: 0.9em;
@@ -339,6 +347,8 @@
     }
 
     & nav {
+      --marker-gap: 0.8ch;
+
       display: flex;
       flex-wrap: wrap;
       gap: 4px 3ch;
@@ -357,7 +367,7 @@
         content: "";
         position: absolute;
         top: 50%;
-        left: calc(-7px - 0.8ch);
+        left: calc(-7px - var(--marker-gap));
         width: 7px;
         height: 7px;
         transform: translateY(-50%);
@@ -366,7 +376,24 @@
 
       /* hover's padding moves the link's box 5px left, so the square moves back by as much */
       &[aria-current]:hover::before {
-        left: calc(-2px - 0.8ch);
+        left: calc(-2px - var(--marker-gap));
+      }
+    }
+
+    /*
+     * Phones, where the name and the nav don't fit on one line (below 398px at the default 16px, and a little more in
+     * em at a smaller default, since the mark and the gaps are px): the nav takes a row of its own, its links in line
+     * with the name. Wrapped at the gutter, the first link's square would sit at the window's edge; here it sits under
+     * the mark, flush with its right edge and as far from its link as the mark is from the name. The wider gap keeps a
+     * later link's square nearer its own link than the one before.
+     */
+    @media (width < 25.5em) {
+      & nav {
+        --marker-gap: 10px;
+
+        flex-basis: 100%;
+        column-gap: 4ch;
+        padding-left: 34px;
       }
     }
   }
@@ -520,6 +547,11 @@
 }
 
 @layer utilities {
+  /* a run that breaks only around it, like the footer's links or the repo in About's source */
+  .nowrap {
+    white-space: nowrap;
+  }
+
   .visually-hidden,
   .skip-link:not(:focus) {
     position: absolute;
@@ -547,6 +579,7 @@
     :root {
       --bg: #fff;
       --code-bg: #fff;
+      --code-chip: #fff;
       --body: var(--fg);
     }
 

@@ -1,5 +1,5 @@
 +++
-title = "Configure Proxmox Package Repositories"
+title = "Configuring Proxmox Package Repositories"
 date = 2022-12-22
 summary = "Quick guide to setting up repositories on Proxmox. This solves package update errors and can be used to add beta repos etc."
 tags = ["proxmox", "homelab"]

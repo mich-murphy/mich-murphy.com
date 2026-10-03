@@ -1,5 +1,5 @@
 +++
-title = "How To Configure Systemd Services and Timers in Nixos"
+title = "How to Configure systemd Services and Timers in NixOS"
 date = 2023-01-12
 summary = "Cronjobs are discouraged in Nixos, instead the recommendation is to use Systemd services and timers. This post explains how to set this up."
 tags = ["nixos", "systemd", "cron"]

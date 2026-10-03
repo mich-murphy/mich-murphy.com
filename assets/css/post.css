@@ -40,6 +40,15 @@
     }
 
     /*
+     * The label sits 0.8em above the frame's inside edge, so its ground is the page's down to there, through the
+     * border it cuts, and the code's below, rather than a tab of the page's ground hanging into the code. Forced
+     * colours drop the gradient, and the plain ground under it takes over.
+     */
+    & > .legend {
+      background-image: linear-gradient(var(--bg) 0.8em, var(--code-bg) 0.8em);
+    }
+
+    /*
      * Long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed
      * to the box, which the local layers in the code cover at each end. The pre is focusable, so it scrolls from the
      * keyboard; its ring goes inside the frame, since in light both are fg and a ring on the frame would vanish.
@@ -200,10 +209,11 @@
 
   /*
    * Contents (contents.html). Narrow or touch, the default: a button fixed to the bottom-right corner that opens the
-   * Contents box above it while #toc is the target. Wide with a mouse, from 1360px, where the box fits in the margin:
-   * the trace, a tick per heading fixed to the window's right edge, with the box beside it on hover. That breakpoint
-   * is in px, unlike the others, because the margin it measures is: the column and the box are px wide, and an em
-   * breakpoint would follow the browser's font size, so a small one would bring the trace in with no room for the box.
+   * Contents box above it while #toc is the target. Wide with a mouse, from 1360px, where the margin beside the
+   * column holds the trace and most of the box: the trace, a tick per heading fixed to the window's right edge, with
+   * the box beside it on hover. That breakpoint is in px, unlike the others, because the margin it measures is: the
+   * column and the box are px wide, and an em breakpoint would follow the browser's font size, so a small one would
+   * bring the trace in with no room for the box.
    *
    * The current section comes from :target-current (Chrome and Edge 140+): its tick turns fg, the box marks it with
    * the 7px square, and the button counts up to it. Those rules stay on their own, because a browser that doesn't
@@ -507,8 +517,9 @@
    * trace fits the window.
    *
    * The box opens to the left, centred on the window as the trace is, on hover or when the keyboard reaches its
-   * links. Closed, it's hidden only by opacity, so its links stay focusable. Its width leaves 24px to the text column,
-   * and a classic scrollbar's width besides, so it never covers the text.
+   * links. Closed, it's hidden only by opacity, so its links stay focusable. It's always 280px, room for most headings
+   * on a line: under a 1452px window that covers the column's right edge while it's open (46px at 1360, 6px at 1440),
+   * which it is only while the pointer or the keyboard is on it.
    */
   @media (width >= 1360px) and (hover: hover) {
     .contents {
@@ -578,12 +589,11 @@
       display: none;
     }
 
-    /* the text column is centred, so the margin beside it is half the window less half the column */
     .contents-popover {
       top: 0;
       right: var(--trace-width);
       bottom: 0;
-      width: min(280px, calc(50vw - (var(--wrap) / 2 - var(--gutter)) - var(--trace-width) - 32px));
+      width: 280px;
       height: fit-content;
       margin-block: auto;
       visibility: visible;

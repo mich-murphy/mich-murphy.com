@@ -1,10 +1,10 @@
 {{- /* The search index that home's script loads: every post, newest first, as {s, t, d, g, l}: its slug, title, date,
   tags (as tag-slug.html gives them) and lines. A line is [text, anchor, kind], with kind 0 for prose, 1 for a
-  heading and 2 for code, read from the post's Markdown. Blank lines and fence lines are skipped. Prose is what a
-  reader sees: link text without its URL, no **, no list or quote markers, and no line for an alert's [!NOTE]. A
-  heading loses its #s, and code stays as written. The anchor is the id of the h2 or h3 the line sits under. The
-  Markdown doesn't say what id Hugo gave a heading, so each h2 or h3 line takes the next one from headings.html, in
-  document order, and the build fails if the two disagree on how many there are */}}
+  heading and 2 for code, read from the post's Markdown, a callout's included. Blank lines and fence lines are
+  skipped. Prose is what a reader sees: link text without its URL, no **, _ or backticks, no list or quote markers,
+  and no line for an alert's [!NOTE]. A heading loses its #s, and code stays as written. The anchor is the id of the
+  h2 or h3 the line sits under. The Markdown doesn't say what id Hugo gave a heading, so each h2 or h3 line takes the
+  next one from headings.html, in document order, and the build fails if the two disagree on how many there are */}}
 {{- $posts := slice }}
 {{- range (partialCached "posts.html" .).ByDate.Reverse }}
   {{- $source := .File.Path }}
@@ -14,16 +14,18 @@
   {{- $fence := "" }}
   {{- $rows := slice }}
   {{- range $line := split .RawContent "\n" }}
-    {{- $text := strings.TrimSpace $line }}
+    {{- /* in a callout, every line starts with the quote's >, its code's fences and lines too */}}
+    {{- $unquoted := replaceRE `^ {0,3}>[ \t]?` "" $line }}
+    {{- $text := strings.TrimSpace $unquoted }}
     {{- $marker := "" }}
-    {{- with findRESubmatch "^ {0,3}(`{3,}|~{3,})" $line 1 }}{{ $marker = index . 0 1 }}{{ end }}
+    {{- with findRESubmatch "^ {0,3}(`{3,}|~{3,})" $unquoted 1 }}{{ $marker = index . 0 1 }}{{ end }}
     {{- $row := false }}
     {{- if $fence }}
       {{- /* a fence closes with a line of only its character, at least as many times as it opened */}}
       {{- if and $marker (eq (substr $marker 0 1) (substr $fence 0 1)) (ge (len $marker) (len $fence)) (eq $text $marker) }}
         {{- $fence = "" }}
       {{- else if $text }}
-        {{- $row = slice (strings.TrimRight " \t\r\n\v\f" $line) $anchor 2 }}
+        {{- $row = slice (strings.TrimRight " \t\r\n\v\f" $unquoted) $anchor 2 }}
       {{- end }}
     {{- else if $marker }}
       {{- $fence = $marker }}
@@ -44,6 +46,9 @@
         {{- $prose = replaceRE `!?\[([^\]]*)\]\([^)]*\)` "${1}" $prose }}
         {{- $prose = replaceRE `<(https?://[^>]+)>` "${1}" $prose }}
         {{- $prose = replaceRE `\*\*(.+?)\*\*` "${1}" $prose }}
+        {{- /* _emphasis_ only where the underscores aren't inside a word, so known_hosts keeps its own */}}
+        {{- $prose = replaceRE `(^|\W)_([^_\s](?:[^_]*[^_\s])?)_(\W|$)` "${1}${2}${3}" $prose }}
+        {{- $prose = replace $prose "`" "" }}
         {{- $prose = strings.TrimSpace $prose }}
         {{- if and $prose (not (findRE `^\[!\w+\]$` $prose 1)) }}{{ $row = slice $prose $anchor 0 }}{{ end }}
       {{- end }}

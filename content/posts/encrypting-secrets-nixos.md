@@ -1,5 +1,5 @@
 +++
-title = "Encrypting Secrets in NixOS With Agenix"
+title = "Encrypting Secrets in NixOS with Agenix"
 date = 2023-02-22
 summary = "Walkthrough of secret encryption using Agenix, covering configuration,structure and editing of secrets."
 tags = ["nixos", "homelab", "agenix"]
