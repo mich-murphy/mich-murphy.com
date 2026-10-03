@@ -47,6 +47,20 @@
       color: var(--muted);
     }
 
+    /*
+     * Focused, the box shows it as the frame's own parts do: the dotted rule under it turns solid in the focus colour,
+     * 1px thicker with 1px less padding so nothing moves, and the prompt takes the accent, as a terminal's wakes up.
+     * The input drops its ring for them (below).
+     */
+    &:has(.search-input:focus-visible) {
+      padding-bottom: 9px;
+      border-bottom: 2px solid var(--focus);
+
+      & .search-prompt {
+        color: var(--accent-text);
+      }
+    }
+
     /* the key hint shows only while the box is idle: no focus, no words, no count */
     &:is(:focus-within, :has(.search-input:not(:placeholder-shown), .search-count:not(:empty))) .search-key {
       display: none;
@@ -65,6 +79,13 @@
     font: inherit;
     appearance: none;
     outline-offset: 4px;
+
+    /* the box's rule shows focus instead; forced colours, which recolour the rule, keep the ring */
+    @media (forced-colors: none) {
+      &:focus-visible {
+        outline: none;
+      }
+    }
 
     &::placeholder {
       color: var(--muted);
