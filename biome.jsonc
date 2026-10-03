@@ -4,9 +4,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "files": {
-    // filters.css is a Go template that head.html runs to write a rule for each tag and year, so it isn't CSS until
-    // Hugo has built it
-    "includes": ["assets/js/**/*.js", "assets/css/**/*.css", "!assets/css/filters.css"]
+    // home-filters.css is a Go template that head.html runs to write a rule for each tag and year, so it isn't CSS
+    // until Hugo has built it
+    "includes": ["assets/js/**/*.js", "assets/css/**/*.css", "!assets/css/home-filters.css"]
   },
   "formatter": {
     "indentStyle": "space",
@@ -25,7 +25,13 @@
   },
   "linter": {
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "style": {
+        // It scores a nested selector without its parent (`.header-bar { & nav a {} }` as nav a, not .header-bar nav
+        // a) and ignores cascade layers, so with both in use it reports overrides that are deliberate, or between
+        // selectors that never match the same element
+        "noDescendingSpecificity": "off"
+      }
     }
   }
 }

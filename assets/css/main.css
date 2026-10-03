@@ -88,10 +88,7 @@
     color-scheme: light dark;
     --bg: light-dark(#f5f4f0, #0f1214);
     --fg: light-dark(#0f1214, #e6e2d6);
-    --body: light-dark(
-      color-mix(in srgb, var(--fg) 74%, var(--bg)),
-      color-mix(in srgb, var(--fg) 85%, var(--bg))
-    );
+    --body: light-dark(color-mix(in srgb, var(--fg) 74%, var(--bg)), color-mix(in srgb, var(--fg) 85%, var(--bg)));
     --muted: light-dark(#67655d, #a39f93);
     --edge: light-dark(#b3b0a6, #3e454a);
     --code-bg: light-dark(#ebe9e3, #0a0d0f);

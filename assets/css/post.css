@@ -51,9 +51,9 @@
         linear-gradient(to right, var(--code-bg) 30%, transparent) left / 28px 100% no-repeat local,
         linear-gradient(to left, var(--code-bg) 30%, transparent) right / 28px 100% no-repeat local,
         linear-gradient(to right, color-mix(in srgb, var(--fg) 22%, transparent), transparent) left / 10px 100%
-          no-repeat scroll,
+        no-repeat scroll,
         linear-gradient(to left, color-mix(in srgb, var(--fg) 22%, transparent), transparent) right / 10px 100%
-          no-repeat scroll;
+        no-repeat scroll;
       background-color: var(--code-bg);
       scrollbar-color: var(--scrollbar-thumb) var(--code-bg);
 
