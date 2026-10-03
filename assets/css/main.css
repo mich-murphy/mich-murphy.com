@@ -263,6 +263,11 @@
     margin: 0 0 1.15em;
   }
 
+  /* a date (date.html) is one token, so a narrow column never breaks it at a hyphen */
+  time {
+    white-space: nowrap;
+  }
+
   code {
     padding: 0.08em 0.35em;
     background: var(--code-chip);

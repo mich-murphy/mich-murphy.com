@@ -1,8 +1,9 @@
 {{ define "main" }}
 {{- /* About (content/about.md): the head and the bio, then the Projects card from
   data/projects.toml, and the "This site" box, the page's one dither, whose values all come from the build. The space
-  between a project's name and description keeps them apart in reader mode and without CSS. Styles are prose.css and
-  pages.css */}}
+  between a project's name and description keeps them apart in reader mode and without CSS. The source breaks, on a
+  phone, after its owner's slash rather than at a hyphen in the repo's name, as Subscribe's feed does on Feeds.
+  Styles are prose.css and pages.css */}}
 {{- $gh := site.Params.repo }}
 {{- $projects := hugo.Data.projects.project }}
 {{ partial "page-head.html" . }}
@@ -14,7 +15,7 @@
 </ul></div></div>
 <div class="dithered key-values"><h2 class="legend">This site</h2><div class="frame">
 <dl>
-<dt>source</dt><dd><a href="{{ $gh }}">{{ strings.TrimPrefix "https://github.com/" $gh }}</a></dd>
+<dt>source</dt><dd>{{ with strings.TrimPrefix "https://github.com/" $gh }}<a href="{{ $gh }}">{{ path.Dir . }}/<wbr><span class="nowrap">{{ path.Base . }}</span></a>{{ end }}</dd>
 <dt>built</dt><dd>Hugo {{ hugo.Version }} on GitHub Actions</dd>
 <dt>hosted</dt><dd>GitHub Pages</dd>
 <dt>type</dt><dd>Argon, Xenon, Radon and Krypton from Monaspace 1.400 by GitHub Next, <a href="/fonts/LICENSE-Monaspace.txt">SIL Open Font License</a></dd>

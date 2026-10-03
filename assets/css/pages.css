@@ -27,6 +27,11 @@
     }
   }
 
+  /* a name that breaks only before it, like the repo in This site's source */
+  .nowrap {
+    white-space: nowrap;
+  }
+
   /* Subscribe's feed address reads as the values around it, and one click selects all of it and nothing else */
   .url {
     padding: 0;
