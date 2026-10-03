@@ -200,8 +200,10 @@
 
   /*
    * Contents (contents.html). Narrow or touch, the default: a button fixed to the bottom-right corner that opens the
-   * Contents box above it while #toc is the target. Wide with a mouse, from 85em (1360px), where the box fits in the
-   * margin: the trace, a tick per heading fixed to the window's right edge, with the box beside it on hover.
+   * Contents box above it while #toc is the target. Wide with a mouse, from 1360px, where the box fits in the margin:
+   * the trace, a tick per heading fixed to the window's right edge, with the box beside it on hover. That breakpoint
+   * is in px, unlike the others, because the margin it measures is: the column and the box are px wide, and an em
+   * breakpoint would follow the browser's font size, so a small one would bring the trace in with no room for the box.
    *
    * The current section comes from :target-current (Chrome and Edge 140+): its tick turns fg, the box marks it with
    * the 7px square, and the button counts up to it. Those rules stay on their own, because a browser that doesn't
@@ -455,7 +457,7 @@
    * leaves the box for the page, the box closes, so it never covers what has focus (WCAG 2.4.11): without a script
    * there's no Esc to close it in place.
    */
-  @media (width < 85em), (hover: none) {
+  @media (width < 1360px), (hover: none) {
     #toc:target {
       & ~ .contents-open {
         display: none;
@@ -508,7 +510,7 @@
    * links. Closed, it's hidden only by opacity, so its links stay focusable. Its width leaves 24px to the text column,
    * and a classic scrollbar's width besides, so it never covers the text.
    */
-  @media (width >= 85em) and (hover: hover) {
+  @media (width >= 1360px) and (hover: hover) {
     .contents {
       --trace-width: 60px;
 
