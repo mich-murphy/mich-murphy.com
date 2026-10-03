@@ -30,7 +30,7 @@ check() {
 # sites, so it needs no network. #_ is left out on purpose: it matches no id,
 # so following it closes the Contents box. The build isn't --quiet, which
 # would hide Hugo's errors as well as its stats
-links() {
+check_site() {
   local site=$tmp/public
   scripts/build.sh --destination "$site" &&
     scripts/postbuild.py "$site" &&
@@ -49,7 +49,7 @@ check "actionlint: workflows" actionlint
 # permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
 # update. --offline keeps it to the files here, with no GitHub API or token
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
-check "lychee: the built site's links" links
+check "site: build, postbuild.py and lychee's link check" check_site
 
 echo
 if [ ${#failed[@]} -gt 0 ]; then
