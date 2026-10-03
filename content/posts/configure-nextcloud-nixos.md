@@ -18,9 +18,9 @@ There are several services that need to be configured to setup Nextcloud:
 
 ## Nextcloud Setup
 
-Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look [here](https://search.nixos.org/options?from=0&size=50&sort=relevance&type=packages&query=services.nextcloud).
+Nextcloud itself is relatively straightforward to setup, I found knowing all the additional services to be the tricky part. The module has a multitude of options to configure, for more information about each one take a look at [the module's options](https://search.nixos.org/options?from=0&size=50&sort=relevance&type=packages&query=services.nextcloud).
 
-Here is a look at my config - you'll note that secrets are managed with Agenix, which I've written about [here](/posts/encrypting-secrets-nixos.md):
+Here is a look at my config - you'll note that secrets are managed with Agenix, which I've [written about before](/posts/encrypting-secrets-nixos.md):
 
 ```nix
 # /etc/nixos/configuration.nix
@@ -186,4 +186,4 @@ I pieced together this setup thanks to the [documentation in the NixOS Manual](h
 
 As you can see above, there are a few steps involved in properly configuring Nextcloud. Regarding Nextcloud apps, I found it easier to be able to install and manage these via Nextcloud itself.
 
-I ended up putting all of the above config into its own module, for reference you can view it [here](https://github.com/mich-murphy/nix-config/blob/82e8fd5f96a6960dfc9e29ef83b1c764ccc86bdd/common/nixos/nextcloud.nix).
+I ended up putting all of the above config into its own module, for reference you can [view the module on GitHub](https://github.com/mich-murphy/nix-config/blob/82e8fd5f96a6960dfc9e29ef83b1c764ccc86bdd/common/nixos/nextcloud.nix).

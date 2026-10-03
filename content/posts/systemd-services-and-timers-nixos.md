@@ -93,7 +93,7 @@ I then add the following to `/etc/nixos/configuration.nix`, which defines the se
 
 If it makes sense for your use case, you may simply want to add the script to be run inside of `/etc/nixos/configuration.nix`.
 
-If you want to read more about the systemd security settings above you can find a high level explanation [here](https://xeiaso.net/blog/paranoid-nixos-2021-07-18) and details of each individual setting at [systemd.exec(5)](https://man7.org/linux/man-pages/man5/systemd.exec.5.html). A helpful command you can run to being reviewing security of services is `systemd-analyze security example.service`.
+If you want to read more about the systemd security settings above you can find [a high level explanation](https://xeiaso.net/blog/paranoid-nixos-2021-07-18) and details of each individual setting at [systemd.exec(5)](https://man7.org/linux/man-pages/man5/systemd.exec.5.html). A helpful command you can run to being reviewing security of services is `systemd-analyze security example.service`.
 
 ## Separating Service Script
 
