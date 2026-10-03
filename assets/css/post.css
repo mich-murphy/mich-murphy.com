@@ -40,6 +40,15 @@
     }
 
     /*
+     * The label sits 0.8em above the frame's inside edge, so its ground is the page's down to there, through the
+     * border it cuts, and the code's below, rather than a tab of the page's ground hanging into the code. Forced
+     * colours drop the gradient, and the plain ground under it takes over.
+     */
+    & > .legend {
+      background-image: linear-gradient(var(--bg) 0.8em, var(--code-bg) 0.8em);
+    }
+
+    /*
      * Long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed
      * to the box, which the local layers in the code cover at each end. The pre is focusable, so it scrolls from the
      * keyboard; its ring goes inside the frame, since in light both are fg and a ring on the frame would vanish.
