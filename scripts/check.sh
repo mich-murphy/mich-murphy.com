@@ -43,10 +43,11 @@ check "ruff check: Python lint" ruff check scripts
 check "ruff format: Python formatting" ruff format --check scripts
 check "biome: CSS and JavaScript" biome ci
 check "actionlint: workflows" actionlint
-# zizmor's default persona reports real security problems in the workflows and
-# Dependabot's settings with few false positives. --offline keeps it to the
-# files here, without the GitHub API and a token
-check "zizmor: workflow security" zizmor --offline --no-progress .github
+# zizmor's pedantic persona adds to its security audits the habits that keep a
+# workflow easy to review, like naming every job and saying why it needs each
+# permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
+# update. --offline keeps it to the files here, with no GitHub API or token
+check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
 check "lychee: the built site's links" links
 
 echo

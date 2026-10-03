@@ -2,11 +2,10 @@
 # https://gohugo.io/host-and-deploy/host-on-github-pages/
 name: Build and deploy
 env:
-  # The Hugo version and its tarball's SHA-256, the line for
-  # hugo_<version>_linux-amd64.tar.gz in the release's
-  # hugo_<version>_checksums.txt. The version must match the Hugo in flake.nix
-  # and module.hugoVersion in hugo.toml; the README says how to change them
-  HUGO_VERSION: 0.166.0
+  # The SHA-256 of the Hugo tarball the build job installs: the line for
+  # hugo_<version>_linux-amd64.tar.gz (not an extended or withdeploy one) in the
+  # release's hugo_<version>_checksums.txt, for the version in hugo.toml's
+  # [module.hugoVersion] min. Change it with that version; the README says how
   HUGO_SHA256: 45228f5a52eb118b0ca168068f01d7df0447314a24056f1d29667ed9fc368308
 
   # Set the build time zone
@@ -17,8 +16,8 @@ on:
       - main
   pull_request:
   workflow_dispatch:
-permissions:
-  contents: read
+# No permissions by default: each job asks for what it needs
+permissions: {}
 concurrency:
   # One group per ref. A newer PR run cancels older runs of the same PR. On
   # main a running deploy is never cancelled, but GitHub keeps only one
@@ -30,24 +29,32 @@ defaults:
     shell: bash
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read # to check out the repo
     steps:
       # The whole history, for each post's updated date (enableGitInfo in
       # hugo.toml). The build never pushes, so the token isn't kept
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      # The tarball must match the SHA-256 pinned above, so a download that
-      # changed since the pin fails here
+      # Installs the Hugo that hugo.toml pins (scripts/hugo-version.sh reads
+      # it). The tarball must match HUGO_SHA256, so a download that changed
+      # since the pin, or a pin changed without its checksum, fails here
       - name: Install Hugo
         run: |
-          tarball="${{ runner.temp }}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
-          curl -sSfL -o "${tarball}" "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
-          echo "${HUGO_SHA256}  ${tarball}" | sha256sum --check
+          version=$(scripts/hugo-version.sh)
+          tarball="${RUNNER_TEMP}/hugo_${version}_linux-amd64.tar.gz"
+          curl -sSfL -o "${tarball}" "https://github.com/gohugoio/hugo/releases/download/v${version}/hugo_${version}_linux-amd64.tar.gz"
+          if ! echo "${HUGO_SHA256}  ${tarball}" | sha256sum --check; then
+            echo "::error::Hugo ${version}'s tarball doesn't match HUGO_SHA256; if hugo.toml's version changed, update HUGO_SHA256 too (README)"
+            exit 1
+          fi
           mkdir -p "${HOME}/.local/hugo"
           tar -C "${HOME}/.local/hugo" -xf "${tarball}"
           echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
@@ -77,24 +84,53 @@ jobs:
       # Every run uploads the built site, so a pull request's build can be
       # downloaded for preview; only the deploy job below is limited to main
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          include-hidden-files: false
           path: ./public
+
+  # scripts/check.sh in the flake's ci shell, so CI runs the same linters, at
+  # the same versions, as a local `nix develop -c scripts/check.sh`, and checks
+  # the links of its own fresh build. It runs beside build, and deploy doesn't
+  # wait for it: it checks the code rather than what's published, and a pull
+  # request shows it as a check of its own before it's merged
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # to check out the repo
+    steps:
+      # The whole history, for the link check's build, as above
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configure Git
+        run: git config --global core.quotepath false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+
+      - name: Check
+        run: nix develop .#ci -c scripts/check.sh
+
   # Pull requests and other branches only build; main deploys
   deploy:
+    name: Deploy
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     # deploy-pages itself waits up to 10 minutes for the deployment
     timeout-minutes: 15
     needs: build
     permissions:
-      pages: write
-      id-token: write
+      pages: write # to deploy to GitHub Pages
+      id-token: write # to prove to Pages that the deployment comes from this workflow
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

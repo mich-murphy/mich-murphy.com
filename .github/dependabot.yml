@@ -1,9 +1,20 @@
 # Opens a pull request when an action in .github/workflows has a new version.
-# Hugo isn't covered: its version is pinned in the flake, the workflow and
-# hugo.toml, which change together by hand (README)
+# Hugo isn't covered: its version is set in hugo.toml, and the flake and the
+# workflow's HUGO_SHA256 change with it by hand (README)
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    # Waits until a release is a week old, so a bad or compromised one has time
+    # to be noticed and pulled before it's proposed here
+    cooldown:
+      default-days: 7
+    # One pull request for every action that has a new version
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ci
