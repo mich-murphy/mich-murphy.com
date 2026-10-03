@@ -42,6 +42,8 @@ The status line is gone. Posts get Contents in two forms instead, from one `nav`
   - It opens the same box above it, and ✕ takes its place.
   - A tap outside closes the box. Picking a heading closes it and jumps there.
   - The page ends 56px lower, so the pill never covers the footer.
+  - The pill sits in an 8px ring of the ground. It's 16px in, as a code window's frame is, so without the ring a window scrolling past ran into its right edge and the two read as one box (box lab, button D).
+  - The page dims behind the open box, to the ground at 72%, so frames under the box fall back; the box is as wide as the text column and lined up with them too (box lab, box D). A tap on the dim closes the box. The dim fades with the box.
 - **Why bottom right** (researched on 2026-10-03):
   - Material 3 puts the FAB lower right on phones, and NN/g finds people expect floating buttons there.
   - In Hoober's 2013 grip study, about 61% of taps come from the right hand.
@@ -304,6 +306,7 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
 | What | Where |
 |---|---|
 | Design lab (rev 15, picked: opens on the final picks, and every option explored stays under "Every switch") | https://claude.ai/artifact/Tb4pePZ6AC5JNVCabTGQ7A |
+| Contents box lab (2026-10-03, picked: button D, the ground ring, and box D, the dimmed page): six treatments of each over the real post on a phone | https://claude.ai/artifact/HQX7x511iDU6q6odo4SuLA, local copy `docs/design/box-lab.html` |
 | Content trace canvas (2026-10-03, picked: desktop A · Ticks, phone 2 · Pop-up with the button bottom right) | https://claude.ai/artifact/HvjDWGS6AjJP2wPspR4p8A |
 | Rail lab (rev 9, picks made): six contents rails, the keyed colophon, commit message placement | https://claude.ai/artifact/NwYMmP5akxuJyZ5MQyAWq2, local copy `docs/design/rail-lab.html` |
 | Mark lab and design review (rev 7, picks made) | https://claude.ai/artifact/71VrwQCm6i1q16eKn1b55n, local copy `docs/design/mark-lab.html` |
