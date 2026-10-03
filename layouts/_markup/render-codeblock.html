@@ -33,7 +33,7 @@
   reader says what it reached. hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
   own pre and code replace */}}
 {{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" -}}
-<figure class="win{{ if not $path }} lgw{{ end }}{{ if gt $lines 41 }} long{{ end }}">
+<figure class="code-window{{ if not $path }} with-legend{{ end }}{{ if gt $lines 41 }} long{{ end }}">
 {{- with $path }}<figcaption><span class="path">{{ $name }} · {{ . }}</span></figcaption>
 {{- else }}<span class="legend">{{ $name }}</span>{{ end -}}
 <pre class="code" tabindex="0" role="group" aria-label="{{ $name }} code{{ with $path }}, {{ . }}{{ end }}"><code>{{ $h | safeHTML }}</code></pre></figure>

@@ -1,14 +1,14 @@
-{{- /* The Posts card: every post, newest first, as a row of its title and date. Each row carries its tags (data-t)
-  as the slugs in their /tags/<slug>/ URLs, decoded, and its year (data-y), for filtering. It is the page's one dither,
+{{- /* The Posts card: every post, newest first, as a row of its title and date. Each row carries its tags (data-tag)
+  as the slugs in their /tags/<slug>/ URLs, decoded, and its year (data-year), for filtering. It is the page's one dither,
   and its styles are card.css. The ol has list-style:none, which WebKit exposes as a group unless it has role=list.
   On home it also holds search's hidden targets, #all and one per tag and year (filters.html): the menus link to them,
   so a fragment filters the list without a script (filters.css), and a hidden target doesn't make the page jump. Then
   the status line the script fills with how many posts match, for screen readers */}}
 {{- $posts := where site.RegularPages "Section" "posts" }}
-<div class="dz tcard idx"><h2 class="legend">Posts · <span class="lc">{{ len $posts }}</span></h2><div class="frame">
-{{- if .IsHome }}<i id="all" hidden></i>{{ range partial "filters.html" . }}<i id="{{ .id }}" class="{{ cond (eq .k "t") "tg" "yt" }}" hidden></i>{{ end }}{{ end }}<ol role="list">
+<div class="dithered posts-card"><h2 class="legend">Posts · <span class="posts-count">{{ len $posts }}</span></h2><div class="frame">
+{{- if .IsHome }}<i id="all" hidden></i>{{ range partial "filters.html" . }}<i id="{{ .id }}" class="{{ .k }}-target" hidden></i>{{ end }}{{ end }}<ol role="list">
 {{- range $posts.ByDate.Reverse }}
-<li class="tr" data-t="{{ with .GetTerms "tags" }}{{ range $i, $t := . }}{{ if $i }} {{ end }}{{ path.Base (urls.Parse $t.RelPermalink).Path }}{{ end }}{{ end }}" data-y="{{ .Date.Year }}"><span class="t"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></span><span class="d">{{ .Date.Format "2006-01-02" }}</span></li>
+<li class="post-row" data-tag="{{ with .GetTerms "tags" }}{{ range $i, $t := . }}{{ if $i }} {{ end }}{{ path.Base (urls.Parse $t.RelPermalink).Path }}{{ end }}{{ end }}" data-year="{{ .Date.Year }}"><span class="post-title"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></span><span class="post-date">{{ .Date.Format "2006-01-02" }}</span></li>
 {{- end }}
 </ol>
-{{- if .IsHome }}<p class="vh" role="status"></p>{{ end }}</div></div>
+{{- if .IsHome }}<p class="visually-hidden" role="status"></p>{{ end }}</div></div>

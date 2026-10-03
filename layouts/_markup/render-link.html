@@ -33,5 +33,5 @@
   without the scheme and a trailing slash */ -}}
 {{- $bare := `^https?://|/$` -}}
 {{- $addr := or (strings.HasPrefix .Destination "#") (eq (replaceRE $bare "" .PlainText) (replaceRE $bare "" .Destination)) -}}
-<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }} {{- if $addr }} class="addr" {{- end }}>{{ .Text }}</a>
+<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }} {{- if $addr }} class="no-print-url" {{- end }}>{{ .Text }}</a>
 {{- /**/ -}}

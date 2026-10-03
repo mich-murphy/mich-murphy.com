@@ -1,5 +1,5 @@
 {{- /* The search index that home's script loads: every post, newest first, as {s, t, d, g, l}, its slug, title, date,
-  tags (the slugs in the Posts card's data-t) and lines. A line is [number, text, anchor, kind], kind 0 prose, 1 heading
+  tags (the slugs in the Posts card's data-tag) and lines. A line is [number, text, anchor, kind], kind 0 prose, 1 heading
   and 2 code, read from the Markdown source as docs/design/build-grep-index.py does, so the number is the line in the
   file. Blank lines and fence lines are skipped. Prose is what a reader sees: link text without its URL, no **, no list
   or quote markers, and no line for an alert's [!NOTE]. A heading loses its #s, and code stays as written. The anchor

@@ -20,20 +20,20 @@
 const $ = (s, e = document) => e.querySelector(s);
 const $$ = (s, e = document) => [...e.querySelectorAll(s)];
 const box = $("search");
-const inp = $(".sq", box);
-const sc = $(".sc", box);
-const lg = $(".sfr .legend");
-const lc = $(".lc");
-const st = $(".idx [role=status]");
-const ol = $(".idx ol");
-const rows = $$(".tr", ol);
+const inp = $(".search-input", box);
+const sc = $(".search-count", box);
+const lg = $(".search-frame .legend");
+const lc = $(".posts-count");
+const st = $(".posts-card [role=status]");
+const ol = $(".posts-card ol");
+const rows = $$(".post-row", ol);
 const n = rows.length;
-const dets = $$(".fmn");
-const none = Object.assign(document.createElement("p"), { className: "none", hidden: true, textContent: "No post matches." });
+const dets = $$(".filter-menu");
+const none = Object.assign(document.createElement("p"), { className: "no-match", hidden: true, textContent: "No post matches." });
 // each menu entry as [link, whether it's a year, value, the id it goes to]: all has no value, and the id all
-const E = $$(".fpop a").map((a) => {
+const E = $$(".filter-popover a").map((a) => {
   const f = decodeURIComponent(a.hash.slice(1));
-  const y = !!a.closest(".fr-y");
+  const y = !!a.closest(".filter-year");
   return [a, y, a.matches(".all") ? "" : y ? f.slice(1) : f, f];
 });
 // the scores of prose, heading and code lines
@@ -91,8 +91,8 @@ const run = (T, Y, Q, res) => {
 
 const draw = () => {
   for (const [a, y, v] of E) attr(a, "aria-current", (v ? (y ? Y == v : T.includes(v)) : !(y ? Y : T[0])) && "true");
-  $(".fr-t b").textContent = T.join(", ");
-  $(".fr-y b").textContent = Y;
+  $(".filter-tag b").textContent = T.join(", ");
+  $(".filter-year b").textContent = Y;
   if (!D) return;
   const Q = parse(inp.value);
   const res = Q.t.map((w) => word(esc(w)));
@@ -107,13 +107,13 @@ const draw = () => {
     const a = $("a", r);
     r.hidden = on && !h;
     a.innerHTML = mark(a.textContent);
-    $(".ex", r)?.remove();
+    $(".excerpt", r)?.remove();
     if (h?.ex) {
       // the excerpt keeps its first match in view
       let x = h.ex[1].trimStart();
       const i = x.search(mk);
       if (i > 30) x = "…" + x.slice(i - 20);
-      r.insertAdjacentHTML("beforeend", `<a class="ex" href="${html(a.getAttribute("href") + (h.ex[2] && "#" + h.ex[2]))}"><span class="br" aria-hidden="true">└</span>${mark(x)}</a>`);
+      r.insertAdjacentHTML("beforeend", `<a class="excerpt" href="${html(a.getAttribute("href") + (h.ex[2] && "#" + h.ex[2]))}"><span class="excerpt-branch" aria-hidden="true">└</span>${mark(x)}</a>`);
     }
   }
   // moving a row takes focus from its link, which gets it back if it's still shown
@@ -171,7 +171,7 @@ const off = (bad) => {
   box.hidden = true;
   lg.textContent = "Filter";
   for (const [a] of E) attr(a, "aria-current");
-  for (const b of $$(".fmn b")) b.textContent = "";
+  for (const b of $$(".filter-menu b")) b.textContent = "";
   if (!bad) return;
   clearTimeout(tu);
   tu = 0;
@@ -186,7 +186,7 @@ const off = (bad) => {
 // loaded, it waits for the list the index draws, and only the last one pressed acts, once
 let K;
 const act = () => {
-  const f = $(".tr:not([hidden]) a", ol);
+  const f = $(".post-row:not([hidden]) a", ol);
   if (f && K) K == "Enter" ? f.click() : f.focus();
   K = 0;
 };
@@ -264,15 +264,15 @@ inp.oninput = () => {
 // outside it. While the box is hidden, the links work as they do without the script, and after a request for the index
 // that failed, a pick makes it again
 addEventListener("click", (e) => {
-  const a = e.target.closest(".ff a");
+  const a = e.target.closest(".filters a");
   for (const d of dets) if (!d.contains(e.target)) d.open = false;
   if (a && P === 0) load();
   if (!a || box.hidden) return;
   e.preventDefault();
   if (a.hasAttribute("aria-disabled")) return;
-  const fr = a.closest(".fr");
+  const fr = a.closest(".filter");
   const v = E.find((x) => x[0] == a)?.[2] || "";
-  fr.matches(".fr-y") ? (Y = v) : (T = v ? [v] : []);
+  fr.matches(".filter-year") ? (Y = v) : (T = v ? [v] : []);
   $("details", fr).open = false;
   $("summary", fr).focus();
   go();
@@ -280,13 +280,13 @@ addEventListener("click", (e) => {
 
 addEventListener("keydown", (e) => {
   const t = e.target;
-  const d = $(".fmn[open]");
-  const f = $(".tr:not([hidden]) a", ol);
+  const d = $(".filter-menu[open]");
+  const f = $(".post-row:not([hidden]) a", ol);
   if (e.key == "Escape") {
     if (d) {
       d.open = false;
       if (d.contains(t)) $("summary", d).focus();
-    } else if (t.closest(".sfr") && !box.hidden) {
+    } else if (t.closest(".search-frame") && !box.hidden) {
       inp.value ? (inp.value = "") : ((T = []), (Y = ""));
       go();
     } else return;

@@ -14,16 +14,16 @@
 {{- $hs := partial "headings.html" . }}
 {{- $n := len $hs }}
 {{- if ge $n 2 }}
-<nav class="toc" aria-label="Contents" style="--n:{{ $n }}">
+<nav class="contents" aria-label="Contents" style="--n:{{ $n }}">
 <i id="toc"></i>
-<ol class="ticks" aria-hidden="true"><li class="tk-hd"><a href="#top" tabindex="-1"></a></li>
-{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}" tabindex="-1"></a></li>{{ end }}</ol>
-<a class="topen" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="vh">Contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
-<a class="tshut" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="vh">Close contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
-<a class="tdim" href="#_" tabindex="-1" aria-hidden="true"></a>
-<div class="tpop"><div class="pbox"><span class="legend">Contents · {{ $n }}</span><div class="frame">
-<ol class="clist"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
-{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
+<ol class="ticks" aria-hidden="true"><li class="head-anchor"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}" tabindex="-1"></a></li>{{ end }}</ol>
+<a class="contents-open" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="visually-hidden">Contents</span><span class="contents-count" aria-hidden="true">/{{ $n }}</span></a>
+<a class="contents-close" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="visually-hidden">Close contents</span><span class="contents-count" aria-hidden="true">/{{ $n }}</span></a>
+<a class="contents-dim" href="#_" tabindex="-1" aria-hidden="true"></a>
+<div class="contents-popover"><div class="contents-box"><span class="legend">Contents · {{ $n }}</span><div class="frame">
+<ol class="contents-list"><li class="head-anchor" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
 </div></div></div>
 </nav>
 {{- end }}

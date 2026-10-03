@@ -3,15 +3,15 @@
    since 404 has one too */
 /* the head: the title, the meta line in mute, whose tags are links like any other, and a 1px rule at the column
    width. A bare head has no meta line */
-.ph{margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
-.ph h1{margin:0 0 10px}
-.ph.bare h1{margin:0}
-.ph .meta{margin:0;color:var(--mute);font-family:var(--mach);font-size:15px}
+.page-head{margin:0 0 32px;padding-bottom:20px;border-bottom:1px solid var(--fg)}
+.page-head h1{margin:0 0 10px}
+.page-head.bare h1{margin:0}
+.page-head .meta{margin:0;color:var(--mute);font-family:var(--mach);font-size:15px}
 
 /* headings in the headings' face, Xenon, and full fg over body text in the body mix. Home's h1 is only for screen
-   readers (.vh) and stays in the body's face, which spares home a font it would load for nothing. The ids are there for Contents and search, so a jump
+   readers (.visually-hidden) and stays in the body's face, which spares home a font it would load for nothing. The ids are there for Contents and search, so a jump
    to one leaves some room above it */
-.ph h1,.prose :is(h2,h3){font-family:var(--head)}
+.page-head h1,.prose :is(h2,h3){font-family:var(--head)}
 .prose :is(p,li){color:var(--body)}
 .prose h2{margin:2.3em 0 .75em}
 .prose h3{margin:1.9em 0 .6em}
@@ -35,10 +35,10 @@
 /* a keyed list, in a framed box: keys in mute in a max-content column, values in fg, at 15px in the machine face,
    since what the colophon, This site and Subscribe list comes from the build. The third column is
    for the colophon's history; other values span it */
-.kv .frame,.colo .frame{padding:20px 18px 14px;font-family:var(--mach);font-size:15px;line-height:1.55}
-.kv dl,.colo dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;column-gap:2ch;align-items:baseline;margin:0}
-.kv dt,.colo dt{color:var(--mute)}
-.kv dd,.colo dd{grid-column:2/-1;min-width:0;margin:0}
+.key-values .frame,.colophon .frame{padding:20px 18px 14px;font-family:var(--mach);font-size:15px;line-height:1.55}
+.key-values dl,.colophon dl{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;column-gap:2ch;align-items:baseline;margin:0}
+.key-values dt,.colophon dt{color:var(--mute)}
+.key-values dd,.colophon dd{grid-column:2/-1;min-width:0;margin:0}
 
 /* forced colours drop backgrounds, and the squares are backgrounds */
 @media (forced-colors:active){

@@ -4,58 +4,58 @@
 /* a code window that ends a note sits as far above the frame as a paragraph does, and one that opens it leaves
    just enough room for its own label under the note's */
 .callout .frame>:last-child{margin-bottom:1.15em}
-.callout .frame>.win:first-child{margin-top:.6em}
+.callout .frame>.code-window:first-child{margin-top:.6em}
 
 /* code windows: a heavy frame on the code ground, with no dither. A file's path goes in an inverted title bar, and a
    block without one has its language cut into the border. The bar keeps its rule for forced colours, which drop its
    ground */
-.win{position:relative;margin:1.7em 0;border:2px solid var(--fg);background:var(--code)}
-.win figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-family:var(--mach);font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
+.code-window{position:relative;margin:1.7em 0;border:2px solid var(--fg);background:var(--code)}
+.code-window figcaption{padding:5px 10px;border-bottom:2px solid var(--fg);background:var(--fg);color:var(--bg);font-family:var(--mach);font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
 /* long lines scroll inside the frame. The scroll hint is a soft edge where a line runs past it: fg shadows fixed to
    the box, which the local layers in code cover at each end */
-.win pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--thumb) var(--code);
+.code-window pre.code{margin:0;padding:12px 16px;scrollbar-color:var(--thumb) var(--code);
   background:linear-gradient(to right,var(--code) 30%,transparent) left/28px 100% no-repeat local,
     linear-gradient(to left,var(--code) 30%,transparent) right/28px 100% no-repeat local,
     linear-gradient(to right,color-mix(in srgb,var(--fg) 22%,transparent),transparent) left/10px 100% no-repeat scroll,
     linear-gradient(to left,color-mix(in srgb,var(--fg) 22%,transparent),transparent) right/10px 100% no-repeat scroll;
   background-color:var(--code)}
-.win.lgw pre.code{padding-top:20px}
+.code-window.with-legend pre.code{padding-top:20px}
 /* the pre scrolls from the keyboard. Its ring goes inside the frame: in light both are fg, so a ring on the frame
    would vanish */
-.win pre.code:focus-visible{outline-offset:-4px}
+.code-window pre.code:focus-visible{outline-offset:-4px}
 /* two-tone syntax: comments and strings, and everything else plain */
-.win :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
+.code-window :is(.c,.c1,.ch,.cm,.cp,.cpf,.cs){color:var(--com)}
 /* a comment is a note in the author's hand. A hashbang and preprocessor lines take the comments' colour, but they're
    instructions to the machine, so they stay in the code's face */
-.win :is(.c,.c1,.cm,.cs){font-family:var(--hand)}
-.win :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
+.code-window :is(.c,.c1,.cm,.cs){font-family:var(--hand)}
+.code-window :is(.s,.s1,.s2,.sa,.sb,.sc,.sd,.se,.sh,.si,.sr,.ss,.sx,.dl){color:var(--str)}
 
 /* the colophon: the post's one dither, as wide as the text column, all of it in the machine face. The source file is
    its label, which wraps inside the frame. One keyed list, laid out in prose.css, with history at the end of the commit row; then the words and
    code blocks under a dotted rule, split by dots with .6ch either side, as in the lab */
-.colo{margin-top:56px;font-family:var(--mach)}
-.colo .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
-.colo .cm{grid-column:2}
-.colo .hist{grid-column:3;text-align:right}
-.comp{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge);color:var(--mute)}
-.comp span{white-space:nowrap}
-.comp .n{color:var(--fg)}
-.comp .sep{padding-inline:.6ch}
+.colophon{margin-top:56px;font-family:var(--mach)}
+.colophon .legend{max-width:calc(100% - 24px);overflow-wrap:anywhere}
+.colophon .commit{grid-column:2}
+.colophon .history{grid-column:3;text-align:right}
+.colophon-counts{margin:8px 0 0;padding-top:8px;border-top:1px dotted var(--edge);color:var(--mute)}
+.colophon-counts span{white-space:nowrap}
+.colophon-counts .count{color:var(--fg)}
+.colophon-counts .separator{padding-inline:.6ch}
 
 /* Older and Newer (pn.html): the neighbours' file names at the two ends of the text column, in mute. They invert on
-   hover like any link; .pn-file a would win over main.css's a:hover colour, so hover sets it again. The nav spans the
+   hover like any link; .post-nav a would win over main.css's a:hover colour, so hover sets it again. The nav spans the
    column, as the colophon does. Only when the two don't fit do they give way, and then the name's
    span takes the ellipsis, so the arrow always shows; on phones they stack. 32px under the colophon's frame (about
    24px to the eye, past the dither), and main's bottom padding drops from 56px to 28px, so the footer's rule sits
    28px under them */
-.pn{margin-top:32px}
-.pn-file{display:flex;column-gap:3ch}
-.pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-family:var(--mach);font-size:15px;text-decoration:none;white-space:nowrap}
-.pn-file span{overflow:hidden;text-overflow:ellipsis}
-.pn-file [aria-hidden]{flex:none}
-.pn-file a:hover{color:var(--bg)}
-.pn-file .newer{margin-left:auto}
-main:has(.pn-file){padding-bottom:28px}
+.post-nav{margin-top:32px}
+.post-nav{display:flex;column-gap:3ch}
+.post-nav a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-family:var(--mach);font-size:15px;text-decoration:none;white-space:nowrap}
+.post-nav span{overflow:hidden;text-overflow:ellipsis}
+.post-nav [aria-hidden]{flex:none}
+.post-nav a:hover{color:var(--bg)}
+.post-nav .newer{margin-left:auto}
+main:has(.post-nav){padding-bottom:28px}
 
 
 /* Contents (contents.html). Narrow or touch, the default: a button fixed to the bottom-right corner, 16px in past the
@@ -64,11 +64,11 @@ main:has(.pn-file){padding-bottom:28px}
    beside it on hover. The current section comes from :target-current (Chrome and Edge 140+): its tick turns fg, the box
    marks it with the 7px square and the button counts up to it. Those rules stay on their own, because a browser that
    doesn't know the pseudo-class drops the whole rule; there nothing is marked and the button shows no count */
-.toc{counter-reset:cur}
-.ticks,.clist{margin:0;padding:0;list-style:none;scroll-target-group:auto}
+.contents{counter-reset:cur}
+.ticks,.contents-list{margin:0;padding:0;list-style:none;scroll-target-group:auto}
 /* the head's anchors stay in each group, hidden, so nothing is current above the first heading. Narrow, the ticks are
    only scroll markers: rendered but clipped, so they still count for the button */
-.ticks,.tk-hd,.clist .sl-hd{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
+.ticks,.head-anchor,.contents-list .head-anchor{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%)}
 /* the target that opens the box: empty and fixed to the top of the window, so following the button scrolls nothing */
 #toc{position:fixed;top:0;left:0}
 /* the button: the header's ruled frame as a 48px pill, the menu icon and the section count in the machine face, in a
@@ -78,53 +78,53 @@ main:has(.pn-file){padding-bottom:28px}
    only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its place while the box is open. The page dims
    behind the open box, so frames under it fall back, and a tap on the dim closes the box, without the tap's grey flash.
    Hidden, the dim waits for its fade. The ring sits under the button (z-index -1), or it would cover the focus ring */
-.topen,.tshut{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none}
-.topen::before,.tshut::before{content:"";position:absolute;z-index:-1;inset:-8px;border:6px solid var(--bg);border-radius:6px;pointer-events:none}
-.topen svg,.tshut svg{display:block;flex:none;width:18px;height:14px}
-.topen path{fill:currentColor}
-.tshut path{fill:none;stroke:currentColor;stroke-width:2}
-.toc :is(.topen,.tshut):hover{background:var(--bg);color:var(--fg)}
-@media (hover:hover){.toc :is(.topen,.tshut):hover{background:var(--fg);color:var(--bg)}}
-.tshut{display:none}
-.tdim{position:fixed;inset:0;z-index:20;visibility:hidden;opacity:0;transition:opacity .14s,visibility 0s .14s;-webkit-tap-highlight-color:transparent}
-.tdim,.toc .tdim:hover{background:color-mix(in srgb,var(--bg) 72%,transparent)}
-.toc .ticks a:hover{background:none}
-.tnum{display:none}
+.contents-open,.contents-close{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none}
+.contents-open::before,.contents-close::before{content:"";position:absolute;z-index:-1;inset:-8px;border:6px solid var(--bg);border-radius:6px;pointer-events:none}
+.contents-open svg,.contents-close svg{display:block;flex:none;width:18px;height:14px}
+.contents-open path{fill:currentColor}
+.contents-close path{fill:none;stroke:currentColor;stroke-width:2}
+.contents :is(.contents-open,.contents-close):hover{background:var(--bg);color:var(--fg)}
+@media (hover:hover){.contents :is(.contents-open,.contents-close):hover{background:var(--fg);color:var(--bg)}}
+.contents-close{display:none}
+.contents-dim{position:fixed;inset:0;z-index:20;visibility:hidden;opacity:0;transition:opacity .14s,visibility 0s .14s;-webkit-tap-highlight-color:transparent}
+.contents-dim,.contents .contents-dim:hover{background:color-mix(in srgb,var(--bg) 72%,transparent)}
+.contents .ticks a:hover{background:none}
+.contents-count{display:none}
 @supports selector(:target-current){
-  .tnum{display:inline;color:var(--mute)}
-  .tnum::before{content:counter(cur);color:var(--fg)}
+  .contents-count{display:inline;color:var(--mute)}
+  .contents-count::before{content:counter(cur);color:var(--fg)}
   /* inverted on hover, the count takes the button's colour, or the current number would vanish into it */
-  @media (hover:hover){.toc :is(.topen,.tshut):hover .tnum,.toc :is(.topen,.tshut):hover .tnum::before{color:inherit}}
-  .ticks li:not(.tk-hd):has(>a:target-current){counter-increment:cur}
-  .ticks li:not(.tk-hd):has(~li>a:target-current){counter-increment:cur}
+  @media (hover:hover){.contents :is(.contents-open,.contents-close):hover .contents-count,.contents :is(.contents-open,.contents-close):hover .contents-count::before{color:inherit}}
+  .ticks li:not(.head-anchor):has(>a:target-current){counter-increment:cur}
+  .ticks li:not(.head-anchor):has(~li>a:target-current){counter-increment:cur}
 }
 /* the box opens above the button: the label, a heavy frame, no dither. Narrow, a closed box is hidden with
    visibility, which waits for the fade, so its links take no tap or focus; picking one hides it, and focus goes back to
    the page at the heading. Rows are at least 44px, and a long list scrolls inside the frame */
-.tpop{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:21;width:min(calc(38ch + 36px),calc(100% - 32px));visibility:hidden;opacity:0;transform:translateY(8px);transition:opacity .14s,transform .14s,visibility 0s .14s}
-.pbox,.pbox>.frame{position:relative}
-.tpop .frame{max-height:calc(100vh - 120px);max-height:calc(100svh - 120px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:18px 16px 8px}
-.clist li{position:relative;padding-left:2.2ch}
-.clist .l3{padding-left:4.4ch}
-.clist a{display:block;min-height:44px;padding:10px 0;line-height:1.4;text-decoration:none;color:var(--mute)}
-.clist li a:hover{background:var(--fg);color:var(--bg)}
-.clist a:target-current{color:var(--fg)}
-.clist li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:calc(10px + .5em);width:7px;height:7px;background:var(--fg)}
-.clist .l3:has(>a:target-current)::before{left:2.2ch}
+.contents-popover{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:21;width:min(calc(38ch + 36px),calc(100% - 32px));visibility:hidden;opacity:0;transform:translateY(8px);transition:opacity .14s,transform .14s,visibility 0s .14s}
+.contents-box,.contents-box>.frame{position:relative}
+.contents-popover .frame{max-height:calc(100vh - 120px);max-height:calc(100svh - 120px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:18px 16px 8px}
+.contents-list li{position:relative;padding-left:2.2ch}
+.contents-list .level-3{padding-left:4.4ch}
+.contents-list a{display:block;min-height:44px;padding:10px 0;line-height:1.4;text-decoration:none;color:var(--mute)}
+.contents-list li a:hover{background:var(--fg);color:var(--bg)}
+.contents-list a:target-current{color:var(--fg)}
+.contents-list li:has(>a:target-current)::before{content:"";position:absolute;left:0;top:calc(10px + .5em);width:7px;height:7px;background:var(--fg)}
+.contents-list .level-3:has(>a:target-current)::before{left:2.2ch}
 /* the page ends lower by the button's height, so it never covers the footer, and focus scrolls clear of it */
-body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
-:root:has(.toc){scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+body:has(.contents){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+:root:has(.contents){scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 /* open while #toc is the target. Only narrow, so a link to #toc does nothing to the trace. When the keyboard leaves the
    box for the page, the box closes, so it never covers what has focus (WCAG 2.4.11); without a script there's no Esc
    to close it in place */
 @media (max-width:1359.98px),(hover:none){
-  #toc:target~.topen{display:none}
-  #toc:target~.tshut{display:flex}
-  #toc:target~.tdim{visibility:visible;opacity:1;transition:opacity .14s}
-  #toc:target~.tpop{visibility:visible;opacity:1;transform:none;transition:opacity .14s,transform .14s}
-  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~.topen{display:flex}
-  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~.tshut{display:none}
-  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~:is(.tdim,.tpop){visibility:hidden;opacity:0;transition:none}
+  #toc:target~.contents-open{display:none}
+  #toc:target~.contents-close{display:flex}
+  #toc:target~.contents-dim{visibility:visible;opacity:1;transition:opacity .14s}
+  #toc:target~.contents-popover{visibility:visible;opacity:1;transform:none;transition:opacity .14s,transform .14s}
+  body:has(:is(.site-header,main,.site-footer) :focus-visible) #toc:target~.contents-open{display:flex}
+  body:has(:is(.site-header,main,.site-footer) :focus-visible) #toc:target~.contents-close{display:none}
+  body:has(:is(.site-header,main,.site-footer) :focus-visible) #toc:target~:is(.contents-dim,.contents-popover){visibility:hidden;opacity:0;transition:none}
 }
 
 /* wide, with a mouse: the trace. 60px (--tw) fixed to the right edge and centred top to bottom, without a transform, so
@@ -134,40 +134,40 @@ body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
    links stay focusable. Its width leaves 24px to the 772px text column, and a classic scrollbar's width besides, so it
    never covers the text */
 @media (min-width:1360px) and (hover:hover){
-  .toc{--tw:60px;position:fixed;top:0;bottom:0;right:0;z-index:20;width:var(--tw);height:fit-content;margin-block:auto;padding:24px 16px}
-  body:has(.toc){padding-bottom:0}
-  :root:has(.toc){scroll-padding-bottom:0}
+  .contents{--tw:60px;position:fixed;top:0;bottom:0;right:0;z-index:20;width:var(--tw);height:fit-content;margin-block:auto;padding:24px 16px}
+  body:has(.contents){padding-bottom:0}
+  :root:has(.contents){scroll-padding-bottom:0}
   .ticks{position:static;display:flex;flex-direction:column;align-items:flex-end;width:auto;height:auto;overflow:visible;clip-path:none}
   .ticks a{display:block;width:28px;padding:round(down,max(1px,min(6px,(100vh - 96px) / var(--n) / 2 - 1px)),1px) 0}
   .ticks a::before{content:"";display:block;width:20px;height:2px;margin-left:auto;background:var(--dim)}
-  .ticks .l3 a::before{width:12px}
+  .ticks .level-3 a::before{width:12px}
   .ticks a:hover::before{background:var(--fg)}
   .ticks a:target-current::before{background:var(--fg)}
-  .topen,.tshut,.tdim{display:none}
-  .tpop{top:0;bottom:0;right:var(--tw);width:min(280px,calc(50vw - 386px - var(--tw) - 32px));height:fit-content;margin-block:auto;visibility:visible;transform:none;pointer-events:none;transition:opacity .12s}
-  .toc:hover .tpop,.toc:has(.clist a:focus-visible) .tpop{opacity:1;pointer-events:auto}
-  .tpop .frame{max-height:calc(100vh - 48px);font-size:15px;line-height:1.45}
-  .clist li{margin:0 0 .6em}
-  .clist a{display:inline;min-height:0;padding:0;line-height:inherit}
-  .clist li:has(>a:target-current)::before{top:.45em}
+  .contents-open,.contents-close,.contents-dim{display:none}
+  .contents-popover{top:0;bottom:0;right:var(--tw);width:min(280px,calc(50vw - 386px - var(--tw) - 32px));height:fit-content;margin-block:auto;visibility:visible;transform:none;pointer-events:none;transition:opacity .12s}
+  .contents:hover .contents-popover,.contents:has(.contents-list a:focus-visible) .contents-popover{opacity:1;pointer-events:auto}
+  .contents-popover .frame{max-height:calc(100vh - 48px);font-size:15px;line-height:1.45}
+  .contents-list li{margin:0 0 .6em}
+  .contents-list a{display:inline;min-height:0;padding:0;line-height:inherit}
+  .contents-list li:has(>a:target-current)::before{top:.45em}
 }
 
 /* phones: history drops under the hash, 24px from its centre to the hash's (WCAG 2.5.8), a path label that wraps to two lines clears the first row, and Older and Newer
    stack, older at the left and newer at the right */
 @media (max-width:600px){
-  .colo .frame{padding-top:38px}
-  .colo .hist{grid-column:2/-1;margin-top:1px;text-align:left}
-  .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
-  .pn-file a{max-width:100%}
+  .colophon .frame{padding-top:38px}
+  .colophon .history{grid-column:2/-1;margin-top:1px;text-align:left}
+  .post-nav{flex-direction:column;align-items:flex-start;row-gap:2px}
+  .post-nav a{max-width:100%}
 }
 @media (prefers-reduced-motion:reduce){
-  .tpop,.tdim,#toc:target~:is(.tpop,.tdim){transition:none}
+  .contents-popover,.contents-dim,#toc:target~:is(.contents-popover,.contents-dim){transition:none}
 }
 /* forced colours drop backgrounds, and the squares and ticks are backgrounds. The ticks take GrayText, and the current
    one Highlight, as a native control marks what's selected */
 @media (forced-colors:active){
-  .clist li::before{background:CanvasText;forced-color-adjust:none}
+  .contents-list li::before{background:CanvasText;forced-color-adjust:none}
   .ticks a::before{background:GrayText;forced-color-adjust:none}
   .ticks a:target-current::before{background:Highlight}
-  .topen::before,.tshut::before{display:none}
+  .contents-open::before,.contents-close::before{display:none}
 }

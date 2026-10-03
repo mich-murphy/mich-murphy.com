@@ -5,14 +5,14 @@
   pages.css */}}
 {{- $gh := site.Params.repo }}
 {{- $projects := hugo.Data.projects.project }}
-<header class="ph bare"><h1>{{ .Title }}</h1></header>
+<header class="page-head bare"><h1>{{ .Title }}</h1></header>
 {{ partial "prose.html" . }}
-<div class="pcard"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
+<div class="projects"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
 {{- range $projects }}
-<li><a href="{{ .url }}">{{ .name }}</a> <span class="pd">{{ .desc }}</span></li>
+<li><a href="{{ .url }}">{{ .name }}</a> <span class="project-desc">{{ .desc }}</span></li>
 {{- end }}
 </ul></div></div>
-<div class="dz kv"><h2 class="legend">This site</h2><div class="frame">
+<div class="dithered key-values"><h2 class="legend">This site</h2><div class="frame">
 <dl>
 <dt>source</dt><dd><a href="{{ $gh }}">{{ strings.TrimPrefix "https://github.com/" $gh }}</a></dd>
 <dt>built</dt><dd>Hugo {{ hugo.Version }} on GitHub Actions</dd>

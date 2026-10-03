@@ -5,7 +5,7 @@
   anchor in Contents (contents.html) */}}
 {{- $post := eq .Section "posts" }}
 <article>
-<header class="ph{{ if not $post }} bare{{ end }}" id="top">
+<header class="page-head{{ if not $post }} bare{{ end }}" id="top">
 <h1>{{ .Title }}</h1>
 {{- if $post }}
 {{- /* a tag reads as its slug, decoded from the URL path so café isn't shown as caf%C3%A9, and links to the index

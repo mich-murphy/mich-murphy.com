@@ -42,7 +42,7 @@ a{color:inherit;text-decoration:underline 1px;text-underline-offset:3px}
 a:hover{background:var(--fg);color:var(--bg);text-decoration:none}
 /* a commit hash (the footer's build, the colophon's commit) is accent text. a:hover is more specific, so it still
    inverts */
-.h{color:var(--acct)}
+.hash{color:var(--acct)}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 h1,h2,h3{font-weight:400;text-wrap:balance}
 h1{font-size:27px;line-height:1.25}
@@ -56,11 +56,11 @@ pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
 
 /* framed boxes: a label cut into the border, and the dither, an offset shadow in fg through our own 4x6 tile.
    One dither per page */
-.dz{position:relative}
-.dz::before{content:"";position:absolute;inset:8px -8px -8px 8px;background:var(--fg);opacity:.5;pointer-events:none;
+.dithered{position:relative}
+.dithered::before{content:"";position:absolute;inset:8px -8px -8px 8px;background:var(--fg);opacity:.5;pointer-events:none;
   --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E") 0 0/4px 6px repeat;
   -webkit-mask:var(--m);mask:var(--m)}
-.dz>*{position:relative}
+.dithered>*{position:relative}
 .frame{border:2px solid var(--fg);background:var(--bg)}
 /* a page's own boxes (home, 404, About, Feeds) are labelled with an h2, so a screen reader's list of headings finds
    them; a box inside a post (code windows, callouts, the colophon) and Contents keep a span */
@@ -75,46 +75,46 @@ pre code{font-size:inherit;background:none;padding:0;overflow-wrap:normal}
 .callout>.legend{position:relative;float:left;max-width:calc(100% - 24px);margin-bottom:2px;overflow-wrap:anywhere}
 .callout .frame>:first-child{clear:left}
 
-.vh,.skip:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.skip{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:13.5px}
+.visually-hidden,.skip-link:not(:focus){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip-link{position:absolute;top:8px;left:8px;z-index:2;padding:4px 8px;border:2px solid var(--fg);background:var(--bg);font-size:13.5px}
 
 /* the ruled header and footer run the full width; their contents and main sit on the 820px wrap, and every page's
    content fills it, so a page lines up with the header and footer */
-.hd,main,.ft{max-width:820px;margin-inline:auto;padding-inline:24px}
+.header-bar,main,.footer-bar{max-width:820px;margin-inline:auto;padding-inline:24px}
 main{flex:1 0 auto;width:100%;padding-block:36px 56px}
 /* the skip link focuses main (tabindex=-1), which needs no ring */
 main:focus{outline:none}
-.hdw{border-bottom:2px solid var(--fg)}
-.hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;padding-block:12px;font-size:13.5px}
-.hd a{text-decoration:none}
+.site-header{border-bottom:2px solid var(--fg)}
+.header-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;padding-block:12px;font-size:13.5px}
+.header-bar a{text-decoration:none}
 /* only the name is set in capitals; nav items are paths, so they read as written */
 .brand{display:inline-flex;align-items:center;gap:10px;min-width:0;overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:.08em}
 .brand:hover{background:none;color:inherit}
 .mark{display:block;flex:none;width:24px;height:24px;fill:currentColor}
-.mark .b{fill:var(--bg)}
-.hd nav{display:flex;flex-wrap:wrap;gap:4px 3ch}
+.mark .knockout{fill:var(--bg)}
+.header-bar nav{display:flex;flex-wrap:wrap;gap:4px 3ch}
 /* the current section takes the Contents box's 7px square, outside the flow so nothing shifts; inversion is for hover */
-.hd nav a{position:relative}
-.hd nav a[aria-current]::before{content:"";position:absolute;top:50%;left:calc(-7px - .8ch);width:7px;height:7px;transform:translateY(-50%);background:var(--fg)}
-.hd nav a:hover{padding:2px 5px;margin:-2px -5px}
+.header-bar nav a{position:relative}
+.header-bar nav a[aria-current]::before{content:"";position:absolute;top:50%;left:calc(-7px - .8ch);width:7px;height:7px;transform:translateY(-50%);background:var(--fg)}
+.header-bar nav a:hover{padding:2px 5px;margin:-2px -5px}
 /* that padding moves the link's box 5px left, so the square moves back by as much */
-.hd nav a[aria-current]:hover::before{left:calc(-2px - .8ch)}
+.header-bar nav a[aria-current]:hover::before{left:calc(-2px - .8ch)}
 /* the page's address (header.html) is for print, where it takes the nav's place */
-.purl{display:none}
+.print-url{display:none}
 /* bigger hit areas without moving anything */
-.ft a{position:relative}
-.hd nav a::after,.ft a::after{content:"";position:absolute;inset:-12px -6px}
-.ftw{border-top:2px solid var(--fg)}
-.ft{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:14px 28px;color:var(--mute);font-family:var(--mach);font-size:13.5px}
+.footer-bar a{position:relative}
+.header-bar nav a::after,.footer-bar a::after{content:"";position:absolute;inset:-12px -6px}
+.site-footer{border-top:2px solid var(--fg)}
+.footer-bar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:14px 28px;color:var(--mute);font-family:var(--mach);font-size:13.5px}
 
 @media (max-width:600px){
-  .hd,main,.ft{padding-inline:16px}
+  .header-bar,main,.footer-bar{padding-inline:16px}
 }
 /* forced colours drop backgrounds, and the current marker is one. The mark's M is knocked out of the system ground */
 @media (forced-colors:active){
-  .hd nav a[aria-current]::before{background:CanvasText;forced-color-adjust:none}
-  .hd nav a[aria-current]{text-decoration:underline}
-  .mark .b{fill:Canvas}
+  .header-bar nav a[aria-current]::before{background:CanvasText;forced-color-adjust:none}
+  .header-bar nav a[aria-current]{text-decoration:underline}
+  .mark .knockout{fill:Canvas}
 }
 /* reduced motion: nothing here animates. Components scope their own rules: the Contents box's fade is off (post.css) */
 
@@ -139,28 +139,28 @@ main:focus{outline:none}
      fits but its padding runs over, it moves all of main to the next page and leaves one with only the header. A margin
      at a break is just dropped. The footer asks not to start a page; Chrome then takes the last row or lines with it
      when it can, and Firefox ignores it */
-  main,body main:has(.pn-file){padding-bottom:0}
-  .ftw{margin-top:28px;break-before:avoid}
-  .hd nav,nav.toc,nav.pn,.sfr,.ft>span+span,.dz::before{display:none}
-  body:has(nav.toc){padding-bottom:0}
-  .purl{display:inline;color:var(--mute)}
+  main,body main:has(.post-nav){padding-bottom:0}
+  .site-footer{margin-top:28px;break-before:avoid}
+  .header-bar nav,nav.contents,nav.post-nav,.search-frame,.footer-bar>span+span,.dithered::before{display:none}
+  body:has(nav.contents){padding-bottom:0}
+  .print-url{display:inline;color:var(--mute)}
   .legend,.prose ul>li::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  figure.win figcaption{background:var(--bg);color:var(--fg);break-after:avoid}
-  figure.win pre.code{white-space:pre-wrap;background:none;orphans:4;widows:4}
-  .win code{overflow-wrap:anywhere}
-  .prose a:is([href^="http"],[href^="/"]):not(.addr)::after,.pcard a[href^="http"]::after{content:" <" attr(href) ">";
+  figure.code-window figcaption{background:var(--bg);color:var(--fg);break-after:avoid}
+  figure.code-window pre.code{white-space:pre-wrap;background:none;orphans:4;widows:4}
+  .code-window code{overflow-wrap:anywhere}
+  .prose a:is([href^="http"],[href^="/"]):not(.no-print-url)::after,.projects a[href^="http"]::after{content:" <" attr(href) ">";
     color:var(--mute);font-size:13.5px;overflow-wrap:anywhere}
   /* an internal link's href is a path, so the site's host (baseURL in hugo.toml) goes in front, as in the header's
      address */
-  .prose a[href^="/"]:not(.addr)::after{content:" <mich-murphy.com" attr(href) ">"}
+  .prose a[href^="/"]:not(.no-print-url)::after{content:" <mich-murphy.com" attr(href) ">"}
   .prose :is(h2,h3){break-after:avoid}
   /* a code window taller than a page (class long, render-codeblock.html) would be pushed to a new page and split there
      anyway, so it splits where it falls, keeping its title bar with its code and at least 4 lines on each side
      (orphans and widows, which Firefox ignores) */
-  .win:not(.long),.callout,.colo,.kv{break-inside:avoid}
+  .code-window:not(.long),.callout,.colophon,.key-values{break-inside:avoid}
   :has(>.legend+.frame){border-top:10px solid transparent}
-  .win.lgw{border-width:10px 0 0;border-color:transparent}
-  .win.lgw pre.code{border:2px solid var(--fg)}
+  .code-window.with-legend{border-width:10px 0 0;border-color:transparent}
+  .code-window.with-legend pre.code{border:2px solid var(--fg)}
   /* the Posts card's clip (card.css) hides, in Firefox, a row that falls past a page break */
-  div.tcard ol{clip-path:none}
+  div.posts-card ol{clip-path:none}
 }

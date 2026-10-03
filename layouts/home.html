@@ -1,22 +1,21 @@
 {{ define "main" }}
-<h1 class="vh">{{ site.Title }}</h1>
+<h1 class="visually-hidden">{{ site.Title }}</h1>
 <div class="intro">{{ .Content }}</div>
 {{- /* Search: a plain frame above the Posts card. The box needs the script, so it ships hidden and the frame is
   labelled Filter until the script shows the box and renames it Search. Under the box are the tag and year menus.
   Their links go to the hidden targets in the Posts card, so they filter the list through :target without the script
   (filters.css), and the script takes them over. <b> stays empty: CSS writes all, or the applied value without the
-  script, and the script writes the value. filters.css finds an entry by data-f, its target's id, since Hugo
+  script, and the script writes the value. filters.css finds an entry by data-filter, its target's id, since Hugo
   percent-encodes the href, so café's is #caf%c3%a9. Styles are in index.css */}}
-<div class="sfr"><h2 class="legend">Filter</h2><div class="frame">
-<search class="sb" hidden><span class="pr" aria-hidden="true">&gt;</span><input type="search" class="sq" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="kc" title="Press / to search">/</kbd><span class="sc" aria-hidden="true"></span></search>
-<div class="ff ff-menus"><span class="k">filter</span>
+<div class="search-frame"><h2 class="legend">Filter</h2><div class="frame">
+<search class="search-box" hidden><span class="search-prompt" aria-hidden="true">&gt;</span><input type="search" class="search-input" placeholder="search posts" aria-label="Search posts" autocomplete="off" spellcheck="false"><kbd class="search-key" title="Press / to search">/</kbd><span class="search-count" aria-hidden="true"></span></search>
+<div class="filters"><span class="key">filter</span>
 {{- $fs := partial "filters.html" . }}
-{{- range slice (slice "t" "tag") (slice "y" "year") }}
-  {{- $k := index . 0 }}
-  {{- $name := index . 1 }}
-<div class="fr fr-{{ $k }}"><details class="fmn" name="ff"><summary><span class="k">{{ $name }}:</span><b></b></summary><div class="fpop" role="group" aria-label="Filter by {{ $name }}"><span class="fo"><a href="#all" class="fb all">all</a>
-  {{- range where $fs "k" $k }}<a href="{{ print "#" .id | safeURL }}" class="fb" data-f="{{ .id }}"><span>{{ .v }}</span><span class="n">{{ .n }}</span></a>{{ end -}}
-</span></div></details><a href="#all" class="dx" aria-label="Clear the {{ $name }} filter">×</a></div>
+{{- range slice "tag" "year" }}
+  {{- $k := . }}
+<div class="filter filter-{{ $k }}"><details class="filter-menu" name="filters"><summary><span class="key">{{ $k }}:</span><b></b></summary><div class="filter-popover" role="group" aria-label="Filter by {{ $k }}"><span class="filter-choices"><a href="#all" class="filter-choice all">all</a>
+  {{- range where $fs "k" $k }}<a href="{{ print "#" .id | safeURL }}" class="filter-choice" data-filter="{{ .id }}"><span>{{ .v }}</span><span class="count">{{ .n }}</span></a>{{ end -}}
+</span></div></details><a href="#all" class="filter-clear" aria-label="Clear the {{ $k }} filter">×</a></div>
 {{- end }}
 </div>
 </div></div>

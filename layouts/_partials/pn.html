@@ -16,8 +16,8 @@
   {{- end }}
 {{- end }}
 {{- if or $older $newer }}
-<nav class="pn pn-file" aria-label="Newer and older posts">
-{{- with $older }}<a class="older" href="{{ .RelPermalink }}" rel="prev"><span aria-hidden="true">‹</span><span>{{ strings.TrimPrefix "posts/" .File.Path }}</span><span class="vh">, older post: {{ .Title }}</span></a>{{ end }}
-{{- with $newer }}<a class="newer" href="{{ .RelPermalink }}" rel="next"><span>{{ strings.TrimPrefix "posts/" .File.Path }}</span><span class="vh">, newer post: {{ .Title }}</span><span aria-hidden="true">›</span></a>{{ end }}
+<nav class="post-nav" aria-label="Newer and older posts">
+{{- with $older }}<a class="older" href="{{ .RelPermalink }}" rel="prev"><span aria-hidden="true">‹</span><span>{{ strings.TrimPrefix "posts/" .File.Path }}</span><span class="visually-hidden">, older post: {{ .Title }}</span></a>{{ end }}
+{{- with $newer }}<a class="newer" href="{{ .RelPermalink }}" rel="next"><span>{{ strings.TrimPrefix "posts/" .File.Path }}</span><span class="visually-hidden">, newer post: {{ .Title }}</span><span aria-hidden="true">›</span></a>{{ end }}
 </nav>
 {{- end }}
