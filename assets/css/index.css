@@ -55,6 +55,7 @@ search[hidden],.tr[hidden]{display:none}
    linking to its section. When nothing matches, the card says so */
 .tr .ex{grid-column:1/-1;margin-top:1px;color:var(--body);font-size:15px;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex .br{margin-right:1ch;color:var(--mute)}
+.tr .ex:hover,.tr .ex:hover .br{color:var(--bg)}
 .tcard mark{background:var(--acc);color:var(--on)}
 .tcard .none{margin:0;padding:12px 0 14px;color:var(--mute)}
 
@@ -67,6 +68,6 @@ search[hidden],.tr[hidden]{display:none}
 }
 /* forced colours drop backgrounds, so the menus keep their inversion in system colours, and marks take the system's */
 @media (forced-colors:active){
-  .ff{forced-color-adjust:none;--fg:CanvasText;--bg:Canvas;--mute:GrayText;--edge:GrayText;color:var(--fg)}
+  .ff{forced-color-adjust:none;--fg:CanvasText;--bg:Canvas;--mute:GrayText;--edge:GrayText;--focus:Highlight;color:var(--fg)}
   .tcard mark{forced-color-adjust:none;background:Mark;color:MarkText}
 }

@@ -52,6 +52,7 @@
 .pn-file{display:flex;column-gap:3ch}
 .pn-file a{display:flex;column-gap:1ch;flex:0 1 auto;min-width:0;color:var(--mute);font-family:var(--mach);font-size:15px;text-decoration:none;white-space:nowrap}
 .pn-file span{overflow:hidden;text-overflow:ellipsis}
+.pn-file [aria-hidden]{flex:none}
 .pn-file a:hover{color:var(--bg)}
 .pn-file .newer{margin-left:auto}
 main:has(.pn-file){padding-bottom:28px}
@@ -76,9 +77,9 @@ main:has(.pn-file){padding-bottom:28px}
    same distance from the square pill all round; a box-shadow's corners would stand further off. It inverts on hover
    only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its place while the box is open. The page dims
    behind the open box, so frames under it fall back, and a tap on the dim closes the box, without the tap's grey flash.
-   Hidden, the dim waits for its fade */
+   Hidden, the dim waits for its fade. The ring sits under the button (z-index -1), or it would cover the focus ring */
 .topen,.tshut{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:22;display:flex;align-items:center;gap:10px;min-width:48px;height:48px;padding:0 13px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-family:var(--mach);font-size:13.5px;line-height:1;text-decoration:none}
-.topen::before,.tshut::before{content:"";position:absolute;inset:-8px;border:6px solid var(--bg);border-radius:6px;pointer-events:none}
+.topen::before,.tshut::before{content:"";position:absolute;z-index:-1;inset:-8px;border:6px solid var(--bg);border-radius:6px;pointer-events:none}
 .topen svg,.tshut svg{display:block;flex:none;width:18px;height:14px}
 .topen path{fill:currentColor}
 .tshut path{fill:none;stroke:currentColor;stroke-width:2}
@@ -92,6 +93,8 @@ main:has(.pn-file){padding-bottom:28px}
 @supports selector(:target-current){
   .tnum{display:inline;color:var(--mute)}
   .tnum::before{content:counter(cur);color:var(--fg)}
+  /* inverted on hover, the count takes the button's colour, or the current number would vanish into it */
+  @media (hover:hover){.toc :is(.topen,.tshut):hover .tnum,.toc :is(.topen,.tshut):hover .tnum::before{color:inherit}}
   .ticks li:not(.tk-hd):has(>a:target-current){counter-increment:cur}
   .ticks li:not(.tk-hd):has(~li>a:target-current){counter-increment:cur}
 }
@@ -111,12 +114,17 @@ main:has(.pn-file){padding-bottom:28px}
 /* the page ends lower by the button's height, so it never covers the footer, and focus scrolls clear of it */
 body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
 :root:has(.toc){scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
-/* open while #toc is the target. Only narrow, so a link to #toc does nothing to the trace */
+/* open while #toc is the target. Only narrow, so a link to #toc does nothing to the trace. When the keyboard leaves the
+   box for the page, the box closes, so it never covers what has focus (WCAG 2.4.11); without a script there's no Esc
+   to close it in place */
 @media (max-width:1359.98px),(hover:none){
   #toc:target~.topen{display:none}
   #toc:target~.tshut{display:flex}
   #toc:target~.tdim{visibility:visible;opacity:1;transition:opacity .14s}
   #toc:target~.tpop{visibility:visible;opacity:1;transform:none;transition:opacity .14s,transform .14s}
+  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~.topen{display:flex}
+  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~.tshut{display:none}
+  body:has(:is(.hdw,main,.ftw) :focus-visible) #toc:target~:is(.tdim,.tpop){visibility:hidden;opacity:0;transition:none}
 }
 
 /* wide, with a mouse: the trace. 60px (--tw) fixed to the right edge and centred top to bottom, without a transform, so
@@ -144,11 +152,11 @@ body:has(.toc){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
   .clist li:has(>a:target-current)::before{top:.45em}
 }
 
-/* phones: history drops under the hash, a path label that wraps to two lines clears the first row, and Older and Newer
+/* phones: history drops under the hash, 24px from its centre to the hash's (WCAG 2.5.8), a path label that wraps to two lines clears the first row, and Older and Newer
    stack, older at the left and newer at the right */
 @media (max-width:600px){
   .colo .frame{padding-top:38px}
-  .colo .hist{grid-column:2/-1;text-align:left}
+  .colo .hist{grid-column:2/-1;margin-top:1px;text-align:left}
   .pn-file{flex-direction:column;align-items:flex-start;row-gap:2px}
   .pn-file a{max-width:100%}
 }

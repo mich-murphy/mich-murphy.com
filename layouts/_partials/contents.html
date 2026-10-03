@@ -9,7 +9,7 @@
   The ticks are scroll markers for the current section, aria-hidden with tabindex=-1, and the Contents links are the
   ones for keyboards and screen readers. The head's anchor comes first in both lists, empty and hidden, so nothing is
   current until the first heading. The ticks also count the sections up to the current one for the button's 4/7.
-  role=list keeps Contents a list in WebKit, which drops the role from a list without markers. --n, the number of
+  WebKit drops the role from a list without markers, but not inside a nav, so Contents needs no role=list. --n, the number of
   headings, lets a long post's ticks close up so the trace always fits the window */}}
 {{- $hs := partial "headings.html" . }}
 {{- $n := len $hs }}
@@ -22,7 +22,7 @@
 <a class="tshut" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="vh">Close contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
 <a class="tdim" href="#_" tabindex="-1" aria-hidden="true"></a>
 <div class="tpop"><div class="pbox"><span class="legend">Contents · {{ $n }}</span><div class="frame">
-<ol class="clist" role="list"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
+<ol class="clist"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
 {{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
 </div></div></div>
 </nav>
