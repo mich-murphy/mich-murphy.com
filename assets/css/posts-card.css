@@ -11,7 +11,8 @@
   /*
    * One row per post: the title, then the date in muted at the right, with dotted rules between rows. When home's
    * filters hide the first rows, the first one on show would bring its dotted rule to the top of the list, so the
-   * list's top pixel is clipped.
+   * list's top 2px are clipped: the list can start between pixels, and a 1px clip there leaves half the rule showing.
+   * The first row's 8px padding has room for it.
    */
   .posts-card {
     margin-top: 32px;
@@ -28,7 +29,7 @@
       margin: 0;
       padding: 0;
       list-style: none;
-      clip-path: inset(1px -12px -12px);
+      clip-path: inset(2px -12px -12px);
     }
 
     & .post-row + .post-row {
