@@ -211,9 +211,13 @@
     display: block;
   }
 
+  /*
+   * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 11px
+   * margin and the frame's 2px padding), so the two read as one line rather than two a few pixels apart.
+   */
   .filter-popover {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 13px);
     right: 0;
     left: 0;
     z-index: 30;
