@@ -1,48 +1,49 @@
 {
   description = "Hugo website development environment";
 
-  # Flake inputs
   inputs = {
-    # nixos-unstable on 2026-09-26, which has hugo 0.166.0 in the binary cache.
-    # The Hugo version must match HUGO_VERSION in .github/workflows/hugo.yaml
-    # and module.hugoVersion in hugo.toml; the README says how to change them,
-    # and check `nix develop -c hugo version` afterwards.
+    # nixos-unstable on 2026-09-26, pinned by commit rather than following a branch, so Hugo and fontTools only change
+    # when this line does. Its Hugo, 0.166.0, must be the version in hugo.toml's [module.hugoVersion] min, which
+    # scripts/build.sh checks; the README says how to update them together
     nixpkgs.url = "github:nixos/nixpkgs/e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa";
   };
 
-  # Flake outputs
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    # Systems supported. Nixpkgs 26.11 dropped x86_64-darwin, and no nixpkgs
-    # release that still supports it has hugo 0.166.0
-    allSystems = [
-      "x86_64-linux" # 64-bit Intel/AMD Linux
-      "aarch64-linux" # 64-bit ARM Linux
-      "aarch64-darwin" # 64-bit ARM macOS
-    ];
-
-    # Helper to provide system-specific attributes
-    forAllSystems = f:
-      nixpkgs.lib.genAttrs allSystems (system:
-        f {
-          pkgs = import nixpkgs {
-            inherit system;
-            config = {allowUnfree = true;};
-          };
-        });
+  outputs = {nixpkgs, ...}: let
+    # Nixpkgs 26.11 dropped x86_64-darwin, and no release that still supports it has Hugo 0.166.0
+    systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
+    forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
   in {
-    # Development environment output
-    devShells = forAllSystems ({pkgs}: {
-      default = pkgs.mkShell {
-        # The Nix packages provided in the environment
-        packages = [
-          pkgs.hugo
-          # scripts/fonts.py cuts the site's fonts from Monaspace's release; brotli writes woff2
-          (pkgs.python3.withPackages (p: [p.fonttools p.brotli]))
-        ];
+    devShells = forAllSystems (pkgs: let
+      # What scripts/check.sh runs, for both shells
+      lintTools = [
+        pkgs.shellcheck
+        pkgs.shfmt
+        pkgs.ruff
+        pkgs.biome
+        pkgs.actionlint
+        pkgs.zizmor
+        pkgs.lychee
+      ];
+    in {
+      # For working on the site: `nix develop`, or direnv with .envrc. scripts/fonts.py needs fontTools, and brotli
+      # to write woff2
+      default = pkgs.mkShellNoCC {
+        packages =
+          [
+            pkgs.hugo
+            (pkgs.python3.withPackages (p: [p.fonttools p.brotli]))
+          ]
+          ++ lintTools;
+      };
+
+      # For CI's lint job: `nix develop .#ci -c scripts/check.sh`. It leaves out Python, which only fonts.py needs
+      # from Nix; scripts/postbuild.py uses only the standard library, so the runner's python3 runs it
+      ci = pkgs.mkShellNoCC {
+        packages = [pkgs.hugo] ++ lintTools;
       };
     });
+
+    # `nix fmt` formats this file
+    formatter = forAllSystems (pkgs: pkgs.alejandra);
   };
 }
