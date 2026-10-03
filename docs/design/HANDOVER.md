@@ -42,6 +42,8 @@ The status line is gone. Posts get Contents in two forms instead, from one `nav`
   - It opens the same box above it, and ✕ takes its place.
   - A tap outside closes the box. Picking a heading closes it and jumps there.
   - The page ends 56px lower, so the pill never covers the footer.
+  - The pill sits in an 8px ring of the ground. It's 16px in, as a code window's frame is, so without the ring a window scrolling past ran into its right edge and the two read as one box (box lab, button D).
+  - The page dims behind the open box, to the ground at 72%, so frames under the box fall back; the box is as wide as the text column and lined up with them too (box lab, box D). A tap on the dim closes the box. The dim fades with the box.
 - **Why bottom right** (researched on 2026-10-03):
   - Material 3 puts the FAB lower right on phones, and NN/g finds people expect floating buttons there.
   - In Hoober's 2013 grip study, about 61% of taps come from the right hand.
@@ -304,20 +306,15 @@ The largest page is the index, at about 9.6 KB gzipped against the 14 KB (14,336
 | What | Where |
 |---|---|
 | Design lab (rev 15, picked: opens on the final picks, and every option explored stays under "Every switch") | https://claude.ai/artifact/Tb4pePZ6AC5JNVCabTGQ7A |
+| Contents box lab (2026-10-03, picked: button D, the ground ring, and box D, the dimmed page): six treatments of each over the real post on a phone | https://claude.ai/artifact/HQX7x511iDU6q6odo4SuLA |
 | Content trace canvas (2026-10-03, picked: desktop A · Ticks, phone 2 · Pop-up with the button bottom right) | https://claude.ai/artifact/HvjDWGS6AjJP2wPspR4p8A |
-| Rail lab (rev 9, picks made): six contents rails, the keyed colophon, commit message placement | https://claude.ai/artifact/NwYMmP5akxuJyZ5MQyAWq2, local copy `docs/design/rail-lab.html` |
-| Mark lab and design review (rev 7, picks made) | https://claude.ai/artifact/71VrwQCm6i1q16eKn1b55n, local copy `docs/design/mark-lab.html` |
+| Rail lab (rev 9, picks made): six contents rails, the keyed colophon, commit message placement | https://claude.ai/artifact/NwYMmP5akxuJyZ5MQyAWq2 |
+| Mark lab and design review (rev 7, picks made) | https://claude.ai/artifact/71VrwQCm6i1q16eKn1b55n |
 | First proposal (A/B/C directions, for history) | https://claude.ai/artifact/VFM7eMyvC5erWnZjwaEDpk |
-| Local copy of the lab, self-contained | `docs/design/theme-lab.html` (open in a browser) |
-| Lab source, with placeholders for fonts and dither masks | `docs/design/theme-lab.src.html` |
-| Lab build (inlines fonts, masks and the grep index into the local copy, and measures the grep script) | `docs/design/build-lab.py` |
-| Search index for the lab: every line of the 17 posts, `[{s,t,d,g:[tags],l:[[line,text,anchor,kind]]}]`, kind 0 prose, 1 heading, 2 code | `docs/design/grep-index.json` |
-| Grep index generator (rerun after content edits, then `build-lab.py`) | `docs/design/build-grep-index.py` |
-| 0xProto subsets and OFL licence | `docs/design/fonts/` |
 
 The lab's CSS is the reference implementation. It contains every option that was explored, so only the selectors that match the final picks below apply. Everything under `.site` in the lab is the site. Everything outside it is lab chrome. The rev 7 picks are baked into those selectors rather than added as switches.
 
-`docs/design/` is committed (`f4e7b18`, on `main` and `theme`). After editing `theme-lab.src.html`, rerun `build-lab.py` and commit both files. The lab's saved-state key is `mm-theme-lab-rev15-picked`, so a browser that saved rev 15's recommendations opens on the picks. The lab sources for the mark and rail labs lived in a session scratchpad and are gone; the self-contained HTML copies in `docs/design/` hold all their CSS and data.
+The labs live only as the artifacts linked above. Their local copies, the theme lab's source and build script, its search index and generator, and the 0xProto subsets it used were in `docs/design/` until 2026-10-03, when they left the repo; `git show 03c37ea:docs/design/<file>` brings any of them back. The theme lab's saved-state key is `mm-theme-lab-rev15-picked`, so a browser that saved rev 15's recommendations opens on the picks.
 
 ## Final picks
 
