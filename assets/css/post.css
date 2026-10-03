@@ -555,7 +555,11 @@
           background: var(--tick);
         }
 
-        &:hover::before,
+        &:hover::before {
+          background: var(--fg);
+        }
+
+        /* on its own, so a browser without :target-current still keeps the hover */
         &:target-current::before {
           background: var(--fg);
         }
