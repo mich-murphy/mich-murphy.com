@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{- /* Feeds (content/feeds/index.md): the bare head, then the Subscribe box, the page's one dither. It keys the feed's
+{{- /* Feeds (content/feeds/index.md): the head, then the Subscribe box, the page's one dither. It keys the feed's
   full address, from home's atom output as the head's alternate link takes it, which one click selects whole
   (pages.css), and the post count and newest date from the build. The <wbr> lets a phone break the address before
   atom.xml rather than at mich-murphy's hyphen.
@@ -15,25 +15,25 @@
   {{- if not (urls.Parse $url).Host }}{{ errorf "data/blogroll.toml: %q has the url %q, which has no host" .name $url }}{{ end }}
   {{- if not (in $roll.topics .topic) }}{{ errorf "data/blogroll.toml: %q has the topic %q, which isn't in topics" .name .topic }}{{ end }}
 {{- end }}
-<header class="ph bare"><h1>{{ .Title }}</h1></header>
-<div class="dz kv"><h2 class="legend">Subscribe</h2><div class="frame">
+{{ partial "page-head.html" . }}
+<div class="dithered key-values"><h2 class="legend">Subscribe</h2><div class="frame">
 <dl>
-<dt>feed</dt><dd>{{ $u := (site.Home.OutputFormats.Get "atom").Permalink }}{{ $f := path.Base $u }}<code class="url">{{ strings.TrimSuffix $f $u }}<wbr>{{ $f }}</code></dd>
+<dt>feed</dt><dd>{{ $feed := (site.Home.OutputFormats.Get "atom").Permalink }}{{ $file := path.Base $feed }}<code class="url">{{ strings.TrimSuffix $file $feed }}<wbr>{{ $file }}</code></dd>
 <dt>format</dt><dd>Atom 1.0, full post text</dd>
-{{- with (where site.RegularPages "Section" "posts").ByDate.Reverse }}
-<dt>posts</dt><dd>{{ len . }}, newest {{ (index . 0).Date.Format "2006-01-02" }}</dd>
+{{- with (partialCached "posts.html" .).ByDate.Reverse }}
+<dt>posts</dt><dd>{{ len . }}, newest {{ partial "date.html" (index . 0).Date }}</dd>
 {{- end }}
 <dt>by tag</dt><dd>/tags/&lt;tag&gt;/atom.xml, one per tag</dd>
 </dl>
 </div></div>
 {{ partial "prose.html" . }}
-<div class="roll"><h2 class="legend">Feeds I read · {{ len $roll.feed }}</h2><div class="frame">
+<div class="blogroll"><h2 class="legend">Feeds I read · {{ len $roll.feed }}</h2><div class="frame">
 <dl>
 {{- range $topic := $roll.topics }}
 {{- with where $roll.feed "topic" $topic }}
 <dt>{{ lower $topic }}</dt><dd><ul role="list">
 {{- range . }}
-<li><a href="{{ .url }}">{{ .name }}</a> <span class="dm">{{ or .host (strings.TrimPrefix "www." (urls.Parse .url).Host) }}</span></li>
+<li><a href="{{ .url }}">{{ .name }}</a> <span class="feed-host">{{ or .host (strings.TrimPrefix "www." (urls.Parse .url).Host) }}</span></li>
 {{- end }}
 </ul></dd>
 {{- end }}

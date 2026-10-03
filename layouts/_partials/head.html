@@ -1,66 +1,20 @@
+{{- /* Everything in every page's head: the metadata for search engines and link previews (head/meta.html), the feed,
+  the colour scheme, the fonts and icons the page fetches first, and its styles (head/styles.html) */ -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
-{{- /* A post's summary is its description in search results and link previews, so a post without one fails the build
-  rather than share the site's. The other pages use the site's */}}
-{{- $post := and .IsPage (eq .Section "posts") }}
-{{- if and $post (not .Params.summary) }}
-  {{- errorf "%s has no summary: add one to its front matter, for search results and link previews" .File.Path }}
-{{- end }}
-<meta name="description" content="{{ or .Params.summary site.Params.description }}">
-{{- /* GitHub Pages serves 404.html at any missing address, so it has no address of its own to name or share, and it's
-  kept out of search results: it also answers 200 at /404.html */}}
-{{- if eq .Kind "404" }}
-<meta name="robots" content="noindex">
-{{- else }}
-{{- /* Link previews: Open Graph, plus X's twitter: tags. A post's preview shows its social card (social-card.html),
-  whose alt text is the post's title; other pages share their title and description without an image. A post also
-  gets structured data for search engines (jsonld.html) */}}
-<meta property="og:type" content="{{ cond $post "article" "website" }}">
-<meta property="og:site_name" content="{{ site.Title }}">
-<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
-<meta property="og:description" content="{{ or .Params.summary site.Params.description }}">
-<meta property="og:url" content="{{ .Permalink }}">
-{{- if $post }}{{ with partial "social-card.html" . }}
-<meta property="og:image" content="{{ .Permalink }}">
-<meta property="og:image:width" content="{{ .Width }}">
-<meta property="og:image:height" content="{{ .Height }}">
-<meta property="og:image:alt" content="{{ $.Title }}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="{{ .Permalink }}">
-{{- partial "jsonld.html" (dict "page" $ "card" .) }}
-{{- end }}{{ end }}
-<link rel="canonical" href="{{ .Permalink }}">
-{{- end }}
+{{ partial "head/meta.html" . }}
 {{- /* every page points feed readers to the site's feed, /atom.xml */}}
 <link rel="alternate" type="application/atom+xml" href="{{ (site.Home.OutputFormats.Get "atom").Permalink }}" title="{{ site.Title }}">
+{{- /* the browser's chrome takes the page's ground, --bg in main.css */}}
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
 <meta name="color-scheme" content="dark light">
 {{- /* every page sets text in the reading face and the machine face (the footer, at least), so both load early. The
-  other faces and styles load on the pages that use them (main.css) */}}
+  other faces load on the pages that use them */}}
 <link rel="preload" href="/fonts/MMAr-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/MMKr-Regular.woff2" as="font" type="font/woff2" crossorigin>
 {{- /* scripts/favicons.py draws the icons. sizes keeps Chrome on the SVG, which follows the colour scheme */}}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-{{- /* Every page inlines main.css plus only its page type's files, to stay under 14 KB */}}
-{{- $names := slice "main" }}
-{{- /* card.css styles the Posts card, on home and on 404, which shows it under its box */}}
-{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "card" }}{{ end }}
-{{- /* index.css styles home's intro and Search, and filters.css filters the card without a script */}}
-{{- if .IsHome }}{{ $names = $names | append "index" "filters" }}{{ end }}
-{{- /* prose.css styles the page head, the prose and keyed lists, on posts and on the other pages (About, Feeds).
-  post.css adds a post's code windows, colophon, Older/Newer and Contents, and pages.css the other pages' keyed
-  boxes, Projects card and Feeds I read card */}}
-{{- if .IsPage }}{{ $names = $names | append "prose" (cond (eq .Section "posts") "post" "pages") }}{{ end }}
-{{- $files := slice }}
-{{- range $names }}
-  {{- $f := resources.Get (printf "css/%s.css" .) }}
-  {{- /* filters.css is a template, with a rule for each tag and year */}}
-  {{- if eq . "filters" }}{{ $f = $f | resources.ExecuteAsTemplate "css/filters-built.css" $ }}{{ end }}
-  {{- $files = $files | append $f }}
-{{- end }}
-{{- $css := $files | resources.Concat (printf "css/inline-%s.css" (delimit $names "-")) | minify }}
-<style>{{ $css.Content | safeCSS }}</style>
+{{ partial "head/styles.html" . }}

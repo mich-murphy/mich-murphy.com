@@ -17,7 +17,7 @@ Nixos-anywhere utilises [Disko](https://github.com/nix-community/disko), which a
 
 ### Disko Configuration
 
-First start by specifying how you want Disko to configure your disks. You can find an example Disko config [here](https://github.com/nix-community/disko/blob/master/example/multi-device-no-deps.nix)
+First start by specifying how you want Disko to configure your disks. You can find [an example Disko config](https://github.com/nix-community/disko/blob/master/example/multi-device-no-deps.nix) in the Disko repository
 
 The following configuration is what I used to format an SSD drive, mounted at `/dev/sda`, creating partitions for EFI boot and operating system storage:
 

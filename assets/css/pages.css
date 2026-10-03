@@ -1,44 +1,151 @@
-/* the boxes on the pages that aren't posts (about.html, feeds.html), as wide as the text column. A keyed box's list
-   is laid out in prose.css, as the colophon's is, with 2px between its rows. A value that can't break, like a URL,
-   breaks anywhere rather than run out of the box. The last box sits as far above the footer as any page's */
-.kv,.pcard,.roll{position:relative}
-.kv{margin-block:32px 40px}
-.kv:last-child{margin-bottom:0}
-.kv dl{row-gap:2px}
-.kv dd{overflow-wrap:anywhere}
-/* Subscribe's feed address reads as the value around it, and one click selects all of it and nothing else */
-.url{font:inherit;background:none;padding:0;-webkit-user-select:all;user-select:all}
+/*
+ * The boxes on the pages that aren't posts (about.html, feeds.html), as wide as the text column: the keyed boxes
+ * (This site, Subscribe), whose list is laid out in prose.css as the colophon's is, and the Projects and Feeds I read
+ * cards. The last box sits as far above the footer as any page's.
+ */
+@layer components {
+  .key-values,
+  .projects,
+  .blogroll {
+    position: relative;
+  }
 
-/* the Projects and Feeds I read cards list their rows in bare uls. With list-style:none WebKit exposes a ul as a
-   group unless it has role=list */
-.pcard ul,.roll ul{margin:0;padding:0;list-style:none}
+  /* a value that can't break, like a URL, breaks anywhere rather than run out of the box */
+  .key-values {
+    margin-block: 32px 40px;
 
-/* the Projects card: each project's name, linked, over its description in mute, with dotted rules between */
-.pcard{margin-top:40px}
-.pcard .frame{padding:12px 18px 6px}
-.pcard li{padding-block:8px}
-.pcard li+li{border-top:1px dotted var(--edge)}
-.pcard .pd{display:block;color:var(--mute);font-size:15px;line-height:1.5}
+    &:last-child {
+      margin-bottom: 0;
+    }
 
-/* Feeds I read: a list keyed by topic, each feed's name, linked, at the left and its host in mute at the right. No
-   column gap, so the dotted rules between topics run unbroken across both columns. The host's auto margin keeps it at
-   the right when it wraps under a long name */
-.roll{margin-top:32px}
-.roll .frame{padding:10px 18px 4px}
-.roll dl{display:grid;grid-template-columns:max-content minmax(0,1fr);margin:0}
-.roll dt,.roll dd{margin:0;padding:8px 0}
-.roll dt{padding-right:3ch;color:var(--mute);font-size:15px;line-height:1.9}
-.roll dt~dt,.roll dt~dt+dd{border-top:1px dotted var(--edge)}
-.roll li{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 2ch}
-.roll .dm{margin-left:auto;color:var(--mute);font-size:15px}
+    & dl {
+      row-gap: 2px;
+    }
 
-/* phones: the topic goes above its feeds, and each host under its name */
-@media (max-width:600px){
-  .pcard .frame{padding-inline:12px}
-  .roll dl{display:block}
-  .roll dt{padding-bottom:0}
-  .roll dd{padding-top:0}
-  .roll dt~dt+dd{border-top:0}
-  .roll li{display:block;padding-bottom:4px}
-  .roll .dm{display:block}
+    & dd {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* Subscribe's feed address reads as the values around it, and one click selects all of it and nothing else */
+  .url {
+    padding: 0;
+    background: none;
+    font: inherit;
+    -webkit-user-select: all;
+    user-select: all;
+  }
+
+  /* the cards list their rows in bare uls, with role=list, since WebKit exposes a ul without markers as a group */
+  :is(.projects, .blogroll) ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Projects: each project's name, linked, over its description in muted, with dotted rules between */
+  .projects {
+    margin-top: 40px;
+
+    & .frame {
+      padding: 12px 18px 6px;
+
+      @media (width <= 37.5em) {
+        padding-inline: 12px;
+      }
+    }
+
+    & li {
+      padding-block: 8px;
+    }
+
+    & li + li {
+      border-top: 1px dotted var(--edge);
+    }
+
+    & .project-desc {
+      display: block;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+  }
+
+  /*
+   * Feeds I read: a list keyed by topic, each feed's name, linked, at the left and its host in muted at the right.
+   * No column gap, so the dotted rules between topics run unbroken across both columns. The host's auto margin keeps
+   * it at the right when it wraps under a long name. On phones the topic goes above its feeds, and each host under
+   * its name.
+   */
+  .blogroll {
+    margin-top: 32px;
+
+    & .frame {
+      padding: 10px 18px 4px;
+    }
+
+    & dl {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      margin: 0;
+    }
+
+    & dt,
+    & dd {
+      margin: 0;
+      padding: 8px 0;
+    }
+
+    & dt {
+      padding-right: 3ch;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.9;
+    }
+
+    & dt ~ dt,
+    & dt ~ dt + dd {
+      border-top: 1px dotted var(--edge);
+    }
+
+    & li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 2ch;
+    }
+
+    & .feed-host {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: var(--text-sm);
+    }
+
+    @media (width <= 37.5em) {
+      & dl {
+        display: block;
+      }
+
+      & dt {
+        padding-bottom: 0;
+      }
+
+      & dd {
+        padding-top: 0;
+      }
+
+      & dt ~ dt + dd {
+        border-top: 0;
+      }
+
+      & li {
+        display: block;
+        padding-bottom: 4px;
+      }
+
+      & .feed-host {
+        display: block;
+      }
+    }
+  }
 }

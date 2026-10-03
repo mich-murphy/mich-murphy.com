@@ -1,0 +1,28 @@
+# Whitespace for every file in the repo, for editors that read EditorConfig (https://editorconfig.org). Ruff and Biome
+# have their own settings, which match these; shfmt takes its settings from the [*.sh] section
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.py]
+indent_size = 4
+
+# Two spaces at the end of a line are a line break in Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# shfmt: two-space indents, with each case pattern indented inside its case
+[*.sh]
+indent_size = 2
+switch_case_indent = true
+
+# Monaspace's license text, copied as it's released
+[LICENSE-Monaspace.txt]
+trim_trailing_whitespace = false
+insert_final_newline = false

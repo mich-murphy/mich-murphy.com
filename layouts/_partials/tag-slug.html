@@ -1,0 +1,4 @@
+{{- /* A tag's slug, as its URL has it but decoded, so café reads as café rather than caf%C3%A9. Everything that names
+  a tag uses it: a post's meta line, the Posts card's data-tag, the filters, the search index, the feeds and the tag
+  redirects. Call it with the tag's term page */}}
+{{- return path.Base (urls.Parse .RelPermalink).Path }}

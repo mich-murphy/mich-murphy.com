@@ -1,0 +1,19 @@
+{{- /* The page's styles, inlined in one <style>, so it needs no request: main.css plus only the files for the page's
+  type, in the order main.css's header gives, which keeps every page under postbuild.py's 14 KB.
+  - posts-card.css: the Posts card, on home and on 404, which shows it under its box
+  - home.css: home's intro and Search; home-filters.css, a template with a rule for each tag and year, filters the
+    card without the script
+  - prose.css: the page head, the prose and the keyed lists, on posts and the other pages (About, Feeds); then
+    post.css for a post's code windows, colophon, Older/Newer and Contents, or pages.css for the other pages' boxes */}}
+{{- $names := slice "main" }}
+{{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "posts-card" }}{{ end }}
+{{- if .IsHome }}{{ $names = $names | append "home" "home-filters" }}{{ end }}
+{{- if .IsPage }}{{ $names = $names | append "prose" (cond (eq .Section "posts") "post" "pages") }}{{ end }}
+{{- $files := slice }}
+{{- range $names }}
+  {{- $file := resources.Get (printf "css/%s.css" .) }}
+  {{- if eq . "home-filters" }}{{ $file = $file | resources.ExecuteAsTemplate "css/home-filters-built.css" $ }}{{ end }}
+  {{- $files = $files | append $file }}
+{{- end }}
+{{- $css := $files | resources.Concat (printf "css/inline-%s.css" (delimit $names "-")) | minify }}
+<style>{{ $css.Content | safeCSS }}</style>

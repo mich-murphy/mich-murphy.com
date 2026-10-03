@@ -1,4 +1,4 @@
-{{- /* An Atom 1.0 feed of posts with their full text (rev 11 feed=full), newest first. Home's, at /atom.xml, has every
+{{- /* An Atom 1.0 feed of posts with their full text, newest first. Home's, at /atom.xml, has every
   post (home.atom.xml), and a tag's, at /tags/<tag>/atom.xml, has that tag's (term.atom.xml). Call it with a dict of
   the page the feed belongs to and its pages; only posts are listed, with no limit. Readers key on the ids, which match
   the Zola feed's: the feed's is its own address, and an entry's is the post's, with its trailing slash. published is
@@ -11,7 +11,7 @@
 {{- $p := .page }}
 {{- $self := ($p.OutputFormats.Get "atom").Permalink }}
 {{- $title := site.Title }}
-{{- if eq $p.Kind "term" }}{{ $title = printf "#%s · %s" (path.Base (urls.Parse $p.RelPermalink).Path) site.Title }}{{ end }}
+{{- if eq $p.Kind "term" }}{{ $title = printf "#%s · %s" (partial "tag-slug.html" $p) site.Title }}{{ end }}
 {{- $entries := slice }}
 {{- range (where .pages "Section" "posts").ByDate.Reverse }}
   {{- $o := partialCached "origin.html" . .Path }}

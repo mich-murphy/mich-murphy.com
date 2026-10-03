@@ -9,21 +9,21 @@
   The ticks are scroll markers for the current section, aria-hidden with tabindex=-1, and the Contents links are the
   ones for keyboards and screen readers. The head's anchor comes first in both lists, empty and hidden, so nothing is
   current until the first heading. The ticks also count the sections up to the current one for the button's 4/7.
-  role=list keeps Contents a list in WebKit, which drops the role from a list without markers. --n, the number of
+  WebKit drops the role from a list without markers, but not inside a nav, so Contents needs no role=list. --n, the number of
   headings, lets a long post's ticks close up so the trace always fits the window */}}
 {{- $hs := partial "headings.html" . }}
 {{- $n := len $hs }}
 {{- if ge $n 2 }}
-<nav class="toc" aria-label="Contents" style="--n:{{ $n }}">
-<i id="toc"></i>
-<ol class="ticks" aria-hidden="true"><li class="tk-hd"><a href="#top" tabindex="-1"></a></li>
-{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}" tabindex="-1"></a></li>{{ end }}</ol>
-<a class="topen" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="vh">Contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
-<a class="tshut" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="vh">Close contents</span><span class="tnum" aria-hidden="true">/{{ $n }}</span></a>
-<a class="tdim" href="#_" tabindex="-1" aria-hidden="true"></a>
-<div class="tpop"><div class="pbox"><span class="legend">Contents · {{ $n }}</span><div class="frame">
-<ol class="clist" role="list"><li class="sl-hd" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
-{{- range $hs }}<li class="l{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
+<nav class="contents" aria-label="Contents" style="--n:{{ $n }}">
+<span id="toc"></span>
+<ol class="ticks" aria-hidden="true"><li class="head-anchor"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}" tabindex="-1"></a></li>{{ end }}</ol>
+<a class="contents-open" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="visually-hidden">Contents</span><span class="contents-count" aria-hidden="true">/{{ $n }}</span></a>
+<a class="contents-close" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="visually-hidden">Close contents</span><span class="contents-count" aria-hidden="true">/{{ $n }}</span></a>
+<a class="contents-dim" href="#_" tabindex="-1" aria-hidden="true"></a>
+<div class="contents-popover"><div class="contents-box"><span class="legend">Contents · {{ $n }}</span><div class="frame">
+<ol class="contents-list"><li class="head-anchor" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
+{{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
 </div></div></div>
 </nav>
 {{- end }}

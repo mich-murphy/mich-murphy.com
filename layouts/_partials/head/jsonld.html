@@ -1,23 +1,25 @@
 {{- /* A post's structured data for search engines: a schema.org BlogPosting with the properties Google recommends for
   an article (https://developers.google.com/search/docs/appearance/structured-data/article). datePublished is the
   front-matter date, and dateModified the post's updated date from the origin partial, as its colophon shows it, but
-  never earlier than datePublished, as in the feeds. The author links to About, and the image is the post's social
-  card. Call it with a dict of the post (page) and its card (card). In a JSON-LD script, html/template writes the dict
-  as JSON */}}
+  never earlier than datePublished, as in the feeds. The author links to About and is the same person as the GitHub
+  account, the description is the post's summary, and the image is its social card. Call it with a dict of the post
+  (page) and its card (card). In a JSON-LD script, html/template writes the dict as JSON */}}
 {{- $p := .page }}
-{{- $o := partialCached "origin.html" $p $p.Path }}
+{{- $origin := partialCached "origin.html" $p $p.Path }}
 {{- $published := $p.Date }}
-{{- $modified := or $o.date $published }}
+{{- $modified := or $origin.date $published }}
 {{- if $modified.Before $published }}{{ $modified = $published }}{{ end }}
-{{- $f := "2006-01-02T15:04:05-07:00" }}
-{{- $author := dict "@type" "Person" "name" site.Params.author.name }}
+{{- $rfc3339 := "2006-01-02T15:04:05-07:00" }}
+{{- $author := dict "@type" "Person" "name" site.Params.author.name "sameAs" (slice site.Params.author.github) }}
 {{- with site.GetPage "/about" }}{{ $author = merge $author (dict "url" .Permalink) }}{{ end }}
 <script type="application/ld+json">{{ dict
   "@context" "https://schema.org"
   "@type" "BlogPosting"
   "headline" $p.Title
-  "datePublished" ($published.Format $f)
-  "dateModified" ($modified.Format $f)
+  "description" $p.Params.summary
+  "url" $p.Permalink
+  "datePublished" ($published.Format $rfc3339)
+  "dateModified" ($modified.Format $rfc3339)
   "author" $author
   "image" .card.Permalink
 }}</script>

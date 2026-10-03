@@ -1,0 +1,3 @@
+{{- /* Every post. The context doesn't matter: call it as partialCached "posts.html" ., which works it out once per
+  build */}}
+{{- return where site.RegularPages "Section" "posts" }}

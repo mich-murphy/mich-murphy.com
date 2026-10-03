@@ -1,6 +1,6 @@
 <!doctype html>
-<!-- The social card's base, 1200x630 in the dark palette: the ruled header and an empty framed box, as in the design
-  lab's mock (.og, which is sized in cqw: 1cqw is 12px here). scripts/card-base.sh fills in
+<!-- The social card's base, 1200x630 in the dark palette: the ruled header and an empty framed box.
+  scripts/card-base.sh fills in
   the font, the mark and the box's number of title lines, and screenshots it to assets/images/card-base-1.png, -2.png
   and -3.png. The build draws each post's title and date in the box (layouts/_partials/social-card.html), so a change
   to the box's size, place or padding must change the numbers there too -->
@@ -18,11 +18,11 @@ body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg);col
 .hd{display:flex;justify-content:space-between;align-items:center;height:114px;padding:34px 58px 29px;border-bottom:3px solid var(--fg)}
 .brand{display:flex;align-items:center;gap:16px;text-transform:uppercase;letter-spacing:.08em}
 .mark{display:block;width:48px;height:48px;fill:var(--fg)}
-.mark .b{fill:var(--bg)}
+.mark .knockout{fill:var(--bg)}
 .u{color:var(--mute)}
-/* the box fits its title, as the lab's does: it's 178px tall plus 71px, the title's line height at 62px, for each of
+/* the box fits its title: it's 178px tall plus 71px, the title's line height at 62px, for each of
    its --lines. It's centred between the header's rule and 15px above the foot, at y 364.5, with its top rounded down
-   to a whole pixel. So it runs from y 169 to 560 round 3 lines, where the lab draws it, from 204 to 524 round 2 and
+   to a whole pixel. So it runs from y 169 to 560 round 3 lines, from 204 to 524 round 2 and
    from 240 to 489 round 1, and from x 58 to 1128. Its text starts at x 104, inside the 3px frame and 43px of padding,
    and is 978px wide. The dither is main.css's tile at twice the size, 14px down and right */
 .box{--lines:@LINES@;--h:calc(178px + 71px * var(--lines));position:absolute;left:58px;

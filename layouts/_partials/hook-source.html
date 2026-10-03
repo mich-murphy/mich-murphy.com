@@ -1,0 +1,5 @@
+{{- /* For a render hook's error messages: the file the Markdown came from, or the page's path if it has no file. Call
+  it with the hook's context */}}
+{{- $source := .PageInner.Path }}
+{{- with .PageInner.File }}{{ $source = .Path }}{{ end }}
+{{- return $source }}

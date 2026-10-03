@@ -1,25 +1,25 @@
 {{ define "main" }}
-{{- /* About (content/about.md): the bare head and the bio (prose.html), then the Projects card from
+{{- /* About (content/about.md): the head and the bio, then the Projects card from
   data/projects.toml, and the "This site" box, the page's one dither, whose values all come from the build. The space
   between a project's name and description keeps them apart in reader mode and without CSS. Styles are prose.css and
   pages.css */}}
 {{- $gh := site.Params.repo }}
 {{- $projects := hugo.Data.projects.project }}
-<header class="ph bare"><h1>{{ .Title }}</h1></header>
+{{ partial "page-head.html" . }}
 {{ partial "prose.html" . }}
-<div class="pcard"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
+<div class="projects"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
 {{- range $projects }}
-<li><a href="{{ .url }}">{{ .name }}</a> <span class="pd">{{ .desc }}</span></li>
+<li><a href="{{ .url }}">{{ .name }}</a> <span class="project-desc">{{ .desc }}</span></li>
 {{- end }}
 </ul></div></div>
-<div class="dz kv"><h2 class="legend">This site</h2><div class="frame">
+<div class="dithered key-values"><h2 class="legend">This site</h2><div class="frame">
 <dl>
 <dt>source</dt><dd><a href="{{ $gh }}">{{ strings.TrimPrefix "https://github.com/" $gh }}</a></dd>
 <dt>built</dt><dd>Hugo {{ hugo.Version }} on GitHub Actions</dd>
 <dt>hosted</dt><dd>GitHub Pages</dd>
 <dt>type</dt><dd>Argon, Xenon, Radon and Krypton from Monaspace 1.400 by GitHub Next, <a href="/fonts/LICENSE-Monaspace.txt">SIL Open Font License</a></dd>
-{{- with (where site.RegularPages "Section" "posts").ByDate }}
-<dt>posts</dt><dd>{{ len . }} since {{ (index . 0).Date.Format "2006-01-02" }}</dd>
+{{- with (partialCached "posts.html" .).ByDate }}
+<dt>posts</dt><dd>{{ len . }} since {{ partial "date.html" (index . 0).Date }}</dd>
 {{- end }}
 </dl>
 </div></div>

@@ -47,17 +47,10 @@ enableRobotsTXT = true
 [minify]
   disableXML = true
 
-# Syntax highlighting with CSS classes rather than inline styles, and no line
-# numbers. For why you'd want to avoid inline styles, see
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src#unsafe_inline_styles
-[markup]
-  [markup.highlight]
-    lineNos = false
-    noClasses = false
 
-# The Hugo the site is built with, as the flake and the workflow pin it. An older Hugo warns that the project "is not
-# compatible with this Hugo version", which fails the build (--panicOnWarning in scripts/build.sh). To update Hugo,
-# change this first (README)
+# The Hugo the site is built with, and the one place its version is set: scripts/hugo-version.sh reads it,
+# scripts/build.sh fails on any other version, and CI installs this one. The flake's nixpkgs and the workflow's
+# HUGO_SHA256 must change with it (README)
 [module.hugoVersion]
   min = "0.166.0"
 
@@ -91,3 +84,5 @@ enableRobotsTXT = true
 
   [params.author]
     name = "Michael Murphy"
+    # The footer's github link, and the author's sameAs in each post's structured data (head/jsonld.html)
+    github = "https://github.com/mich-murphy"

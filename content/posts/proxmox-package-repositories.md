@@ -40,7 +40,7 @@ After the above changes I ran `apt update` and `apt dist-upgrade`, everything up
 
 ## Automated Script
 
-Tteck has provided a number of [useful Proxmox scripts](https://github.com/tteck/Proxmox), one of them completes the above automatically, as well as removing subscription notices and optionally adding beta repositories. Have a read through [here](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh) before running:
+Tteck has provided a number of [useful Proxmox scripts](https://github.com/tteck/Proxmox), one of them completes the above automatically, as well as removing subscription notices and optionally adding beta repositories. Have a read through [the script](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh) before running:
 
 ```bash
 bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)"

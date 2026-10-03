@@ -1,21 +1,10 @@
 {{ define "main" }}
-{{- /* A post's head is its title, then date · reading time · tags, over a rule. A page with no layout of its own gets
-  a bare head, the title alone over the rule (prose.css). The summary stays out of the page: the head partial uses it
-  for the description. A post ends with its colophon, then Older and Newer (pn.html). The head's id is the first
-  anchor in Contents (contents.html) */}}
-{{- $post := eq .Section "posts" }}
+{{- /* A post, or a page with no layout of its own: its head (page-head.html) and its content. A post ends with its
+  colophon, then Older and Newer */}}
 <article>
-<header class="ph{{ if not $post }} bare{{ end }}" id="top">
-<h1>{{ .Title }}</h1>
-{{- if $post }}
-{{- /* a tag reads as its slug, decoded from the URL path so café isn't shown as caf%C3%A9, and links to the index
-  filtered by it, /#<slug>, where search replaced the tag pages */}}
-<p class="meta">{{ .Date.Format "2006-01-02" }} · {{ .ReadingTime }} min read
-  {{- with .GetTerms "tags" }} ·{{ range . }}{{ $s := path.Base (urls.Parse .RelPermalink).Path }} <a href="/#{{ $s }}">#{{ $s }}</a>{{ end }}{{ end }}</p>
-{{- end }}
-</header>
+{{ partial "page-head.html" . }}
 {{ partial "prose.html" . }}
-{{- if $post }}
+{{- if eq .Section "posts" }}
 {{ partial "colophon.html" . }}
 {{ partial "pn.html" . }}
 {{- end }}

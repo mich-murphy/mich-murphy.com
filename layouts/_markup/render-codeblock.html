@@ -1,4 +1,4 @@
-{{- /* A code window (C1B), with no line numbers, line count or dither. A block with a file path gets a title bar,
+{{- /* A code window, with no line numbers, line count or dither. A block with a file path gets a title bar,
   "Nix · /etc/nixos/configuration.nix"; one without has its language cut into the border as a label. The path is the
   fence's file attribute, or else a first line that is only a path comment, like "# flake.nix". That line comes out of
   the code, with any blank lines under it. A block that is only a path comment stays as it is */ -}}
@@ -29,10 +29,12 @@
 {{- range split (strings.TrimRight "\n" $code) "\n" }}
   {{- $lines = add $lines (math.Max 1 (math.Ceil (div (strings.RuneCount .) 68.0))) }}
 {{- end }}
-{{- /* hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
+{{- /* the pre scrolls, so it's focusable for the keyboard, and a group named for its language and file, so a screen
+  reader says what it reached. These are the site's only highlighting settings: noClasses false writes Chroma's
+  token classes rather than inline colours, so post.css colours them for each colour scheme. hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
   own pre and code replace */}}
 {{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" -}}
-<figure class="win{{ if not $path }} lgw{{ end }}{{ if gt $lines 41 }} long{{ end }}">
+<figure class="code-window{{ if not $path }} with-legend{{ end }}{{ if gt $lines 41 }} long{{ end }}">
 {{- with $path }}<figcaption><span class="path">{{ $name }} · {{ . }}</span></figcaption>
 {{- else }}<span class="legend">{{ $name }}</span>{{ end -}}
-<pre class="code" tabindex="0"><code>{{ $h | safeHTML }}</code></pre></figure>
+<pre class="code" tabindex="0" role="group" aria-label="{{ $name }} code{{ with $path }}, {{ . }}{{ end }}"><code>{{ $h | safeHTML }}</code></pre></figure>

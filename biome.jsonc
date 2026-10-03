@@ -1,0 +1,45 @@
+// Biome formats and lints the site's CSS and JavaScript: `biome check --write` to fix, `biome ci` to check (in
+// scripts/check.sh). Biome 2.5 knows the modern CSS the site uses, like cascade layers, nesting, light-dark(), :has(),
+// ::details-content, :target-current and scroll-target-group, so its recommended rules apply as they are
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "files": {
+    // home-filters.css is a Go template that head.html runs to write a rule for each tag and year, so it isn't CSS
+    // until Hugo has built it. Biome still scans the whole tree for nested configs, so `!!` keeps it out of folders
+    // the repo doesn't own: direnv's links into the Nix store, and Claude Code's worktrees, each a checkout with its
+    // own biome.jsonc that would fail the run as a second root
+    "includes": [
+      "assets/js/**/*.js",
+      "assets/css/**/*.css",
+      "!assets/css/home-filters.css",
+      "!!**/.direnv",
+      "!!**/.claude"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "css": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+      "style": {
+        // It scores a nested selector without its parent (`.header-bar { & nav a {} }` as nav a, not .header-bar nav
+        // a) and ignores cascade layers, so with both in use it reports overrides that are deliberate, or between
+        // selectors that never match the same element
+        "noDescendingSpecificity": "off"
+      }
+    }
+  }
+}

@@ -6,12 +6,25 @@
 # which sizes the box, and screenshots it with headless Chrome at exactly
 # 1200x630. Rerun it after changing any of those, and commit the PNGs: the
 # build draws each post's title and date on the one whose box fits the title
-# (layouts/_partials/social-card.html). CHROME names the browser if it isn't
-# Google Chrome in /Applications
+# (layouts/_partials/social-card.html). It runs on macOS and Linux, with the
+# browser CHROME names, or else the first of Google Chrome and Chromium it finds
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-chrome=${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}
+chrome=${CHROME:-}
+if [ -z "$chrome" ]; then
+  for candidate in google-chrome google-chrome-stable chromium chromium-browser \
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"; do
+    if command -v "$candidate" >/dev/null; then
+      chrome=$candidate
+      break
+    fi
+  done
+fi
+if [ -z "$chrome" ]; then
+  echo "card-base: found no Google Chrome or Chromium; set CHROME to the browser's path" >&2
+  exit 1
+fi
 tmp=$(mktemp -d)
 pid=
 trap 'if [ -n "$pid" ]; then kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true; fi; rm -rf "$tmp"' EXIT

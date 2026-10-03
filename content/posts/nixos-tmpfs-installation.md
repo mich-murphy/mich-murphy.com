@@ -152,7 +152,7 @@ nixos-install --no-root-passwd
 
 ### Deploy-rs & Agenix Preparation
 
-This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've written about it [here](/posts/encrypting-secrets-nixos.md)).
+This final section is likely irrelevant to most users. I plan on writing about these tools in a future post. Deploy-rs (linked above) allows for deployment of nix flakes to remote machines, and [Agenix](https://github.com/ryantm/agenix) encrypts any secrets used in the flakes using SSH keys (I've [written about it](/posts/encrypting-secrets-nixos.md)).
 
 To ensure the host has the correct SSH keys to allow for decryption of secrets be sure to update `secrets.nix` with the new host key `/etc/ssh/ssh_host_ed25516_key.pub`. Agenix will then need to be rekeyed to allow any new SSH keys to decrypt secrets:
 

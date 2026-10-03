@@ -21,17 +21,14 @@
     {{- end -}}
   {{- else -}}
     {{- if and $path (not $u.Host) -}}
-      {{- /* a page with no file, like a tag page that renders a string, is named by its path */ -}}
-      {{- $where := $.PageInner.Path -}}
-      {{- with $.PageInner.File }}{{ $where = .Path }}{{ end -}}
-      {{- errorf "link to %q in %s doesn't resolve to a page or resource; link to the content file (e.g. /posts/<name>.md) or use a full https:// URL" $.Destination $where -}}
+      {{- errorf "link to %q in %s doesn't resolve to a page or resource; link to the content file (e.g. /posts/<name>.md) or use a full https:// URL" $.Destination (partial "hook-source.html" $) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- /* print writes a link's address after it (main.css), unless its text already is the address, as an autolink's
-  is, or the link is within the page, whose address the header prints. Class addr marks those, comparing with or
+  is, or the link is within the page, whose address the header prints. Class no-print-url marks those, comparing with or
   without the scheme and a trailing slash */ -}}
 {{- $bare := `^https?://|/$` -}}
 {{- $addr := or (strings.HasPrefix .Destination "#") (eq (replaceRE $bare "" .PlainText) (replaceRE $bare "" .Destination)) -}}
-<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }} {{- if $addr }} class="addr" {{- end }}>{{ .Text }}</a>
+<a href="{{ $href }}" {{- with .Title }} title="{{ . }}" {{- end }} {{- if $addr }} class="no-print-url" {{- end }}>{{ .Text }}</a>
 {{- /**/ -}}

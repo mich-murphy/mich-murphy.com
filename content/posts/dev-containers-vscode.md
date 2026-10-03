@@ -55,7 +55,7 @@ Here is an example of a quick setup I configured:
 
 ## Adding Dotfiles
 
-One feature which I thought was really handy is the ability to specify a repository containing `dotfiles` (linux personalised configuration settings, [here is an example](https://github.com/mich-murphy/dwm-dotfiles)), which can be [cloned and configured](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories) once the Dev Container is up and running.
+One feature which I thought was really handy is the ability to specify a repository containing `dotfiles` (linux personalised configuration settings, such as [my dwm dotfiles](https://github.com/mich-murphy/dwm-dotfiles)), which can be [cloned and configured](https://code.visualstudio.com/docs/devcontainers/containers#_personalizing-with-dotfile-repositories) once the Dev Container is up and running.
 
 This means you can create a Dev Contianer and share it across a team, so that everyone has a standardised development environment. Then you can add your own configuration after the container has been started by using the dotfiles functionality - no one is subjected to your strange configuration (e.g. running the vim extension).
 
