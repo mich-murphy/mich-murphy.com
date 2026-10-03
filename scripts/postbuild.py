@@ -13,6 +13,9 @@ they are. Sizes are shown as KB with one decimal (1 KB = 1024 B). A second run o
 standard library.
 """
 
+# Leaves the type hints unevaluated, so the script also runs on the Python 3.9 that macOS comes with
+from __future__ import annotations
+
 import gzip
 import os
 import sys
