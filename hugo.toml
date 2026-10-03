@@ -47,13 +47,6 @@ enableRobotsTXT = true
 [minify]
   disableXML = true
 
-# Syntax highlighting with CSS classes rather than inline styles, and no line
-# numbers. For why you'd want to avoid inline styles, see
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src#unsafe_inline_styles
-[markup]
-  [markup.highlight]
-    lineNos = false
-    noClasses = false
 
 # The Hugo the site is built with, and the one place its version is set: scripts/hugo-version.sh reads it,
 # scripts/build.sh fails on any other version, and CI installs this one. The flake's nixpkgs and the workflow's
