@@ -339,6 +339,8 @@
     }
 
     & nav {
+      --marker-gap: 0.8ch;
+
       display: flex;
       flex-wrap: wrap;
       gap: 4px 3ch;
@@ -357,7 +359,7 @@
         content: "";
         position: absolute;
         top: 50%;
-        left: calc(-7px - 0.8ch);
+        left: calc(-7px - var(--marker-gap));
         width: 7px;
         height: 7px;
         transform: translateY(-50%);
@@ -366,7 +368,24 @@
 
       /* hover's padding moves the link's box 5px left, so the square moves back by as much */
       &[aria-current]:hover::before {
-        left: calc(-2px - 0.8ch);
+        left: calc(-2px - var(--marker-gap));
+      }
+    }
+
+    /*
+     * Phones, where the name and the nav don't fit on one line (below 398px at the default 16px, and a little more in
+     * em at a smaller default, since the mark and the gaps are px): the nav takes a row of its own, its links in line
+     * with the name. Wrapped at the gutter, the first link's square would sit at the window's edge; here it sits under
+     * the mark, flush with its right edge and as far from its link as the mark is from the name. The wider gap keeps a
+     * later link's square nearer its own link than the one before.
+     */
+    @media (width < 25.5em) {
+      & nav {
+        --marker-gap: 10px;
+
+        flex-basis: 100%;
+        column-gap: 4ch;
+        padding-left: 34px;
       }
     }
   }
