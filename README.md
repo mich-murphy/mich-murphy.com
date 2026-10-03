@@ -30,7 +30,7 @@ You need [Nix](https://nixos.org/download/) with flakes enabled. The flake provi
 
 ## Design
 - **Light pages.** Every page is its HTML plus one inlined `<style>`, under 14 KB gzipped, with no other request before it can render. `scripts/postbuild.py` fails the build if a page is over.
-- **No JavaScript, except search.** The home page's search is the only script, and its footer says how big it is. Everything else is HTML and CSS:
+- **No JavaScript, except search.** The home page's search is the only script, and its footer says how big it is. Ctrl K focuses the search box, or ⌘K on Apple's platforms, rather than a single key like "/", which a stray key or speech input could set off (WCAG 2.1.4). Everything else is HTML and CSS:
   - Contents on a post opens on hover or focus beside a wide window, and through `#toc:target` from a button on a phone. Its current section comes from `:target-current`, which Chrome and Edge support; other browsers show no current section.
   - Without the script, the home page's tag and year menus are links to hidden targets that filter the posts through `:has(:target)`, one filter at a time.
 - **Real data, not decoration.** The structural devices carry facts from the build: each post's source file, last real commit and history, the page weight in the footer. No cue is there for show, and each says what it is.
