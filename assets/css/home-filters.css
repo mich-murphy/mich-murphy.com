@@ -17,6 +17,11 @@
     display: flex;
   }
 
+  /* the frame is labelled Filter, so the row doesn't say filter again, as it does under the box */
+  {{ $on }} .filters > .key {
+    display: none;
+  }
+
   {{ $on }} :is(.filter, .filter-menu) {
     display: contents;
   }
