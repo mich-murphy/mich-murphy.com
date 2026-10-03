@@ -1,6 +1,6 @@
 {{ define "main" }}
-{{- /* About (content/about.md): the head and the bio, then the Projects card from
-  data/projects.toml, and the "This site" box, the page's one dither, whose values all come from the build. The space
+{{- /* About (content/about.md): the head and the bio, then the Projects card from data/projects.toml, the page's one
+  dither, as the box the page is for, and the "This site" box, whose values all come from the build. The space
   between a project's name and description keeps them apart in reader mode and without CSS. The source breaks, on a
   phone, after its owner's slash rather than at a hyphen in the repo's name, as Subscribe's feed does on Feeds.
   Styles are prose.css and pages.css */}}
@@ -8,12 +8,12 @@
 {{- $projects := hugo.Data.projects.project }}
 {{ partial "page-head.html" . }}
 {{ partial "prose.html" . }}
-<div class="projects"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
+<div class="dithered projects"><h2 class="legend">Projects · {{ len $projects }}</h2><div class="frame"><ul role="list">
 {{- range $projects }}
 <li><a href="{{ .url }}">{{ .name }}</a> <span class="project-desc">{{ .desc }}</span></li>
 {{- end }}
 </ul></div></div>
-<div class="dithered key-values"><h2 class="legend">This site</h2><div class="frame">
+<div class="key-values"><h2 class="legend">This site</h2><div class="frame">
 <dl>
 <dt>source</dt><dd>{{ with strings.TrimPrefix "https://github.com/" $gh }}<a href="{{ $gh }}">{{ path.Dir . }}/<wbr><span class="nowrap">{{ path.Base . }}</span></a>{{ end }}</dd>
 <dt>built</dt><dd>Hugo {{ hugo.Version }} on GitHub Actions</dd>
