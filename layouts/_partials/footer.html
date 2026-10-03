@@ -1,12 +1,15 @@
-{{- /* The copyright runs from the oldest post's year to the build year. CI sets HUGO_BUILD_SHA to the commit it
-  builds; local builds say so. After the build, scripts/postbuild.py writes the same two figures into every page:
-  __HOME__, what a browser fetches to load the homepage, and __JS__, the site's script. hugo server never runs it, so
-  there the footer says serve and leaves both out */}}
+{{- /* Two parts, which stack on a phone: the copyright and the links, then the build. The copyright runs from the
+  oldest post's year to the build year, and the links keep together, so a phone breaks before them rather than
+  between. The build part holds only the build's figures, which fit one line on most phones and never break inside
+  one, and print leaves it out. CI sets HUGO_BUILD_SHA to the commit it builds; local builds say so. After the build,
+  scripts/postbuild.py writes the same two figures into every page: __HOME__, what a browser fetches to load the
+  homepage, and __JS__, the site's script. hugo server never runs it, so there the footer says serve and leaves both
+  out */}}
 {{- $first := now.Year }}
 {{- with (partialCached "posts.html" .).ByDate }}{{ $first = (index . 0).Date.Year }}{{ end }}
 <footer class="site-footer">
 <div class="footer-bar">
-<span>© {{ $first }}-{{ now.Year }} {{ site.Params.author.name }} · <a href="{{ site.Params.author.github }}">github</a></span>
-<span>build {{ if hugo.IsServer }}serve{{ else }}{{ with os.Getenv "HUGO_BUILD_SHA" }}<a class="hash" href="{{ site.Params.repo }}/commit/{{ . }}">{{ substr . 0 7 }}</a>{{ else }}local{{ end }} · home __HOME__ · __JS__ js{{ end }} · <a href="/atom.xml">atom.xml</a></span>
+<span>© {{ $first }}-{{ now.Year }} {{ site.Params.author.name }} · <span class="nowrap"><a href="{{ site.Params.author.github }}">github</a> · <a href="/atom.xml">atom.xml</a></span></span>
+<span>build {{ if hugo.IsServer }}serve{{ else }}{{ with os.Getenv "HUGO_BUILD_SHA" }}<a class="hash" href="{{ site.Params.repo }}/commit/{{ . }}">{{ substr . 0 7 }}</a>{{ else }}local{{ end }} · <span class="nowrap">home __HOME__</span> · <span class="nowrap">__JS__ js</span>{{ end }}</span>
 </div>
 </footer>

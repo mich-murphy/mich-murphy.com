@@ -547,6 +547,11 @@
 }
 
 @layer utilities {
+  /* a run that breaks only around it, like the footer's links or the repo in About's source */
+  .nowrap {
+    white-space: nowrap;
+  }
+
   .visually-hidden,
   .skip-link:not(:focus) {
     position: absolute;
