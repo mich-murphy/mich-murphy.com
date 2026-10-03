@@ -28,10 +28,11 @@ check() {
 # Builds the site as CI does, finishes it with postbuild.py, and checks every
 # link between its pages, #fragments included. --offline skips links to other
 # sites, so it needs no network. #_ is left out on purpose: it matches no id,
-# so following it closes the Contents box
+# so following it closes the Contents box. The build isn't --quiet, which
+# would hide Hugo's errors as well as its stats
 links() {
   local site=$tmp/public
-  scripts/build.sh --quiet --destination "$site" &&
+  scripts/build.sh --destination "$site" &&
     scripts/postbuild.py "$site" &&
     lychee --offline --no-progress --include-fragments --index-files index.html --root-dir "$site" \
       --exclude '#_$' "$site/**/*.html"
