@@ -636,9 +636,16 @@ const update = ({ typed = false } = {}) => {
 
 // ---- keys -----------------------------------------------------------------------------------------------------------
 
-/** Whether a key press is the shortcut: K with the platform's modifier, without Shift or Alt */
+/**
+ * Whether a key press is the shortcut: K with the platform's modifier, without Shift or Alt. K is the letter wherever a
+ * layout puts it, but on a layout with no Latin letters, like Russian, it's the key in K's place, as browsers take
+ * their own shortcuts. Dvorak types T in that place, which stays the browser's.
+ */
 const isSearchShortcut = (event) =>
-  (onApple ? event.metaKey : event.ctrlKey) && !event.shiftKey && !event.altKey && /^k$/i.test(event.key);
+  (onApple ? event.metaKey : event.ctrlKey) &&
+  !event.shiftKey &&
+  !event.altKey &&
+  (/^k$/i.test(event.key) || (event.code === "KeyK" && !/^[a-z]$/i.test(event.key)));
 
 /**
  * Esc closes an open menu, returning focus to its summary if it was inside, or else, in the frame, clears the words,
