@@ -55,9 +55,9 @@ enableRobotsTXT = true
     lineNos = false
     noClasses = false
 
-# The Hugo the site is built with, as the flake and the workflow pin it. An older Hugo warns that the project "is not
-# compatible with this Hugo version", which fails the build (--panicOnWarning in scripts/build.sh). To update Hugo,
-# change this first (README)
+# The Hugo the site is built with, and the one place its version is set: scripts/hugo-version.sh reads it,
+# scripts/build.sh fails on any other version, and CI installs this one. The flake's nixpkgs and the workflow's
+# HUGO_SHA256 must change with it (README)
 [module.hugoVersion]
   min = "0.166.0"
 
