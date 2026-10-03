@@ -1,0 +1,30 @@
+# Ruff lints and formats the Python in scripts/: `ruff check scripts` and `ruff format scripts` (scripts/check.sh checks
+# both). fonts.py needs the devShell's Python, which has fontTools, but favicons.py and postbuild.py need nothing
+# installed, so they may meet the oldest Python they're likely to: the 3.9 that macOS comes with
+target-version = "py39"
+line-length = 120
+
+[lint]
+# Ruff's defaults (E4, E7, E9 and F) catch outright errors. These rules add what a short script can meet without
+# contortions, and leave out the ones that would mostly ask for ceremony, like docstrings on every function (D) or
+# names for every number (PLR2004)
+select = [
+  "E",    # pycodestyle errors, all of them rather than the default subset
+  "W",    # pycodestyle warnings, like trailing whitespace
+  "F",    # Pyflakes: unused imports, undefined names
+  "I",    # imports sorted and grouped, as `ruff check --fix` writes them
+  "B",    # flake8-bugbear: likely bugs, like a mutable default argument
+  "A",    # a variable named after a builtin, like `hash` or `type`, hides it
+  "C4",   # comprehensions in place of loops and needless list() calls
+  "UP",   # syntax for target-version, not for Pythons the scripts never run on
+  "SIM",  # simpler forms of the same code
+  "RET",  # consistent returns
+  "PTH",  # pathlib, not os.path and open()
+  "PIE",  # needless code, like a pass after a docstring
+  "PERF", # loops that a comprehension or a single call does faster
+  "N",    # PEP 8 names
+  "EXE",  # a shebang if and only if the file is executable
+  "S",    # flake8-bandit: security, including assert, which `python -O` strips, for a check that has to run
+  "ANN",  # type hints on every function's arguments and return
+  "RUF",  # Ruff's own rules
+]

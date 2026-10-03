@@ -1,0 +1,31 @@
+// Biome formats and lints the site's CSS and JavaScript: `biome check --write` to fix, `biome ci` to check (in
+// scripts/check.sh). Biome 2.5 knows the modern CSS the site uses, like cascade layers, nesting, light-dark(), :has(),
+// ::details-content, :target-current and scroll-target-group, so its recommended rules apply as they are
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "files": {
+    // filters.css is a Go template that head.html runs to write a rule for each tag and year, so it isn't CSS until
+    // Hugo has built it
+    "includes": ["assets/js/**/*.js", "assets/css/**/*.css", "!assets/css/filters.css"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "css": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "linter": {
+    "rules": {
+      "recommended": true
+    }
+  }
+}
