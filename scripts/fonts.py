@@ -89,6 +89,10 @@ def rename(font: TTFont, sym: str, style: str) -> None:
     name = font["name"]
     for nid in [n.nameID for n in name.names if n.nameID not in (0, 7)]:
         name.removeNames(nameID=nid)
+    # STAT describes the variable font's axes and styles, with names among those just removed. A file of one fixed style
+    # needs none of it, and browsers' font sanitiser (OTS) discards a STAT whose names are missing, with an error in the
+    # console
+    del font["STAT"]
     for nid, value in {
         1: family,
         2: style,
