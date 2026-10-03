@@ -127,6 +127,8 @@
    * script), and print always takes light.
    * - accent is only 1.98:1 on the light ground, so accent text and the focus ring have their own values.
    * - body text is fg mixed into the ground, softer than headings.
+   * - code-chip grounds inline code. In light it's the code ground; in dark the code ground is darker than the page
+   *   and all but vanishes behind a word, so the chip is as much lighter than the page as light's is darker.
    * - scrollbar-thumb is the least mix of muted into edge that shows 3:1 on the code ground (3.3:1 dark, 3.1:1 light).
    * - tick, for the Contents trace, mixes in more muted: 4.1:1 on the ground in dark and 3.3:1 in light, with fg on
    *   it at 3.5:1 and 5.2:1, so the current tick stands out.
@@ -139,6 +141,7 @@
     --muted: light-dark(#67655d, #a39f93);
     --edge: light-dark(#b3b0a6, #3e454a);
     --code-bg: light-dark(#ebe9e3, #0a0d0f);
+    --code-chip: light-dark(#ebe9e3, #1b1e20);
     --scrollbar-thumb: light-dark(
       color-mix(in srgb, var(--muted) 60%, var(--edge)),
       color-mix(in srgb, var(--muted) 35%, var(--edge))
@@ -262,7 +265,7 @@
 
   code {
     padding: 0.08em 0.35em;
-    background: var(--code-bg);
+    background: var(--code-chip);
     color: var(--fg);
     font-family: var(--font-read);
     font-size: 0.9em;
@@ -566,6 +569,7 @@
     :root {
       --bg: #fff;
       --code-bg: #fff;
+      --code-chip: #fff;
       --body: var(--fg);
     }
 
