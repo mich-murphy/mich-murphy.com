@@ -90,9 +90,8 @@ jobs:
 
   # scripts/check.sh in the flake's ci shell, so CI runs the same linters, at
   # the same versions, as a local `nix develop -c scripts/check.sh`, and checks
-  # the links of its own fresh build. It runs beside build, and deploy doesn't
-  # wait for it: it checks the code rather than what's published, and a pull
-  # request shows it as a check of its own before it's merged
+  # the links of its own fresh build. It runs beside build, and deploy waits
+  # for both: a broken link or a failing check never ships
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -123,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
     # deploy-pages itself waits up to 10 minutes for the deployment
     timeout-minutes: 15
-    needs: build
+    needs: [build, lint]
     permissions:
       pages: write # to deploy to GitHub Pages
       id-token: write # to prove to Pages that the deployment comes from this workflow
