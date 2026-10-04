@@ -49,7 +49,7 @@
       color: var(--body);
     }
 
-    /* ul is marked with the 7px square the nav marker and Contents use; ol keeps its numbers, in fg */
+    /* ul is marked with the 7px square Contents uses; ol keeps its numbers, in fg */
     & :is(ul, ol) {
       margin: 0 0 1.15em;
     }

@@ -329,8 +329,13 @@
     }
   }
 
+  /*
+   * The header and footer are ruled off with a 1px hairline in edge, so they sit back from the 2px frames between
+   * them. The 1px of padding keeps each the height a 2px rule gave it
+   */
   .site-header {
-    border-bottom: 2px solid var(--fg);
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--edge);
   }
 
   .header-bar {
@@ -347,52 +352,49 @@
     }
 
     & nav {
-      --marker-gap: 0.8ch;
-
       display: flex;
       flex-wrap: wrap;
       gap: 4px 3ch;
     }
 
+    /*
+     * The current page is underlined 3px in accent text, well below the letters; on a post, posts is dashed: you're
+     * in that section, not on its page. Hover is a 1px fg underline in the same place, never the inversion other links
+     * take, so it can't pass for the current one. Each link's box runs 6px below its text, taken back by its margin so
+     * nothing moves, so its focus ring takes the underline in
+     */
     & nav a {
       position: relative;
+      margin-bottom: -6px;
+      padding-bottom: 6px;
+      text-underline-offset: 7px;
 
       &:hover {
-        margin: -2px -5px;
-        padding: 2px 5px;
+        background: none;
+        color: var(--fg);
+        text-decoration: underline 1px;
       }
 
-      /* the current section is marked with the 7px square Contents uses, outside the flow so nothing shifts */
-      &[aria-current]::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: calc(-7px - var(--marker-gap));
-        width: 7px;
-        height: 7px;
-        transform: translateY(-50%);
-        background: var(--fg);
+      &[aria-current],
+      &[aria-current]:hover {
+        text-decoration: underline 3px var(--accent-text);
+        text-decoration-skip-ink: none;
       }
 
-      /* hover's padding moves the link's box 5px left, so the square moves back by as much */
-      &[aria-current]:hover::before {
-        left: calc(-2px - var(--marker-gap));
+      &[aria-current="true"],
+      &[aria-current="true"]:hover {
+        text-decoration-style: dashed;
       }
     }
 
     /*
      * Phones, where the name and the nav don't fit on one line (below 398px at the default 16px, and a little more in
      * em at a smaller default, since the mark and the gaps are px): the nav takes a row of its own, its links in line
-     * with the name. Wrapped at the gutter, the first link's square would sit at the window's edge; here it sits under
-     * the mark, flush with its right edge and as far from its link as the mark is from the name. The wider gap keeps a
-     * later link's square nearer its own link than the one before.
+     * with the name
      */
     @media (width < 25.5em) {
       & nav {
-        --marker-gap: 10px;
-
         flex-basis: 100%;
-        column-gap: 4ch;
         padding-left: 34px;
       }
     }
@@ -432,7 +434,8 @@
   }
 
   .site-footer {
-    border-top: 2px solid var(--fg);
+    padding-top: 1px;
+    border-top: 1px solid var(--edge);
   }
 
   .footer-bar {
@@ -450,7 +453,7 @@
     }
   }
 
-  /* bigger hit areas without moving anything */
+  /* bigger hit areas without moving anything; a nav link's box already runs 6px below its text */
   .header-bar nav a::after,
   .footer-bar a::after {
     content: "";
@@ -458,17 +461,12 @@
     inset: -12px -6px;
   }
 
-  /* forced colours drop backgrounds, and the current marker is one. The mark's M is knocked out of the system ground */
+  .header-bar nav a::after {
+    bottom: -6px;
+  }
+
+  /* the mark's M is knocked out of the system ground */
   @media (forced-colors: active) {
-    .header-bar nav a[aria-current] {
-      text-decoration: underline;
-
-      &::before {
-        background: CanvasText;
-        forced-color-adjust: none;
-      }
-    }
-
     .mark .knockout {
       fill: Canvas;
     }
