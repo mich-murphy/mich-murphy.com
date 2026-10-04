@@ -78,7 +78,8 @@
     /*
      * Two-tone syntax: comments and strings, and everything else plain. These are Chroma's token classes. A comment
      * is a note in the author's hand; a hashbang and preprocessor lines take the comments' colour, but they're
-     * instructions to the machine, so they stay in the code's face.
+     * instructions to the machine, so they stay in the code's face. render-codeblock.html keeps only these classes'
+     * spans, so a class added here goes in its list too.
      */
     & :is(.c, .c1, .ch, .cm, .cp, .cpf, .cs) {
       color: var(--comment);

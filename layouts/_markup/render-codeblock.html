@@ -33,7 +33,14 @@
   reader says what it reached. These are the site's only highlighting settings: noClasses false writes Chroma's
   token classes rather than inline colours, so post.css colours them for each colour scheme. hl_inline leaves only the token spans, with no per-line wrappers, in a <code class="code-inline …"> that our
   own pre and code replace */}}
-{{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" -}}
+{{- $h := transform.Highlight $code $lang (dict "noClasses" false "hl_inline" true) | replaceRE `^<code[^>]*>|</code>$` "" }}
+{{- /* post.css colours only comments and strings, so the other tokens' spans come off, about four in five of them. The
+  spans are flat, and their text has < escaped, so each is <span class="…">text</span>. RE2 can't match a class that
+  isn't in a list, so the spans to keep become <kept> while the rest are unwrapped, then go back to spans */}}
+{{- $styled := `c|c1|ch|cm|cp|cpf|cs|s|s1|s2|sa|sb|sc|sd|se|sh|si|sr|ss|sx|dl` }}
+{{- $h = replaceRE (printf `<span class="(%s)">([^<]*)</span>` $styled) `<kept class="${1}">${2}</kept>` $h }}
+{{- $h = replaceRE `<span class="[^"]*">([^<]*)</span>` "${1}" $h }}
+{{- $h = replace (replace $h "<kept " "<span ") "</kept>" "</span>" -}}
 <figure class="code-window{{ if not $path }} with-legend{{ end }}{{ if gt $lines 41 }} long{{ end }}">
 {{- with $path }}<figcaption><span class="path">{{ $name }} · {{ . }}</span></figcaption>
 {{- else }}<span class="legend">{{ $name }}</span>{{ end -}}
