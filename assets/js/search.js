@@ -61,9 +61,11 @@
  * @property {string[]} years from 2023
  */
 
+/** @typedef {{ post: ListedPost, score: number }} Found a post that holds every part of the query, and its score */
+
 /**
  * A post the list shows, with the line to show under its title when the title lacks a word.
- * @typedef {{ post: ListedPost, score: number, excerpt: Line | undefined }} Match
+ * @typedef {{ post: ListedPost, excerpt: Line | undefined }} Match
  */
 
 // ---- the page -------------------------------------------------------------------------------------------------------
@@ -184,20 +186,21 @@ const hasQuery = ({ words, tagPrefixes, years }) => words.length > 0 || tagPrefi
 const hasFilters = ({ tags, year }) => tags.length > 0 || year !== "";
 
 /**
- * Whether a post passes the menus' filters, and the query's #tag prefixes and years.
+ * Whether a post has the query's #tag prefixes and years.
  * @param {Post} post
  * @param {Query} query
+ */
+const passesQuery = (post, { tagPrefixes, years }) =>
+  (years.length === 0 || years.includes(post.d.slice(0, 4))) &&
+  tagPrefixes.every((prefix) => post.g.some((tag) => tag.startsWith(prefix)));
+
+/**
+ * Whether a post passes the menus' filters.
+ * @param {Post} post
  * @param {Filters} filters
  */
-const passes = (post, query, { tags, year }) => {
-  const postYear = post.d.slice(0, 4);
-  return (
-    (!year || year === postYear) &&
-    (query.years.length === 0 || query.years.includes(postYear)) &&
-    tags.every((tag) => post.g.includes(tag)) &&
-    query.tagPrefixes.every((prefix) => post.g.some((tag) => tag.startsWith(prefix)))
-  );
-};
+const passesFilters = (post, { tags, year }) =>
+  (!year || year === post.d.slice(0, 4)) && tags.every((tag) => post.g.includes(tag));
 
 /**
  * A post's score for the words, or null when it lacks one of them.
@@ -245,24 +248,29 @@ const bestLine = (lines, words) => {
 };
 
 /**
- * The posts that pass the filters and hold every part of the query, best first.
+ * The posts that hold every part of the query, best first. The menus' filters don't change a score, so they're left to
+ * the caller, and one search serves both the list and the menus' counts.
  * @param {ListedPost[]} posts
  * @param {Query} query
- * @param {Filters} filters
- * @returns {Match[]}
+ * @returns {Found[]}
  */
-const search = (posts, query, filters) => {
-  const matches = [];
+const search = (posts, query) => {
+  const found = [];
   for (const post of posts) {
-    if (!passes(post, query, filters)) continue;
+    if (!passesQuery(post, query)) continue;
     const score = scoreOf(post, query.words);
-    if (score === null) continue;
-    const titleHasEveryWord = query.words.every((word) => word.test(post.t));
-    matches.push({ post, score, excerpt: titleHasEveryWord ? undefined : bestLine(post.l, query.words) });
+    if (score !== null) found.push({ post, score });
   }
   // the sort is stable, and the index is newest first, so ties keep date order
-  return matches.sort((a, b) => b.score - a.score);
+  return found.sort((a, b) => b.score - a.score);
 };
+
+/**
+ * The line to show under a post's title: none when the title holds every word, or else the best line.
+ * @param {Post} post
+ * @param {RegExp[]} words
+ */
+const excerptFor = (post, words) => (words.every((word) => word.test(post.t)) ? undefined : bestLine(post.l, words));
 
 /** An excerpt's text: the line, cut behind an ellipsis when that keeps its first match in view */
 const excerptText = (text, marker) => {
@@ -424,11 +432,11 @@ const renderCounts = (shown, searching) => {
 /**
  * Each choice's count: the posts the list would show with it instead, so a tag's ignores the tags applied, and a
  * year's the year. One that would show none is off, unless it's applied.
- * @param {Query} query
+ * @param {Found[]} found the posts that hold the query, before the menus' filters
  */
-const renderChoiceCounts = (query) => {
-  const withAnyTag = search(index, query, { ...filters, tags: [] });
-  const withAnyYear = search(index, query, { ...filters, year: "" });
+const renderChoiceCounts = (found) => {
+  const withAnyTag = found.filter(({ post }) => passesFilters(post, { ...filters, tags: [] }));
+  const withAnyYear = found.filter(({ post }) => passesFilters(post, { ...filters, year: "" }));
   for (const { link, kind, value, count } of entries) {
     if (!value) continue;
     const shown =
@@ -446,10 +454,14 @@ const render = () => {
   if (!index) return;
   const query = parseQuery(input.value);
   const searching = hasQuery(query) || hasFilters(filters);
-  const matches = search(index, query, filters);
+  const found = search(index, query);
+  /** @type {Match[]} */
+  const matches = found
+    .filter(({ post }) => passesFilters(post, filters))
+    .map(({ post }) => ({ post, excerpt: excerptFor(post, query.words) }));
   renderRows(matches, query.marker, searching);
   renderCounts(searching ? matches.length : rows.length, searching);
-  renderChoiceCounts(query);
+  renderChoiceCounts(found);
 };
 
 // ---- the address ----------------------------------------------------------------------------------------------------
