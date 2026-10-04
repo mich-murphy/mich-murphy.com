@@ -1,6 +1,6 @@
 # Ruff lints and formats the Python in scripts/: `ruff check scripts` and `ruff format scripts` (scripts/check.sh checks
-# both). fonts.py needs the devShell's Python, which has fontTools, but favicons.py and postbuild.py need nothing
-# installed, so they may meet the oldest Python they're likely to: the 3.9 that macOS comes with
+# both). fonts.py needs the devShell's Python, which has fontTools, but favicons.py and postbuild.py need no Python
+# packages, so they may meet the oldest Python they're likely to: the 3.9 that macOS comes with
 target-version = "py39"
 line-length = 120
 

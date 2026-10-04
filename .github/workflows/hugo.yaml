@@ -8,6 +8,14 @@ env:
   # [module.hugoVersion] min. Change it with that version; the README says how
   HUGO_SHA256: 45228f5a52eb118b0ca168068f01d7df0447314a24056f1d29667ed9fc368308
 
+  # The oxipng the build job installs for scripts/postbuild.py, which
+  # compresses the social cards with it: the version the flake's nixpkgs has,
+  # so CI and a local build write the same cards, and the SHA-256 of that
+  # release's oxipng-<version>-x86_64-unknown-linux-musl.tar.gz. Change both
+  # with the flake; the README says how
+  OXIPNG_VERSION: 10.2.1
+  OXIPNG_SHA256: 1813750ef592c5350ca79c88f98b2c0876d05c826dc7156245256d4255c1ad17
+
   # Set the build time zone
   TZ: Australia/Sydney
 on:
@@ -60,6 +68,21 @@ jobs:
           echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
           "${HOME}/.local/hugo/hugo" version
 
+      # Installs the oxipng that OXIPNG_VERSION names, checked against
+      # OXIPNG_SHA256 as Hugo's tarball is against HUGO_SHA256
+      - name: Install oxipng
+        run: |
+          tarball="${RUNNER_TEMP}/oxipng-${OXIPNG_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          curl -sSfL -o "${tarball}" "https://github.com/oxipng/oxipng/releases/download/v${OXIPNG_VERSION}/oxipng-${OXIPNG_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          if ! echo "${OXIPNG_SHA256}  ${tarball}" | sha256sum --check; then
+            echo "::error::oxipng ${OXIPNG_VERSION}'s tarball doesn't match OXIPNG_SHA256; if OXIPNG_VERSION changed, update OXIPNG_SHA256 too (README)"
+            exit 1
+          fi
+          mkdir -p "${HOME}/.local/oxipng"
+          tar -C "${HOME}/.local/oxipng" --strip-components 1 -xf "${tarball}"
+          echo "${HOME}/.local/oxipng" >> "${GITHUB_PATH}"
+          "${HOME}/.local/oxipng/oxipng" --version
+
       # As in the official workflow: git lists non-ASCII paths as they are,
       # not quoted, so Hugo's git info finds them
       - name: Configure Git
@@ -75,9 +98,9 @@ jobs:
           HUGO_BUILD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: scripts/build.sh
 
-      # Writes the homepage's size and the site's script into every footer, and
-      # fails on a script outside the index or a page over 14 KB gzipped, before
-      # anything is uploaded or deployed
+      # Writes the homepage's size and the site's script into every footer,
+      # compresses the social cards, and fails on a script outside the index or
+      # a page over 14 KB gzipped, before anything is uploaded or deployed
       - name: Check page weight and scripts
         run: scripts/postbuild.py public
 
