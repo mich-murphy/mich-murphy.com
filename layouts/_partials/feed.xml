@@ -7,7 +7,8 @@
   as midnight in the site's time zone, is written as midnight UTC, as Zola wrote it, so an entry whose dates haven't
   changed keeps the values readers already have. A date from git keeps its time and offset. The content is the post as
   its page shows it, with root-relative links and sources made absolute, since a reader would resolve them against the
-  feed's address */}}
+  feed's address, and without the spans that are there only for the site's CSS, which a reader doesn't have: the code's
+  comments and strings, and its window's label or path */}}
 {{- $p := .page }}
 {{- $self := ($p.OutputFormats.Get "atom").Permalink }}
 {{- $title := site.Title }}
@@ -30,6 +31,8 @@
 {{- /* a root-relative href or src, but not a protocol-relative one (//host) */}}
 {{- $root := `(\s(?:href|src)=")/([^/])` }}
 {{- $abs := printf "${1}%s${2}" site.Home.Permalink }}
+{{- /* a span with only a class and only text in it, as render-codeblock.html writes them */}}
+{{- $span := `<span class="[^"]*">([^<]*)</span>` }}
 {{- printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ site.Language.Locale }}">
 <title>{{ $title }}</title>
@@ -54,7 +57,7 @@
 <id>{{ .Permalink }}</id>
 <published>{{ $e.published.Format $f | safeHTML }}</published>
 <updated>{{ $e.updated.Format $f | safeHTML }}</updated>
-<content type="html">{{ replaceRE $root $abs .Content | transform.XMLEscape | safeHTML }}</content>
+<content type="html">{{ replaceRE $span "${1}" .Content | replaceRE $root $abs | transform.XMLEscape | safeHTML }}</content>
 </entry>
 {{- end }}
 {{- end }}

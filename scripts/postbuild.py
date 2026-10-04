@@ -5,12 +5,18 @@ Every page's footer shows the same two figures, for the site rather than the pag
 browser fetches to load the homepage, as the 10 KB and 250KB Clubs measure a site: the page, gzipped, and the files its
 head fetches, the preloaded fonts and the SVG icon. In place of __JS__ goes the site's script, the inline <script> that
 only the index has. It fails if any page other than the index has a script (a post's JSON-LD is data, not code, so it
-doesn't count), if any page is over MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB), or if a page isn't UTF-8.
+doesn't count), if any page is over MAX_GZIP_BYTES gzipped (default 13312, i.e. 13 KB), or if a page isn't UTF-8.
+13 KB is what a new connection's first round trip leaves for the page: its 10 TCP segments of 1448 B carry 14.1 KB,
+the TLS record, the HTTP/2 frames and GitHub Pages' headers take about 0.7 KB of that, and Pages' gzip writes up to 2%
+more than level 9 does.
+
+It also compresses the site's PNGs, the social cards, with oxipng, which loses nothing and takes off almost half of
+what Hugo's encoder writes. Link previews fetch the cards, and the footer's figures don't count them.
 
 Text is measured gzipped at level 9, with no file name or time in the gzip header, so a size doesn't depend on the
 file's name or on which gzip a machine has. Fonts and images are measured as bytes on disk, since servers send them as
-they are. Sizes are shown as KB with one decimal (1 KB = 1024 B). A second run only checks. It needs only Python's
-standard library.
+they are. Sizes are shown as KB with one decimal (1 KB = 1024 B). A second run only checks, and finds nothing more to
+compress. It needs Python's standard library and oxipng, which the devShell has and CI installs.
 """
 
 # Leaves the type hints unevaluated, so the script also runs on the Python 3.9 that macOS comes with
@@ -18,6 +24,8 @@ from __future__ import annotations
 
 import gzip
 import os
+import shutil
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -25,7 +33,7 @@ from urllib.parse import unquote, urlsplit
 
 HOME_PLACEHOLDER = "__HOME__"
 JS_PLACEHOLDER = "__JS__"
-DEFAULT_MAX_GZIP_BYTES = "14336"
+DEFAULT_MAX_GZIP_BYTES = "13312"
 # Files that are compressed already, so a server sends them as they are
 PRECOMPRESSED = {".woff2", ".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif"}
 
@@ -84,6 +92,27 @@ def kb(size: int) -> str:
     """Bytes as KB with one decimal, rounded half up."""
     tenths = (size * 10 + 512) // 1024
     return f"{tenths // 10}.{tenths % 10} KB"
+
+
+def compress_pngs(site: Path, failures: list[str]) -> str | None:
+    """Compresses the site's PNGs in place with oxipng, losslessly, and says by how much, or None if there are none or
+    it fails. --opt 4 takes off 2% more than the default level, and higher levels nothing more, on the cards. Every
+    chunk stays, since a photo in a post may need its gamma or orientation, and the cards have none to drop."""
+    pngs = sorted(p for p in site.rglob("*.png") if p.is_file())
+    if not pngs:
+        return None
+    oxipng = shutil.which("oxipng")
+    if oxipng is None:
+        failures.append("oxipng isn't on PATH, so the PNGs weren't compressed; run this in the devShell")
+        return None
+    before = sum(png.stat().st_size for png in pngs)
+    command = [oxipng, "--quiet", "--opt", "4", "--", *map(str, pngs)]
+    # oxipng from PATH, as the devShell and CI put it there, on the site's own files, with no shell
+    if subprocess.run(command, check=False).returncode:  # noqa: S603
+        failures.append(f"oxipng failed on the PNGs in {site}")
+        return None
+    after = sum(png.stat().st_size for png in pngs)
+    return f"compressed {len(pngs)} PNGs from {kb(before)} to {kb(after)}"
 
 
 def read_page(page: Path, failures: list[str]) -> str | None:
@@ -166,6 +195,8 @@ def main() -> int:
     if pages == 0:
         failures.append(f"{site}: no HTML pages")
 
+    compressed = compress_pngs(site, failures)
+
     if written:
         print(
             f"postbuild: checked {pages} pages in {site}, and wrote the homepage's {home} and the site's {script} of "
@@ -178,6 +209,8 @@ def main() -> int:
             f"postbuild: largest is {largest_page} at {kb(largest)} ({largest} B gzipped), "
             f"limit {kb(max_bytes)} ({max_bytes} B)"
         )
+    if compressed:
+        print(f"postbuild: {compressed}")
     if failures:
         # Flush first, so a log that interleaves the two streams keeps this order
         sys.stdout.flush()

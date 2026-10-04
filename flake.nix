@@ -2,9 +2,10 @@
   description = "Hugo website development environment";
 
   inputs = {
-    # nixos-unstable on 2026-09-26, pinned by commit rather than following a branch, so Hugo and fontTools only change
-    # when this line does. Its Hugo, 0.166.0, must be the version in hugo.toml's [module.hugoVersion] min, which
-    # scripts/build.sh checks; the README says how to update them together
+    # nixos-unstable on 2026-09-26, pinned by commit rather than following a branch, so Hugo, fontTools and oxipng only
+    # change when this line does. Its Hugo, 0.166.0, must be the version in hugo.toml's [module.hugoVersion] min, which
+    # scripts/build.sh checks, and its oxipng, 10.2.1, the workflow's OXIPNG_VERSION; the README says how to update them
+    # together
     nixpkgs.url = "github:nixos/nixpkgs/e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa";
   };
 
@@ -14,6 +15,12 @@
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
   in {
     devShells = forAllSystems (pkgs: let
+      # What builds the site and finishes it, for both shells: scripts/postbuild.py compresses its PNGs with oxipng
+      buildTools = [
+        pkgs.hugo
+        pkgs.oxipng
+      ];
+
       # What scripts/check.sh runs, for both shells
       lintTools = [
         pkgs.shellcheck
@@ -29,17 +36,15 @@
       # to write woff2
       default = pkgs.mkShellNoCC {
         packages =
-          [
-            pkgs.hugo
-            (pkgs.python3.withPackages (p: [p.fonttools p.brotli]))
-          ]
+          buildTools
+          ++ [(pkgs.python3.withPackages (p: [p.fonttools p.brotli]))]
           ++ lintTools;
       };
 
       # For CI's lint job: `nix develop .#ci -c scripts/check.sh`. It leaves out Python, which only fonts.py needs
       # from Nix; scripts/postbuild.py uses only the standard library, so the runner's python3 runs it
       ci = pkgs.mkShellNoCC {
-        packages = [pkgs.hugo] ++ lintTools;
+        packages = buildTools ++ lintTools;
       };
     });
 

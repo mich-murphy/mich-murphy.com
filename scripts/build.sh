@@ -2,10 +2,14 @@
 # Builds the site into public, in CI and locally, so both use the same flags:
 # scripts/build.sh [hugo flags], e.g. --destination <dir>. --panicOnWarning fails
 # the build on any warning, such as a code block in a language with no label
-# (render-codeblock.html). It first checks that hugo is exactly the version
-# hugo.toml pins (scripts/hugo-version.sh): Hugo itself only rejects an older
-# one, so a flake or CI install that moved ahead would otherwise build unnoticed.
-# Run scripts/postbuild.py afterwards for the footer's figures and the checks
+# (render-codeblock.html). --cleanDestinationDir deletes what an earlier build
+# left that this one doesn't write, so a local public holds what CI's fresh
+# checkout builds, and postbuild.py checks only that. It deletes anything else
+# in a --destination too, so give the site a folder of its own. It first checks
+# that hugo is exactly the version hugo.toml pins (scripts/hugo-version.sh):
+# Hugo itself only rejects an older one, so a flake or CI install that moved
+# ahead would otherwise build unnoticed. Run scripts/postbuild.py afterwards for
+# the footer's figures and the checks
 set -euo pipefail
 
 want=$("$(dirname "$0")/hugo-version.sh")
@@ -25,4 +29,4 @@ if [ "$have" != "$want" ]; then
   exit 1
 fi
 
-exec hugo build --gc --minify --panicOnWarning "$@"
+exec hugo build --gc --minify --panicOnWarning --cleanDestinationDir "$@"
