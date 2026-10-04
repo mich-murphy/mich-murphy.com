@@ -1,9 +1,11 @@
 // Search on the index, the site's one script: home.html inlines it, minified by js.Build. Without it, the box stays
 // hidden, the frame is labelled Filter, and the menus filter the list through :target (home-filters.css). With it, the
-// box shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. The line
-// index, /index.json (home.json.json), loads on the box's first focus, on a pick from a menu, on Esc in the frame, on
-// a filter's fragment typed into the address, or when the page opens at ?q= or #tag. If it doesn't load, the page
-// goes back to working as it does without the script, and if the request itself failed, it asks again later.
+// box shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. Only words
+// need the line index, /index.json (home.json.json): the menus' filters, and tags and years typed into the box, work
+// from the rows' data-tag and data-year, so a tag's link, to /#nixos, doesn't fetch it. It loads on the box's first
+// focus, or when the page opens at ?q= with words. If the server answers badly, the page goes back to working as it
+// does without the script. If the request itself fails, it's made again later, and the page goes back to working
+// without the script only if words were waiting for the index.
 // - The box holds words: each matches from the start of a word, in any case and script, so imperm finds impermanence
 //   and rsa finds ssh_host_rsa_key, but sy doesn't find easy. A single character is ignored until there's a second.
 //   "A phrase" matches as written, #nix any tag starting with nix, and 2023 that year. Every part must match.
@@ -48,6 +50,7 @@
  * @property {string} value the tag or year it sets, or "" for all
  * @property {string} id its target's id, decoded: the tag, y and the year, or all
  * @property {HTMLElement | null} count where it shows how many posts it would list; all has none
+ * @property {string} built the count the build wrote, which the page shows without the script
  */
 
 /** @typedef {{ tags: string[], year: string }} Filters the menus' values: tags, which combine, and a year or "" */
@@ -91,6 +94,23 @@ const list = $(".posts-card ol");
 const rows = $$(".post-row", list);
 const noMatch = create("p", { className: "no-match", hidden: true, textContent: "No post matches." });
 
+/**
+ * The rows as posts with no lines and only a year for a date, which is all a query without words reads, so the list
+ * filters without the index
+ * @type {ListedPost[]}
+ */
+const rowPosts = rows.map((row) => {
+  const link = $("a", row);
+  return {
+    s: decodeURIComponent(link.getAttribute("href").slice(1, -1)),
+    t: link.textContent,
+    d: row.dataset.year,
+    g: row.dataset.tag.split(" ").filter(Boolean),
+    l: [],
+    row,
+  };
+});
+
 /** @type {MenuEntry[]} */
 const entries = $$(".filter-popover a").map((link) => {
   const id = decodeURIComponent(link.hash.slice(1));
@@ -98,7 +118,8 @@ const entries = $$(".filter-popover a").map((link) => {
   let value = id;
   if (link.matches(".all")) value = "";
   else if (kind === "year") value = id.slice(1);
-  return { link, kind, value, id, count: $(".count", link) };
+  const count = $(".count", link);
+  return { link, kind, value, id, count, built: count?.textContent ?? "" };
 });
 
 // The shortcut that focuses the box takes a modifier, so a stray key or a word said to speech input can't set it off,
@@ -448,13 +469,21 @@ const renderChoiceCounts = (found) => {
   }
 };
 
-/** The menus, and once the index has loaded, the list and its counts */
+/**
+ * The posts to search for a query: the index's once it has loaded, or until then the rows', for a query without words,
+ * or null for one with them
+ * @param {Query} query
+ */
+const postsFor = (query) => index ?? (query.words.length > 0 ? null : rowPosts);
+
+/** The menus, and the list and its counts, unless the words wait for the index */
 const render = () => {
   renderMenus();
-  if (!index) return;
   const query = parseQuery(input.value);
+  const posts = postsFor(query);
+  if (!posts) return;
   const searching = hasQuery(query) || hasFilters(filters);
-  const found = search(index, query);
+  const found = search(posts, query);
   /** @type {Match[]} */
   const matches = found
     .filter(({ post }) => passesFilters(post, filters))
@@ -517,31 +546,40 @@ const fetchIndex = async () => {
     // is the request failing partway through the body
     throw error.name === "SyntaxError" ? new IndexUnavailable() : error;
   }
+  const rowBySlug = new Map(rowPosts.map(({ s, row }) => [s, row]));
   return posts.flatMap((post) => {
-    const row = rows.find((r) => $("a", r).getAttribute("href") === `/${post.s}/`);
+    const row = rowBySlug.get(post.s);
     return row ? [{ ...post, row }] : [];
   });
 };
 
 /**
- * Without the index, the page goes back to working as it does without the script: the box hides, the frame is
- * labelled Filter, and the menus' links go to their fragments, where home-filters.css filters the list. When the
- * server answered badly, the address is cleared of words, and a filter that was set is followed there, so a pick made
- * meanwhile still applies: only one, since home-filters.css applies one at a time, and the tag wins over the year.
- * When the request failed instead, the page may be being left, where following would cancel leaving and clearing
- * would lose what Back returns to, so the address stays as it is, with any update pending for it.
+ * Without the index, the page goes back to working as it does without the script: the box hides, the frame is labelled
+ * Filter, the list and the counts that the rows drew go back to the build's, and the menus' links go to their
+ * fragments, where home-filters.css filters the list. When the server answered badly, the address is cleared of words,
+ * and a filter that was set is followed there, so a pick made meanwhile still applies: only one, since home-filters.css
+ * applies one at a time, and the tag wins over the year. With none set, #all is followed if a target from before the
+ * box showed, like the tag a page opened at, would still filter the list. When the request failed instead, the page may
+ * be being left, where following would cancel leaving and clearing would lose what Back returns to, so the address
+ * stays as it is, with any update pending for it.
  * @param {boolean} serverAnsweredBadly
  */
 const disableSearch = (serverAnsweredBadly) => {
   if (box.hidden) return;
   box.hidden = true;
   frameLegend.textContent = "Filter";
-  for (const { link } of entries) link.removeAttribute("aria-current");
+  renderRows([], null, false);
+  renderCounts(rows.length, false);
+  for (const { link, count, built } of entries) {
+    link.removeAttribute("aria-current");
+    link.removeAttribute("aria-disabled");
+    if (count) count.textContent = built;
+  }
   tagLabel.textContent = "";
   yearLabel.textContent = "";
   if (!serverAnsweredBadly) return;
   cancelPause();
-  const fragment = filters.tags[0] || (filters.year && `y${filters.year}`);
+  const fragment = filters.tags[0] || (filters.year && `y${filters.year}`) || ($(".posts-card :target") ? "all" : "");
   try {
     history.replaceState(null, "", location.pathname);
   } catch {
@@ -609,11 +647,13 @@ const actOnPendingKey = () => {
 
 /**
  * Loads the index, once. When it has loaded, the box shows if it's still hidden, or else the list is drawn, once,
- * however many changes waited for it, and a key that waited acts. If the server answers badly, there's no second try.
- * The request itself fails, even partway through the body, when the page is left while it loads: WebKit fails it as
- * the navigation starts, and Chrome and Firefox as the page unloads. That can't be told from a failure with the page
- * staying, so either way the page works as it does without the script, a key that waited is dropped, and the request
- * is made again when the page is shown again, as on Back from the back-forward cache, or on a pick from a menu.
+ * however many changes waited for it, and a key that waited acts. If the server answers badly, there's no second try,
+ * and the page works as it does without the script. The request itself fails, even partway through the body, when the
+ * page is left while it loads: WebKit fails it as the navigation starts, and Chrome and Firefox as the page unloads.
+ * That can't be told from a failure with the page staying, so either way a key that waited is dropped, and the request
+ * is made again when it's next needed, when the page is shown again, as on Back from the back-forward cache, or on a
+ * pick from a menu. Meanwhile the page works as it does without the script only if words were waiting for the index:
+ * without them the rows still answer, and a box focused on the way to a post doesn't hide as the page is left.
  */
 const loadIndex = async () => {
   if (indexRequest !== "unsent" && indexRequest !== "failed") return;
@@ -625,7 +665,7 @@ const loadIndex = async () => {
     const serverAnsweredBadly = error instanceof IndexUnavailable;
     indexRequest = serverAnsweredBadly ? "answered" : "failed";
     pendingKey = null;
-    disableSearch(serverAnsweredBadly);
+    if (serverAnsweredBadly || !postsFor(parseQuery(input.value))) disableSearch(serverAnsweredBadly);
     return;
   }
   if (box.hidden) showSearch();
@@ -634,15 +674,15 @@ const loadIndex = async () => {
 };
 
 /**
- * Shows a change to the words or the filters: the menus at once, and the list once the index has loaded, which this
- * asks for. The address follows after a pause, and so does the status line when the change was typed. A key still
- * waiting for the list is dropped.
+ * Shows a change to the words or the filters: the menus at once, and the list too, unless its words wait for the index,
+ * which this then asks for. The address follows after a pause, and so does the status line when the change was typed.
+ * A key still waiting for the list is dropped.
  */
 const update = ({ typed = false } = {}) => {
   pendingKey = null;
   statusWaits = typed;
   render();
-  loadIndex();
+  if (!postsFor(parseQuery(input.value))) loadIndex();
   restartPause();
 };
 
@@ -679,17 +719,18 @@ const onEscape = (event) => {
 };
 
 /**
- * Down in the box moves to the first result, and Enter opens it. Pressed before the index has loaded, the key waits
- * for the list the index draws, and only the last one pressed acts, once. Enter while an IME is composing takes a
+ * Down in the box moves to the first result, and Enter opens it. Pressed while the words wait for the index, the key
+ * waits for the list the index draws, and only the last one pressed acts, once. Enter while an IME is composing takes a
  * word instead, which Safari says with keyCode 229.
  */
 const onBoxKey = (event) => {
   const enter = event.key === "Enter" && !event.isComposing && event.keyCode !== 229;
   if (event.key !== "ArrowDown" && !enter) return;
-  // down would move the caret to the end, as it still does once the list has loaded with no result to move to
-  if (event.key === "ArrowDown" && (firstResult() || !index)) event.preventDefault();
+  const listed = postsFor(parseQuery(input.value)) !== null;
+  // down would move the caret to the end, as it still does once the list is drawn with no result to move to
+  if (event.key === "ArrowDown" && (firstResult() || !listed)) event.preventDefault();
   pendingKey = event.key;
-  if (index) actOnPendingKey();
+  if (listed) actOnPendingKey();
 };
 
 // ---- wiring ---------------------------------------------------------------------------------------------------------
@@ -773,7 +814,8 @@ addEventListener("pageshow", () => {
   if (indexRequest === "failed") loadIndex();
 });
 
-// An address with #nixos, #y2023 or ?q= opens with them set, once the index has loaded; any other shows the box now
+// An address with words in ?q= opens with them once the index has loaded. Any other shows the box now, with the
+// filters it names, #nixos, #y2023 or a tag or year in ?q=, applied from the rows
 applyFragment();
-if (openingQuery || hasFilters(filters)) loadIndex();
+if (openingQuery && parseQuery(openingQuery).words.length > 0) loadIndex();
 else showSearch();
