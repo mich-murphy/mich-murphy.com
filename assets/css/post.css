@@ -94,7 +94,7 @@
   }
 
   /*
-   * The colophon: the post's one dither, as wide as the text column, all in the machine face. The source file is its
+   * The colophon: the post's only dithered box, as wide as the text column, all in the machine face. The source file is its
    * label, which wraps inside the frame. One keyed list (prose.css), with history at the end of the commit row; then
    * the words and code blocks under a dotted rule, split by dots.
    */
