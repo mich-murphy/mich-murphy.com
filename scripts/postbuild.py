@@ -5,7 +5,10 @@ Every page's footer shows the same two figures, for the site rather than the pag
 browser fetches to load the homepage, as the 10 KB and 250KB Clubs measure a site: the page, gzipped, and the files its
 head fetches, the preloaded fonts and the SVG icon. In place of __JS__ goes the site's script, the inline <script> that
 only the index has. It fails if any page other than the index has a script (a post's JSON-LD is data, not code, so it
-doesn't count), if any page is over MAX_GZIP_BYTES gzipped (default 14336, i.e. 14 KB), or if a page isn't UTF-8.
+doesn't count), if any page is over MAX_GZIP_BYTES gzipped (default 13312, i.e. 13 KB), or if a page isn't UTF-8.
+13 KB is what a new connection's first round trip leaves for the page: its 10 TCP segments of 1448 B carry 14.1 KB,
+the TLS record, the HTTP/2 frames and GitHub Pages' headers take about 0.7 KB of that, and Pages' gzip writes up to 2%
+more than level 9 does.
 
 It also compresses the site's PNGs, the social cards, with oxipng, which loses nothing and takes off almost half of
 what Hugo's encoder writes. Link previews fetch the cards, and the footer's figures don't count them.
@@ -30,7 +33,7 @@ from urllib.parse import unquote, urlsplit
 
 HOME_PLACEHOLDER = "__HOME__"
 JS_PLACEHOLDER = "__JS__"
-DEFAULT_MAX_GZIP_BYTES = "14336"
+DEFAULT_MAX_GZIP_BYTES = "13312"
 # Files that are compressed already, so a server sends them as they are
 PRECOMPRESSED = {".woff2", ".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif"}
 
