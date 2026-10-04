@@ -1,10 +1,12 @@
 {{- /* The search index that home's script loads: every post, newest first, as {s, t, d, g, l}: its slug, title, date,
-  tags (as tag-slug.html gives them) and lines. A line is [text, anchor, kind], with kind 0 for prose, 1 for a
-  heading and 2 for code, read from the post's Markdown, a callout's included. Blank lines and fence lines are
-  skipped. Prose is what a reader sees: link text without its URL, no **, _ or backticks, no list or quote markers,
-  and no line for an alert's [!NOTE]. A heading loses its #s, and code stays as written. The anchor is the id of the
-  h2 or h3 the line sits under. The Markdown doesn't say what id Hugo gave a heading, so each h2 or h3 line takes the
-  next one from headings.html, in document order, and the build fails if the two disagree on how many there are */}}
+  tags (as tag-slug.html gives them) and lines, by section. A line is a text and a kind, 0 for prose, 1 for a heading
+  and 2 for code, read from the post's Markdown, a callout's included. Blank lines and fence lines are skipped. Prose is
+  what a reader sees: link text without its URL, no **, _ or backticks, no list or quote markers, and no line for an
+  alert's [!NOTE]. A heading loses its #s, and code its indent. A section is [anchor, kinds, text, …]: the id of the h2
+  or h3 it starts with ("" above the first), its lines' kinds as a digit each, then their texts, which comes to a
+  quarter less than a [text, anchor, kind] for each line. The Markdown doesn't say what id Hugo gave a heading, so each
+  h2 or h3 line takes the next one from headings.html, in document order, and the build fails if the two disagree on
+  how many there are */}}
 {{- $posts := slice }}
 {{- range (partialCached "posts.html" .).ByDate.Reverse }}
   {{- $source := .File.Path }}
@@ -25,7 +27,7 @@
       {{- if and $marker (eq (substr $marker 0 1) (substr $fence 0 1)) (ge (len $marker) (len $fence)) (eq $text $marker) }}
         {{- $fence = "" }}
       {{- else if $text }}
-        {{- $row = slice (strings.TrimRight " \t\r\n\v\f" $unquoted) $anchor 2 }}
+        {{- $row = slice $text $anchor 2 }}
       {{- end }}
     {{- else if $marker }}
       {{- $fence = $marker }}
@@ -57,8 +59,25 @@
     {{- if $row }}{{ if $rows }}{{ $rows = $rows | append $row }}{{ else }}{{ $rows = slice $row }}{{ end }}{{ end }}
   {{- end }}
   {{- if ne $h (len $headings) }}{{ errorf "search index: Hugo found %d h2 and h3 headings in %s, and its Markdown has %d" (len $headings) $source $h }}{{ end }}
+  {{- /* each section's rows, in order. Hugo's heading ids are unique, so a section's rows are all together; a custom id
+    given twice takes both headings' rows, once */}}
+  {{- $sections := slice }}
+  {{- $anchors := slice "" }}
+  {{- range $headings }}{{ if not (in $anchors .id) }}{{ $anchors = $anchors | append .id }}{{ end }}{{ end }}
+  {{- range $anchor := $anchors }}
+    {{- $kinds := "" }}
+    {{- $texts := slice }}
+    {{- range $rows }}
+      {{- if eq (index . 1) $anchor }}{{ $kinds = print $kinds (index . 2) }}{{ $texts = $texts | append (index . 0) }}{{ end }}
+    {{- end }}
+    {{- with $texts }}
+      {{- /* a section is all strings, so append adds the texts to it and it to the sections, as for the rows */}}
+      {{- $section := slice $anchor $kinds | append . }}
+      {{- if $sections }}{{ $sections = $sections | append $section }}{{ else }}{{ $sections = slice $section }}{{ end }}
+    {{- end }}
+  {{- end }}
   {{- $tags := slice }}
   {{- range .GetTerms "tags" }}{{ $tags = $tags | append (partial "tag-slug.html" .) }}{{ end }}
-  {{- $posts = $posts | append (dict "s" .File.ContentBaseName "t" .Title "d" (.Date.Format "2006-01-02") "g" $tags "l" $rows) }}
+  {{- $posts = $posts | append (dict "s" .File.ContentBaseName "t" .Title "d" (.Date.Format "2006-01-02") "g" $tags "l" $sections) }}
 {{- end }}
 {{- $posts | jsonify (dict "noHTMLEscape" true) }}

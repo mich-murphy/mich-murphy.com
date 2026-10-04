@@ -1,7 +1,7 @@
 // Search on the index, the site's one script: home.html inlines it, minified by js.Build. Without it, the box stays
 // hidden, the frame is labelled Filter, and the menus filter the list through :target (home-filters.css). With it, the
 // box shows, the frame is labelled Search, and the Posts card becomes the list of results, updated in place. Only words
-// need the line index, /index.json (home.json.json): the menus' filters, and tags and years typed into the box, work
+// need the line index, /search.json (home.json.json): the menus' filters, and tags and years typed into the box, work
 // from the rows' data-tag and data-year, so a tag's link, to /#nixos, doesn't fetch it. It loads on the box's first
 // focus, or when the page opens at ?q= with words. If the server answers badly, the page goes back to working as it
 // does without the script. If the request itself fails, it's made again later, and the page goes back to working
@@ -25,18 +25,26 @@
 //   × at once.
 
 /**
- * A post in the index, which lists them newest first.
- * @typedef {object} Post
+ * A post in the index, which lists them newest first, with its lines by section.
+ * @typedef {object} IndexPost
  * @property {string} s its slug: the post is at /slug/
  * @property {string} t its title
  * @property {string} d its date, as 2024-04-08
  * @property {string[]} g its tags, as tag-slug.html gives them
- * @property {Line[]} l its lines
+ * @property {Section[]} l its sections
  */
 
 /**
- * A line of a post's Markdown: its text, the id of the h2 or h3 it sits under ("" above the first), and its kind:
- * 0 for prose, 1 for a heading and 2 for code.
+ * A section of a post's Markdown: the id of the h2 or h3 it starts with ("" above the first), its lines' kinds as a
+ * digit each, then their texts.
+ * @typedef {[anchor: string, kinds: string, ...texts: string[]]} Section
+ */
+
+/** @typedef {Omit<IndexPost, "l"> & { l: Line[] }} Post a post with its sections' lines, one after another */
+
+/**
+ * A line of a post's Markdown: its text, its section's anchor, and its kind: 0 for prose, 1 for a heading and 2 for
+ * code.
  * @typedef {[text: string, anchor: string, kind: 0 | 1 | 2]} Line
  */
 
@@ -531,13 +539,13 @@ const restartPause = () => {
 class IndexUnavailable extends Error {}
 
 /**
- * The index's posts that have a row, each with it.
+ * The index's posts that have a row, each with it, and with its sections' lines.
  * @returns {Promise<ListedPost[]>}
  */
 const fetchIndex = async () => {
-  const response = await fetch("/index.json");
+  const response = await fetch("/search.json");
   if (!response.ok) throw new IndexUnavailable();
-  /** @type {Post[]} */
+  /** @type {IndexPost[]} */
   let posts;
   try {
     posts = await response.json();
@@ -547,9 +555,12 @@ const fetchIndex = async () => {
     throw error.name === "SyntaxError" ? new IndexUnavailable() : error;
   }
   const rowBySlug = new Map(rowPosts.map(({ s, row }) => [s, row]));
-  return posts.flatMap((post) => {
+  return posts.flatMap(({ l, ...post }) => {
     const row = rowBySlug.get(post.s);
-    return row ? [{ ...post, row }] : [];
+    if (!row) return [];
+    /** @type {Line[]} */
+    const lines = l.flatMap(([anchor, kinds, ...texts]) => texts.map((text, i) => [text, anchor, Number(kinds[i])]));
+    return [{ ...post, l: lines, row }];
   });
 };
 
