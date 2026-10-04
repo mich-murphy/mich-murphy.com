@@ -476,20 +476,23 @@
 }
 
 @layer components {
-  /* a framed box's dither: an offset shadow in fg through our own 4x6 tile. One per page */
+  /*
+   * A framed box's dither: an offset shadow in full fg through a 4x4 ordered-dither tile, two dots on a diagonal, so
+   * 12.5% is ink. Every box the site draws has one; a box a post's Markdown makes (code windows, callouts, figures)
+   * and Contents don't
+   */
   .dithered {
     position: relative;
 
     &::before {
-      --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E");
+      --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E");
 
       content: "";
       position: absolute;
       inset: 8px -8px -8px 8px;
       background: var(--fg);
-      opacity: 0.5;
       pointer-events: none;
-      mask: var(--tile) 0 0 / 4px 6px repeat;
+      mask: var(--tile) 0 0 / 4px 4px repeat;
     }
 
     & > * {
@@ -519,7 +522,7 @@
     line-height: 1.5;
   }
 
-  /* a callout is a plain frame with a label: an alert in a post (render-blockquote.html), or 404's box */
+  /* a callout is a frame with a label: an alert in a post (render-blockquote.html), which is plain, or 404's box */
   .callout {
     position: relative;
     margin-block: 2em 2.2em;
