@@ -1,10 +1,10 @@
 {{ define "main" }}
-{{- /* GitHub Pages serves this page at any missing address, so every link on it is root-relative. It can't know
-  which address was asked for without a script, so it doesn't say. A plain box labelled 404 points to the index,
-  whose menus filter the posts with or without a script (search needs one, so the box doesn't offer it), and then the
-  Posts card lists every post and carries the page's one dither. The card is plain here: its filter targets and status
-  line are home's (posts-card.html). Styles are posts-card.css, and the callout in main.css */}}
+{{- /* GitHub Pages serves this page at any missing address, so every link on it is root-relative. It can't know which
+  address was asked for without a script, so it doesn't say. A box labelled 404 points to the index, whose menus
+  filter the posts with or without a script (search needs one, so the box doesn't offer it), and then the Posts card
+  lists every post. Both are dithered, as every box the site draws is. The card is plain here: its filter targets and
+  status line are home's (posts-card.html). Styles are posts-card.css, and the callout in main.css */}}
 <h1 class="visually-hidden">Page not found</h1>
-<div class="callout"><h2 class="legend">404</h2><div class="frame"><p>Nothing lives at this address. If you followed a link here, it may have a typo. Every post is listed below, and <a href="/">the index</a> filters them by tag or year.</p></div></div>
+<div class="dithered callout"><h2 class="legend">404</h2><div class="frame"><p>Nothing lives at this address. If you followed a link here, it may have a typo. Every post is listed below, and <a href="/">the index</a> filters them by tag or year.</p></div></div>
 {{ partial "posts-card.html" . }}
 {{ end }}

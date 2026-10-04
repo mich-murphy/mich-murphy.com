@@ -27,8 +27,8 @@ body{margin:0;width:1200px;height:630px;overflow:hidden;background:var(--bg);col
    and is 978px wide. The dither is main.css's tile at twice the size, 14px down and right */
 .box{--lines:@LINES@;--h:calc(178px + 71px * var(--lines));position:absolute;left:58px;
   top:round(down,(729px - var(--h)) / 2,1px);width:1070px;height:var(--h)}
-.box::before{content:"";position:absolute;inset:14px -14px -14px 14px;background:var(--fg);opacity:.5;
-  --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='6'%3E%3Cpath d='M0 0h1v2H0zM2 3h1v2H2z'/%3E%3C/svg%3E") 0 0/8px 12px repeat;
+.box::before{content:"";position:absolute;inset:14px -14px -14px 14px;background:var(--fg);
+  --m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E") 0 0/8px 8px repeat;
   -webkit-mask:var(--m);mask:var(--m)}
 .frame{position:absolute;inset:0;border:3px solid var(--fg);background:var(--bg)}
 /* the label cut into the border, placed as main.css's .legend */

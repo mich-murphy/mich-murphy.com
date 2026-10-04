@@ -8,7 +8,7 @@
   }
 
   /*
-   * Search: a plain frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the key
+   * Search: a dithered frame above the Posts card. Its first row is the box: fzf's > prompt, the input, and the key
    * that focuses it, which gives way to the 3/17 count while there's a query. The box needs the script, so it ships
    * hidden. It's a flex row, which would beat the hidden attribute, so hidden takes a rule of its own, as do the rows
    * the script hides.

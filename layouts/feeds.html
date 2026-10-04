@@ -1,13 +1,13 @@
 {{ define "main" }}
-{{- /* Feeds (content/feeds/index.md): the head, then the Subscribe box, the page's one dither. It keys the feed's
-  full address, from home's atom output as the head's alternate link takes it, which one click selects whole
-  (pages.css), and the post count and newest date from the build. The <wbr> lets a phone break the address before
-  atom.xml rather than at mich-murphy's hyphen.
-  Then the intro (prose.html), and the Feeds I read card from data/blogroll.toml, keyed by topic in the file's order:
-  each feed's name, linked, and its host, the URL's without www. unless the file sets one. The space between them keeps
-  them apart in reader mode and without CSS. A feed with no name, with a URL that has no host (noted.lol/ rather than
-  https://noted.lol/), or whose topic isn't listed fails the build rather than show a broken row or go missing from the
-  card. Styles are prose.css and pages.css */}}
+{{- /* Feeds (content/feeds/index.md): the head, then the Subscribe box, dithered as every box the site draws is. It
+  keys the feed's full address, from home's atom output as the head's alternate link takes it, which one click selects
+  whole (pages.css), and the post count and newest date from the build. The <wbr> lets a phone break the address
+  before atom.xml rather than at mich-murphy's hyphen.
+  Then the intro (prose.html), and the Feeds I read card, also dithered, from data/blogroll.toml, keyed by topic in
+  the file's order: each feed's name, linked, and its host, the URL's without www. unless the file sets one. The space
+  between them keeps them apart in reader mode and without CSS. A feed with no name, with a URL that has no host
+  (noted.lol/ rather than https://noted.lol/), or whose topic isn't listed fails the build rather than show a broken
+  row or go missing from the card. Styles are prose.css and pages.css */}}
 {{- $roll := hugo.Data.blogroll }}
 {{- range $roll.feed }}
   {{- $url := string .url }}
@@ -27,7 +27,7 @@
 </dl>
 </div></div>
 {{ partial "prose.html" . }}
-<div class="blogroll"><h2 class="legend">Feeds I read · {{ len $roll.feed }}</h2><div class="frame">
+<div class="dithered blogroll"><h2 class="legend">Feeds I read · {{ len $roll.feed }}</h2><div class="frame">
 <dl>
 {{- range $topic := $roll.topics }}
 {{- with where $roll.feed "topic" $topic }}
