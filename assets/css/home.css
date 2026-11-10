@@ -15,7 +15,7 @@
    */
   .search-frame {
     position: relative;
-    margin-top: 30px;
+    margin-top: var(--stack);
 
     & .frame {
       padding: 13px 19px 3px;
@@ -23,10 +23,6 @@
       @media (width <= 37.5em) {
         padding-inline: 13px;
       }
-    }
-
-    & + .posts-card {
-      margin-top: 34px;
     }
   }
 
@@ -40,7 +36,9 @@
     align-items: baseline;
     gap: 1.2ch;
     padding-block: 8px;
-    border-bottom: 1px solid var(--edge);
+
+    /* the field's only boundary, so it takes ctl, a control's tone (3:1, WCAG 1.4.11), not edge's divider tone */
+    border-bottom: 1px solid var(--ctl);
 
     & .search-prompt {
       flex: none;
@@ -49,8 +47,8 @@
 
     /*
      * Focused, the box shows it as the frame's own parts do: the hairline under it turns to the focus colour,
-     * 1px thicker with 1px less padding so nothing moves, and the prompt takes the text colour from the muted it rests in, as a terminal's wakes up.
-     * The input drops its ring for them (below).
+     * 1px thicker with 1px less padding so nothing moves (the one 2px line that isn't a ring), and the prompt takes
+     * the text colour from the muted it rests in, as a terminal's wakes up. The input drops its ring for them (below).
      */
     &:has(.search-input:focus-visible) {
       padding-bottom: 7px;
@@ -237,8 +235,7 @@
 
   /*
    * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 10px
-   * margin and the frame's 3px padding, which is the 2px it had when the frame was a 2px line, plus the 1px the
-   * thinner line gave up), so the two read as one line rather than two a few pixels apart.
+   * margin and the frame's 3px bottom padding), so the two read as one line rather than two a few pixels apart.
    */
   .filter-popover {
     position: absolute;

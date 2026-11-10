@@ -2,8 +2,9 @@
   in, both CSS only (post.css), split at 1280px:
   - 1280px and up, with any pointer: the rail, always open in the left margin beside the column, never over it. Its
     label, a tree of the headings (h3s only under the h2 you are in) and a reading meter are all drawn in CSS
-  - narrower: a status bar fixed to the foot of the window, showing § 3/7, the current section's title and the
-    meter, which opens the same list as a sheet above it. The open state is #toc:target. #toc is an empty element
+  - narrower: a status bar fixed to the foot of the window, showing Contents, § 3/7, the current section's title
+    and the meter. The constant Contents is the link's visible label, so it contains its accessible name (WCAG
+    2.5.3). The bar opens the same list as a sheet above it. The open state is #toc:target. #toc is an empty element
     fixed to the top of the window, so following the bar scrolls nothing. Picking a heading changes the target,
     which closes the sheet; ✕ and a tap outside link to #_, which matches nothing, so they close it without
     scrolling
@@ -11,7 +12,7 @@
   inside for the bar to show, and the Contents links are the ones for keyboards and screen readers, so the page is
   read once. The head's anchor comes first in both lists, empty and hidden, so nothing is current until the first
   heading. The ticks also count the sections up to the current one for the bar's 4/7. Without :target-current
-  (Firefox, Safari) nothing is current: the bar reads Contents and the rail lists every heading.
+  (Firefox, Safari) nothing is current: the bar reads only Contents and the rail lists every heading.
   WebKit drops the role from a list without markers, but not inside a nav, so Contents needs no role=list. --n, the
   number of headings, is the bar's total */}}
 {{- $hs := partial "headings.html" . }}

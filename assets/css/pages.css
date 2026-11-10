@@ -12,7 +12,7 @@
 
   /* a value that can't break, like a URL, breaks anywhere rather than run out of the box */
   .key-values {
-    margin-block: 32px 40px;
+    margin-block: var(--stack) 40px;
 
     &:last-child {
       margin-bottom: 0;
@@ -45,7 +45,7 @@
 
   /* Projects: each project's name, linked, over its description in muted, with hairlines between */
   .projects {
-    margin-top: 40px;
+    margin-top: var(--stack);
 
     & .frame {
       padding: 13px 19px 7px;
@@ -78,7 +78,7 @@
    * its name.
    */
   .blogroll {
-    margin-top: 32px;
+    margin-top: var(--stack);
 
     & .frame {
       padding: 11px 19px 5px;

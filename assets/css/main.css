@@ -159,13 +159,13 @@
    * - code-chip grounds inline code. In light it's the code ground; in dark the code ground is darker than the page
    *   and all but vanishes behind a word, so the chip is as much lighter than the page as light's is darker.
    * - scrollbar-thumb is the least mix of muted into edge that shows 3:1 on the code ground (3.3:1 dark, 3.1:1 light).
-   * - tick, for the Contents tree's lines only, mixes in more muted: 4.1:1 on the ground in dark and 3.3:1 in light.
-   *   The meter's empty cells are not in it: they are ink, the tile and tone of every box's shadow.
+   * - the meter's empty cells are ink, the tile and tone of every box's shadow, so the site has one static dither.
    * - edge rules things off and is 1.95:1, enough for a divider; a control's border has to show 3:1 (WCAG 1.4.11),
    *   so the key hint, the filter menus and their choices take ctl (3.0:1 on the ground in both schemes), and so
-   *   does Contents' frame, which is a control's weight rather than a box's.
+   *   does Contents' frame and its tree, which are a control's weight rather than a box's.
    * - every line is 1px and its weight is in its tone: fg for a frame (a box, a code window, a callout, the filter
-   *   menu's list, the skip link), ctl for Contents, edge for a rule or divider. The focus ring stays 2px.
+   *   menu's list, the skip link), ctl for Contents and the search box's underline, edge for a rule or divider. The
+   *   focus ring stays 2px.
    */
   :root {
     color-scheme: light dark;
@@ -181,7 +181,6 @@
       color-mix(in srgb, var(--muted) 60%, var(--edge)),
       color-mix(in srgb, var(--muted) 35%, var(--edge))
     );
-    --tick: color-mix(in srgb, var(--muted) 55%, var(--edge));
     --accent: #e7a15a;
     --on-accent: #0f1214;
     --focus: var(--fg);
@@ -189,20 +188,16 @@
     --string: light-dark(#9f5510, #e7a15a);
 
     /*
-     * The dither's tile and the ladder built from it. The tile is a 4x4 ordered-dither (Bayer) cell with two dots on a
-     * diagonal, cells 0 and 1 of the threshold matrix, so 2 of 16 are ink. Every pair of cells of the matrix is this
-     * tile shifted: (0,0) is cells 0-1, (2,0) is 2-3, (1,1) is 4-5, (3,1) is 6-7, (1,0) is 8-9, (3,0) is 10-11, (0,1)
-     * is 12-13 and (2,1) is 14-15. m stacks eight copies as mask layers, and pN puts the first N/2 of them on their own
-     * cells and the rest on the first's, so mask-position: var(--p8) shows 8 of 16 cells and var(--p16) all of them.
+     * The dither's tile. It is a 4x4 ordered-dither (Bayer) cell with two dots on a diagonal, cells 0 and 1 of the
+     * threshold matrix, so 2 of 16 are ink. Every pair of cells of the matrix is this tile shifted: (0,0) is cells
+     * 0-1, (2,0) is 2-3, (1,1) is 4-5, (3,1) is 6-7, (1,0) is 8-9, (3,0) is 10-11, (0,1) is 12-13 and (2,1) is 14-15.
+     * m stacks eight copies as mask layers, for a ladder of 2 to 16 of 16 cells by shifting layers onto cells of their
+     * own. The nav's marker climbs it with --lv, 0 to 8 layers moved (its mask-position calc list, below), so it can
+     * step in a transition; the meter's two rungs, p2 and p12, are in post.css.
      * - chip is fg at 8%, a flat ground a little off the page's own, for a marked row.
      */
     --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E");
     --m: var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile);
-    --p2: 0 0;
-    --p4: 0 0, 2px 0;
-    --p8: 0 0, 2px 0, 1px 1px, 3px 1px;
-    --p12: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0;
-    --p16: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0, 0 1px, 2px 1px;
     --chip: color-mix(in srgb, var(--fg) 8%, var(--bg));
 
     /*
@@ -225,6 +220,9 @@
     /* the column the header, main and footer share, and its gutter */
     --wrap: 820px;
     --gutter: 24px;
+
+    /* the gap between one site box and the next (Search and Posts, 404's box and Posts, About's, Feeds') */
+    --stack: 32px;
 
     @media (width <= 37.5em) {
       --gutter: 16px;
@@ -412,14 +410,15 @@
     }
 
     /*
-     * A marker, the Contents trace's, sits in the gap before each link: an 8px square drawn through the site's dither
-     * ladder (below). Hover fills it to half-tone (8 of 16 cells), keyboard focus to solid, and leaving thins it out
+     * The nav's marker sits in the gap before each link: an 8px square drawn through the site's dither ladder
+     * (--m, above). Hover fills it to half-tone (8 of 16 cells), keyboard focus to solid, and leaving thins it out
      * again. A marked link is solid ink, the whole ladder (16 of 16): the current page, and on a post posts too, since
      * you're in that section. aria-current is "page" for one and "true" for the other, and both look the same, so posts
      * reads the same on home and on a post and the nav has one you-are-here state, not two levels. Hover is half-tone,
      * and focus is solid with the 2px ink ring every focus gets. Hover and focus never change a marked link, and
-     * never invert one, so nothing can pass for it. Leaving thins an unmarked link out over .13s; a marked link has no
-     * exit, and reduced motion shows each end state at once. The nav has no accent: marker, ring and hover are all ink.
+     * never invert one, so nothing can pass for it. Entering (hover or focus) steps in over .26s and
+     * leaving thins an unmarked link out over .13s, each in eight whole steps, so a keyboard focus takes the .26s to
+     * reach solid; a marked link has no exit, and reduced motion shows each end state at once. The nav has no accent: marker, ring and hover are all ink.
      * Each link's box runs 6px below its text, taken back by its margin so nothing moves, so its focus ring has room
      * under the letters.
      * Forced colours drop the mask and the background, which is all the marker is, so there the nav keeps underlines
@@ -639,10 +638,18 @@
     line-height: 1.5;
   }
 
-  /* a callout is a frame with a label: an alert in a post (render-blockquote.html), which is plain, or 404's box */
+  /*
+   * a callout is a frame with a label: an alert in a post (render-blockquote.html), which is plain, or 404's box. A
+   * post's has 2em above and 2.2em below, but 404's is a box in the site's stack, dithered, and the card under it
+   * sets the gap (--stack), which a larger margin below would win in the collapse.
+   */
   .callout {
     position: relative;
     margin-block: 2em 2.2em;
+
+    &.dithered {
+      margin-bottom: 0;
+    }
 
     & .frame {
       padding: 19px 17px 3px;
