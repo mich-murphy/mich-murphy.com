@@ -5,8 +5,9 @@
 </head>
 <body>
 {{ partial "header.html" . }}
-{{- /* A post's Contents comes before main, so the keyboard reaches it before the post; it's fixed to the window, so
-  where it sits in the page doesn't move anything */}}
+{{- /* A post's Contents comes before main, so the keyboard reaches it before the post. Its rail is a zero-height sticky
+  box right under the header, which puts it level with the top of the post, and its bar is fixed to the window, so
+  neither takes room in the column */}}
 {{- if and .IsPage (eq .Section "posts") }}
 {{ partial "contents.html" . }}
 {{- end }}

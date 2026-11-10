@@ -209,21 +209,22 @@
   }
 
   /*
-   * Contents (contents.html). Narrow or touch, the default: a button fixed to the bottom-right corner that opens the
-   * Contents box above it while #toc is the target. Wide with a mouse, from 1360px, where the margin beside the
-   * column holds the trace and most of the box: the trace, a tick per heading fixed to the window's right edge, with
-   * the box beside it on hover. That breakpoint is in px, unlike the others, because the margin it measures is: the
-   * column and the box are px wide, and an em breakpoint would follow the browser's font size, so a small one would
-   * bring the trace in with no room for the box.
+   * Contents (contents.html): one nav, and two ways to show it, split at 1280px. That breakpoint is in px, unlike the
+   * others, because what it measures is: the column and the rail are px wide, and an em breakpoint would follow the
+   * browser's font size, so a small one would bring the rail in with no room for it.
+   * - 1280px and up, with any pointer: the rail, always open in the left margin, beside the column and never over it.
+   * - narrower: a status bar fixed to the foot of the window, showing § 3/7 and the current section's title, which
+   *   opens the same list as a sheet above it while #toc is the target.
    *
-   * The current section comes from :target-current (Chrome and Edge 140+): its tick turns fg, the box marks it with
-   * the 7px square, and the button counts up to it. Those rules stay on their own, because a browser that doesn't
-   * know the pseudo-class drops the whole rule; there nothing is marked and the button shows no count.
+   * The current section comes from :target-current (Chrome and Edge 140+). Its row is marked, h3s fold under the h2
+   * you are in, and the bar names it. Those rules sit in their own @supports blocks, because a browser that doesn't
+   * know the pseudo-class drops a whole rule; there nothing is marked, every h3 shows, and the bar says Contents.
+   *
+   * Two lists carry the headings. The ticks are scroll markers for the current section: aria-hidden, tabindex=-1, one
+   * empty-looking link per heading (its title is inside, for the bar to show). The Contents list is the one for
+   * keyboards and screen readers. The head's anchor comes first in both, hidden, so nothing is current until the
+   * first heading.
    */
-  .contents {
-    counter-reset: current;
-  }
-
   .ticks,
   .contents-list {
     margin: 0;
@@ -233,9 +234,8 @@
   }
 
   /*
-   * The head's anchor stays in each group, hidden, so nothing is current above the first heading. Narrow, the ticks
-   * are only scroll markers: rendered but clipped, so they still count for the button. The anchor's selector names
-   * its list, to outrank the list's own li rules.
+   * The ticks are rendered but clipped to a pixel, since a scroll marker needs a box. The head's anchor stays that
+   * way in both lists, so it outranks the list's own li rules by naming them.
    */
   .ticks,
   :is(.ticks, .contents-list) .head-anchor {
@@ -248,7 +248,12 @@
     clip-path: inset(50%);
   }
 
-  /* the target that opens the box: empty and fixed to the top of the window, so following the button scrolls nothing */
+  /* a link's own ground, or a:hover would invert one of the ticks */
+  .ticks a {
+    background: none;
+  }
+
+  /* the target that opens the sheet: empty and fixed to the top of the window, so following the button scrolls nothing */
   #toc {
     position: fixed;
     top: 0;
@@ -256,219 +261,423 @@
   }
 
   /*
-   * The button: the header's ruled frame as a 48px pill, holding the menu icon and the section count in the machine
-   * face. It sits 16px in, as a code window's frame does, in a 6px ring of the ground that keeps a window scrolling
-   * past from running into it. The ring is a border on ::before, rounded by its width at the outer corners so it
-   * keeps the same distance from the square pill all round, and under the button so it doesn't cover the focus ring.
-   * The button inverts on hover only with a mouse, since iOS leaves :hover on what was tapped. ✕ takes its place while
-   * the box is open.
+   * The reading meter: cells of the dither under the rail's frame and along the bar's top edge, and the percentage
+   * cut into the frame's top edge like its label. --p is the window's scroll position, 0 to 100, and a steps(20)
+   * animation on the root's scroll timeline moves it in twenty whole steps, so the meter fills cell by cell (5% a
+   * cell) and never smoothly. The empty cells are the tile (2 of 16 dots) in the tick colour, and the full ones 12 of
+   * 16 in the text colour (--mc): the ladder of the tile's own shifts, as a rail of dense and sparse block glyphs would
+   * be. The track is a gradient under a mask of eight tile layers, the first for the empty cells and the last six
+   * for the full ones, intersected with the gradient's stop. Every list in the mask is spelt out, since a short one
+   * repeats and would put the wrong layer in the wrong place.
+   *
+   * Reduced motion doesn't remove it: a scroll timeline moves only as you scroll, and the steps are discrete, so there
+   * is no animation to take away. Without scroll timelines the whole meter is off, and so is the percentage.
    */
-  .contents-open,
-  .contents-close {
-    position: fixed;
-    right: calc(16px + env(safe-area-inset-right, 0px));
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    z-index: 22;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 48px;
-    height: 48px;
-    padding: 0 13px;
-    border: 2px solid var(--fg);
-    background: var(--bg);
-    color: var(--fg);
-    font-family: var(--font-machine);
-    font-size: var(--text-xs);
-    line-height: 1;
-    text-decoration: none;
+  @property --p {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
+  }
 
-    &::before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: -8px;
-      border: 6px solid var(--bg);
-      border-radius: 6px;
-      pointer-events: none;
+  @supports (animation-timeline: scroll()) {
+    @keyframes read {
+      to {
+        --p: 100;
+      }
     }
 
-    & svg {
-      display: block;
-      flex: none;
-      width: 18px;
-      height: 14px;
+    :root {
+      animation: read steps(20, end) both;
+      animation-timeline: scroll(root);
     }
-  }
 
-  .contents-open path {
-    fill: currentColor;
-  }
-
-  .contents-close {
-    display: none;
-
-    & path {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
-  }
-
-  .contents :is(.contents-open, .contents-close):hover {
-    background: var(--bg);
-    color: var(--fg);
-
-    @media (hover: hover) {
-      background: var(--fg);
-      color: var(--bg);
-    }
-  }
-
-  /*
-   * The page dims behind the open box, so frames under it fall back, and a tap on the dim closes the box, without the
-   * tap's grey flash. Hidden, the dim waits for its fade.
-   */
-  .contents-dim {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    visibility: hidden;
-    opacity: 0;
-    transition:
-      opacity 0.14s,
-      visibility 0s 0.14s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .contents-dim,
-  .contents .contents-dim:hover {
-    background: color-mix(in srgb, var(--bg) 72%, transparent);
-  }
-
-  .contents .ticks a:hover {
-    background: none;
-  }
-
-  .contents-count {
-    display: none;
-  }
-
-  @supports selector(:target-current) {
-    .contents-count {
-      display: inline;
-      color: var(--muted);
+    .contents-box {
+      counter-reset: percent var(--p);
 
       &::before {
-        content: counter(current);
-        color: var(--fg);
+        content: counter(percent) "%";
+        position: absolute;
+        top: -0.8em;
+        right: 12px;
+        z-index: 1;
+        padding: 0 6px;
+        background: var(--bg);
+        color: var(--muted);
+        font: var(--text-xs) / 1.5 var(--font-machine);
+        font-variant-numeric: tabular-nums;
       }
     }
 
-    /* inverted on hover, the count takes the button's colour, or the current number would vanish into it */
-    @media (hover: hover) {
-      .contents :is(.contents-open, .contents-close):hover .contents-count,
-      .contents :is(.contents-open, .contents-close):hover .contents-count::before {
-        color: inherit;
-      }
-    }
-
-    .ticks li:not(.head-anchor):has(> a:target-current),
-    .ticks li:not(.head-anchor):has(~ li > a:target-current) {
-      counter-increment: current;
+    :is(.contents-box, .contents-open, .contents-close)::after {
+      content: "";
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--mc, var(--fg)) calc(var(--p) * 1%), var(--tick) 0);
+      mask-image:
+        var(--tile), linear-gradient(90deg, #000 calc(var(--p) * 1%), #0000 0), var(--tile), var(--tile), var(--tile),
+        var(--tile), var(--tile), var(--tile);
+      mask-composite: add, intersect, add, add, add, add, add, add;
+      mask-size:
+        4px,
+        100% 100%,
+        4px,
+        4px,
+        4px,
+        4px,
+        4px,
+        4px;
+      mask-repeat: repeat, no-repeat, repeat, repeat, repeat, repeat, repeat, repeat;
+      mask-position:
+        var(--p2),
+        0 0,
+        var(--p12);
     }
   }
 
   /*
-   * The box opens above the button: the label and a heavy frame, no dither. Narrow, a closed box is hidden with
-   * visibility, which waits for the fade, so its links take no tap or focus; picking one hides it, and focus goes
-   * back to the page at the heading. Rows are at least 44px, and a long list scrolls inside the frame.
+   * The box: its label in capitals in the machine face, cut into the frame's top edge, over a hairline frame. A
+   * Contents frame is always a hairline, since it is a rail or a sheet rather than a box in the text.
    */
-  .contents-popover {
-    position: fixed;
-    right: calc(16px + env(safe-area-inset-right, 0px));
-    bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-    z-index: 21;
-    width: min(calc(38ch + 36px), calc(100% - 32px));
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(8px);
-    transition:
-      opacity 0.14s,
-      transform 0.14s,
-      visibility 0s 0.14s;
+  .contents-box {
+    position: relative;
 
-    & .frame {
-      max-height: calc(100svh - 120px - env(safe-area-inset-bottom, 0px));
-      padding: 18px 16px 8px;
+    & > .legend {
+      font-family: var(--font-machine);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    & > .frame {
+      position: relative;
+      border: 1px solid var(--edge);
       overflow: auto;
       overscroll-behavior: contain;
     }
   }
 
-  .contents-box,
-  .contents-box > .frame {
-    position: relative;
-  }
-
+  /*
+   * The headings as a tree drawn in CSS, not in glyphs: Krypton has no box-drawing glyphs, and a row of glyphs leaves
+   * gaps between lines. Each link carries its branch. ::before is the top-level trunk, a 1px line down the left that
+   * runs the whole height of the row (so it runs through a wrapped line and meets the next row's), with a stub across
+   * to the text at the first line's middle; the last h2's trunk stops at its stub. An h3 is one step in, with its own
+   * trunk and stubs (::after), and the top-level trunk passes behind it while a later h2 is to come. The first branch
+   * starts at its stub. --rp is the link's padding above and below, so the stub finds the first line's middle (0.5lh);
+   * --row is the least height of a row, 44px for a finger and 24px for a pointer (WCAG 2.5.8).
+   *
+   * The current row is in the chip tone with its stub in accent text, and its text is bold: Argon's bold has the same
+   * advance, so nothing moves. Hover inverts a link as any other does.
+   */
   .contents-list {
+    --rp: 10px;
+    --row: 44px;
+    --tl: var(--tick);
+
     & li {
-      position: relative;
-      padding-left: 2.2ch;
+      display: block;
+      margin: 0;
+      padding: 0 6px 0 18px;
     }
 
     & .level-3 {
-      padding-left: 4.4ch;
+      padding-left: 36px;
     }
 
     & a {
+      position: relative;
       display: block;
-      min-height: 44px;
-      padding: 10px 0;
+      min-height: var(--row);
+      padding-block: var(--rp);
       color: var(--muted);
       line-height: 1.4;
       text-decoration: none;
 
-      &:target-current {
-        color: var(--fg);
+      &:hover {
+        background: var(--fg);
+        color: var(--bg);
+      }
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -12px;
+        width: 8px;
+        border-left: 1px solid var(--tl);
+        background:
+          linear-gradient(var(--tc, var(--tick)), var(--tc, var(--tick))) 0 calc(var(--rp) + 0.5lh) / 100% 1px no-repeat;
+        pointer-events: none;
       }
     }
 
-    & li a:hover {
-      background: var(--fg);
-      color: var(--bg);
+    & .level-2 a::before {
+      bottom: 0;
     }
 
-    & li:has(> a:target-current)::before {
-      content: "";
-      position: absolute;
-      top: calc(10px + 0.5em);
-      left: 0;
-      width: 7px;
-      height: 7px;
-      background: var(--fg);
+    & .level-2:not(:has(~ .level-2)) a::before {
+      bottom: auto;
+      height: calc(var(--rp) + 0.5lh + 1px);
     }
 
-    & .level-3:has(> a:target-current)::before {
-      left: 2.2ch;
+    & .head-anchor + .level-2 a::before {
+      top: calc(var(--rp) + 0.5lh);
+      bottom: 0;
+      height: auto;
+      background-position: 0 0;
+    }
+
+    & .head-anchor + .level-2:not(:has(~ .level-2)) a::before {
+      bottom: auto;
+      height: 1px;
+      border-left-width: 0;
+    }
+
+    & .level-3 a::before {
+      left: -30px;
+      bottom: 0;
+      background: none;
+    }
+
+    & .level-3:not(:has(~ .level-2)) a::before {
+      display: none;
+    }
+
+    & .level-3 a::after {
+      bottom: 0;
+    }
+
+    & .level-3:is(:last-child, :has(+ .level-2)) a::after {
+      bottom: auto;
+      height: calc(var(--rp) + 0.5lh + 1px);
     }
   }
 
-  /* the page ends lower by the button's height, so it never covers the footer, and focus scrolls clear of it */
-  body:has(.contents) {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-  }
+  @supports selector(:target-current) {
+    .contents {
+      counter-reset: current total var(--n);
+    }
 
-  :root:has(.contents) {
-    scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    .contents-list {
+      & li:has(> a:target-current) {
+        --tc: var(--accent-text);
+
+        background: var(--chip);
+      }
+
+      /* bold for where you are; hover still inverts it as any other row, so its text doesn't vanish into the fg */
+      & a:target-current {
+        font-weight: 700;
+
+        &:not(:hover) {
+          color: var(--fg);
+        }
+      }
+    }
+
+    /* the ticks count the sections up to the current one, for the bar's 4/7 */
+    .ticks li:not(.head-anchor):is(:has(> a:target-current), :has(~ li > a:target-current)) {
+      counter-increment: current;
+    }
   }
 
   /*
-   * Narrow or touch: open while #toc is the target, so a link to #toc does nothing to the trace. When the keyboard
-   * leaves the box for the page, the box closes, so it never covers what has focus (WCAG 2.4.11): without a script
-   * there's no Esc to close it in place.
+   * Narrower than 1280px: the status bar, one 44px strip (plus the safe area) fixed to the foot of the window, with
+   * the meter along its top edge. The button is stretched across it, so a tap anywhere opens the list, with the menu
+   * icon at the right. Over it, the ticks' own line of text (aria-hidden, so the page is still read once): § 3/7 in
+   * the machine face, from the counters, then the current section's title, which is the one tick :target-current
+   * picks, the others rendered but see-through. Before the first heading it says Contents, and in a browser without
+   * :target-current it always does, and the bar is only a button.
+   *
+   * The list opens above it as a sheet, while #toc is the target: a hairline frame as wide as the window, up to
+   * 640px, with the dim behind it. A tap on the dim, or ✕ where the menu icon was, links to #_, which matches
+   * nothing, so it closes without scrolling. Picking a heading changes the target, which closes it too. A closed
+   * sheet is hidden with visibility, which waits for the fade, so its links take no tap or focus. The page ends 56px
+   * lower, so the footer stays reachable above the bar, and focus scrolls clear of it. The ring is drawn inside
+   * the button, where the window's edge doesn't clip it.
    */
-  @media (width < 1360px), (hover: none) {
+  @media (width < 1280px) {
+    body:has(.contents) {
+      padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    }
+
+    :root:has(.contents) {
+      scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .contents-open,
+    .contents-close {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 22;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      height: calc(44px + env(safe-area-inset-bottom, 0px));
+      padding: 0 max(16px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px)
+        max(16px, env(safe-area-inset-left, 0px));
+      border-top: 1px solid var(--edge);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1;
+      text-decoration: none;
+
+      &:hover {
+        background: var(--chip);
+        color: var(--fg);
+      }
+
+      &:focus-visible {
+        outline-offset: -4px;
+      }
+
+      &::after {
+        position: absolute;
+        top: -2px;
+        right: 0;
+        left: 0;
+      }
+
+      & svg {
+        display: block;
+        flex: none;
+        width: 18px;
+        height: 14px;
+      }
+    }
+
+    .contents-open path {
+      fill: currentColor;
+    }
+
+    .contents-close {
+      display: none;
+
+      & path {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+      }
+    }
+
+    .ticks {
+      position: fixed;
+      right: calc(56px + env(safe-area-inset-right, 0px));
+      bottom: env(safe-area-inset-bottom, 0px);
+      left: max(16px, env(safe-area-inset-left, 0px));
+      z-index: 23;
+      display: flex;
+      align-items: center;
+      width: auto;
+      height: 44px;
+      overflow: hidden;
+      clip-path: none;
+      font: var(--text-xs) / 1 var(--font-machine);
+      pointer-events: none;
+
+      &::before {
+        content: "Contents";
+        color: var(--muted);
+      }
+
+      & li {
+        position: static;
+        display: block;
+        width: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        clip-path: none;
+      }
+
+      & a {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 8ch;
+        display: block;
+        height: 44px;
+        overflow: hidden;
+        opacity: 0;
+        color: var(--fg);
+        font: var(--text-xs) / 44px var(--font-read);
+        text-decoration: none;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    @supports selector(:target-current) {
+      .ticks {
+        &::after {
+          content: "§ " counter(current) "/" counter(total);
+          order: -1;
+          flex: none;
+          width: 8ch;
+          font-variant-numeric: tabular-nums;
+        }
+
+        /* before the first heading there is no section to count or name */
+        &:not(:has(li:not(.head-anchor) a:target-current))::after,
+        &:has(li:not(.head-anchor) a:target-current)::before {
+          content: none;
+        }
+
+        & a:target-current {
+          opacity: 1;
+        }
+      }
+    }
+
+    .contents-popover {
+      position: fixed;
+      right: 0;
+      bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+      left: 0;
+      z-index: 21;
+      width: min(100%, 640px);
+      margin-inline: auto;
+      /*
+       * a band of the ground above the frame, under the half of its label that stands above the top edge, so the
+       * dimmed page doesn't show through around the label
+       */
+      padding-top: 12px;
+      background: var(--bg);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 0.14s,
+        transform 0.14s,
+        visibility 0s 0.14s;
+
+      & .frame {
+        max-height: calc(100svh - 96px - env(safe-area-inset-bottom, 0px));
+        padding: 18px max(16px, env(safe-area-inset-left, 0px)) 8px;
+        border-inline-width: 0;
+      }
+    }
+
+    .contents-box::after {
+      display: none;
+    }
+
+    /* the page dims behind the open sheet, so frames under it fall back, without the tap's grey flash */
+    .contents-dim {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      visibility: hidden;
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+      opacity: 0;
+      transition:
+        opacity 0.14s,
+        visibility 0s 0.14s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     #toc:target {
       & ~ .contents-open {
         display: none;
@@ -494,6 +703,10 @@
       }
     }
 
+    /*
+     * When the keyboard leaves the sheet for the page, the sheet closes, so it never covers what has focus (WCAG
+     * 2.4.11): without a script there's no Esc to close it in place.
+     */
     body:has(:is(.site-header, main, .site-footer) :focus-visible) #toc:target {
       & ~ .contents-open {
         display: flex;
@@ -509,79 +722,40 @@
         transition: none;
       }
     }
+
+    /* the sheet's fade is the only animation here, and goes */
+    @media (prefers-reduced-motion: reduce) {
+      .contents-popover,
+      .contents-dim,
+      #toc:target ~ :is(.contents-popover, .contents-dim) {
+        transition: none;
+      }
+    }
   }
 
   /*
-   * Wide, with a mouse: the trace, 60px (--trace-width) fixed to the right edge and centred top to bottom without a
-   * transform, so the 2px ticks stay on whole pixels. A tick is 20px for an h2 and 12px for an h3, every 14px, in the
-   * tick colour, and the current one is fg. A long post's ticks close up evenly (--n, the number of headings), so the
-   * trace fits the window.
+   * 1280px and up, with any pointer: the rail. Its right edge is one 24px gutter from the column's left edge (the
+   * column starts where the header's mark does), and its width is the margin less that gutter and a 16px edge: 240px
+   * at most, 214px at 1280, where the margin is 254px. Nothing in the column or its code windows reaches into the
+   * left margin, so the rail never covers text. The nav is a zero-height sticky box in the page's flow right under
+   * the header, so the rail starts level with the top of the post (40px under the header's rule, the h1's top) and
+   * holds 24px from the window's top as you scroll. It is before main in the DOM and on the page's left, so the
+   * keyboard meets it first, in reading order. A long list scrolls inside the frame, which is never taller than
+   * the window, and the meter sits under it.
    *
-   * The box opens to the left, centred on the window as the trace is, on hover or when the keyboard reaches its
-   * links. Closed, it's hidden only by opacity, so its links stay focusable. It's always 280px, room for most headings
-   * on a line: under a 1452px window that covers the column's right edge while it's open (46px at 1360, 6px at 1440),
-   * which it is only while the pointer or the keyboard is on it.
+   * The h3s show only under the h2 you are in: the others fold to nothing, though they stay in the keyboard's and
+   * the screen reader's list, and open as the keyboard passes. A folded row is a clipped box of no height, and an
+   * open one is whole again, so the focus ring isn't clipped. The group is the current h2 and its h3s up to the
+   * next h2, whether the current one is the h2 or one of its h3s, and a focused link counts as current.
    */
-  @media (width >= 1360px) and (hover: hover) {
+  @media (width >= 1280px) {
     .contents {
-      --trace-width: 60px;
+      --rw: min(240px, calc(50% - var(--wrap) / 2 - 16px));
 
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
+      position: sticky;
+      top: -16px;
       z-index: 20;
-      width: var(--trace-width);
-      height: fit-content;
-      margin-block: auto;
-      padding: 24px 16px;
-    }
-
-    body:has(.contents) {
-      padding-bottom: 0;
-    }
-
-    :root:has(.contents) {
-      scroll-padding-bottom: 0;
-    }
-
-    .ticks {
-      position: static;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      width: auto;
-      height: auto;
-      overflow: visible;
-      clip-path: none;
-
-      & a {
-        display: block;
-        width: 28px;
-        padding: round(down, max(1px, min(6px, (100vh - 96px) / var(--n) / 2 - 1px)), 1px) 0;
-
-        &::before {
-          content: "";
-          display: block;
-          width: 20px;
-          height: 2px;
-          margin-left: auto;
-          background: var(--tick);
-        }
-
-        &:hover::before {
-          background: var(--fg);
-        }
-
-        /* on its own, so a browser without :target-current still keeps the hover */
-        &:target-current::before {
-          background: var(--fg);
-        }
-      }
-
-      & .level-3 a::before {
-        width: 12px;
-      }
+      height: 0;
     }
 
     .contents-open,
@@ -591,78 +765,76 @@
     }
 
     .contents-popover {
-      top: 0;
-      right: var(--trace-width);
-      bottom: 0;
-      width: 280px;
-      height: fit-content;
-      margin-block: auto;
-      visibility: visible;
-      transform: none;
-      pointer-events: none;
-      transition: opacity 0.12s;
+      position: absolute;
+      top: 40px;
+      left: calc(50% - var(--wrap) / 2 - var(--rw));
+      width: var(--rw);
 
       & .frame {
-        max-height: calc(100vh - 48px);
-        font-size: var(--text-sm);
+        max-height: calc(100vh - 150px);
+        padding: 14px 8px 8px;
+        font-size: var(--text-xs);
         line-height: 1.45;
       }
     }
 
-    .contents:hover .contents-popover,
-    .contents:has(.contents-list a:focus-visible) .contents-popover {
-      opacity: 1;
-      pointer-events: auto;
+    .contents-box::after {
+      margin-top: 10px;
     }
 
     .contents-list {
-      & li {
-        margin: 0 0 0.6em;
-      }
-
-      & a {
-        display: inline;
-        min-height: 0;
-        padding: 0;
-        line-height: inherit;
-      }
-
-      & li:has(> a:target-current)::before {
-        top: 0.45em;
-      }
+      --rp: 3px;
+      --row: 24px;
     }
-  }
 
-  @media (prefers-reduced-motion: reduce) {
-    .contents-popover,
-    .contents-dim,
-    #toc:target ~ :is(.contents-popover, .contents-dim) {
-      transition: none;
+    @supports selector(:target-current) {
+      .contents-list .level-3 {
+        height: 0;
+        overflow: hidden;
+      }
+
+      /* the h3s after the current h2, the current h3, and the h3s after and before it, each up to the next h2 */
+      .contents-list
+        :is(
+          .level-2:has(> a:is(:target-current, :focus-visible))
+            ~ .level-3:not(.level-2:has(> a:is(:target-current, :focus-visible)) ~ .level-2 ~ .level-3),
+          .level-3:has(> a:is(:target-current, :focus-visible)),
+          .level-3:has(> a:is(:target-current, :focus-visible))
+            ~ .level-3:not(.level-3:has(> a:is(:target-current, :focus-visible)) ~ .level-2 ~ .level-3),
+          .level-3:has(~ .level-3 > a:is(:target-current, :focus-visible)):not(
+            :has(~ .level-2 ~ .level-3 > a:is(:target-current, :focus-visible))
+          )
+        ) {
+        height: auto;
+        overflow: visible;
+      }
     }
   }
 
   /*
-   * Forced colours drop backgrounds, and the squares and ticks are backgrounds. The ticks take GrayText and the
-   * current one Highlight, as a native control marks what's selected. The ground ring would be a frame of its own.
+   * Forced colours drop backgrounds, and the tree's trunks are borders but its stubs and the meter are backgrounds,
+   * so they are kept: the tree in CanvasText, the current stub in Highlight as a native control marks what's
+   * selected (the chip is dropped, and the bold text and the stub mark the row), and the meter's filled cells in
+   * Highlight over GrayText.
    */
   @media (forced-colors: active) {
-    .contents-list li::before {
-      background: CanvasText;
+    .contents-list a::before,
+    .contents-list a::after {
+      --tick: CanvasText;
+      --tl: CanvasText;
+
       forced-color-adjust: none;
     }
 
-    .ticks a::before {
-      background: GrayText;
+    .contents-list li:has(> a:target-current) {
+      --tc: Highlight;
+    }
+
+    :is(.contents-box, .contents-open, .contents-close)::after {
+      --mc: Highlight;
+      --tick: GrayText;
+
       forced-color-adjust: none;
-    }
-
-    .ticks a:target-current::before {
-      background: Highlight;
-    }
-
-    .contents-open::before,
-    .contents-close::before {
-      display: none;
     }
   }
 }
