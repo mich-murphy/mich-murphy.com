@@ -39,8 +39,8 @@
     display: flex;
     align-items: baseline;
     gap: 1.2ch;
-    padding: 8px 0 10px;
-    border-bottom: 1px dotted var(--edge);
+    padding-block: 8px;
+    border-bottom: 1px solid var(--edge);
 
     & .search-prompt {
       flex: none;
@@ -48,12 +48,12 @@
     }
 
     /*
-     * Focused, the box shows it as the frame's own parts do: the dotted rule under it turns solid in the focus colour,
+     * Focused, the box shows it as the frame's own parts do: the hairline under it turns to the focus colour,
      * 1px thicker with 1px less padding so nothing moves, and the prompt takes the accent, as a terminal's wakes up.
      * The input drops its ring for them (below).
      */
     &:has(.search-input:focus-visible) {
-      padding-bottom: 9px;
+      padding-bottom: 7px;
       border-bottom: 2px solid var(--focus);
 
       & .search-prompt {
@@ -100,10 +100,12 @@
   /* a phone or tablet with only a touchscreen has no key to press, so it shows no hint */
   .search-key {
     flex: none;
-    padding: 0 5px;
-    border: 1px solid var(--edge);
+    height: 24px;
+    padding: 0 6px;
+    border: 1px solid var(--ctl);
     color: var(--muted);
-    font: var(--text-xs) / 1.4 var(--font-read);
+    font: var(--text-2xs) / 22px var(--font-machine);
+    letter-spacing: 0.02em;
 
     @media (hover: none) and (pointer: coarse) {
       display: none;
@@ -124,7 +126,7 @@
   }
 
   /*
-   * Under a dotted rule, the filters: two menus, "tag: all" and "year: all". Each is a details, named so only one is
+   * Under a hairline, the filters: two menus, "tag: all" and "year: all". Each is a details, named so only one is
    * open at a time, whose list opens under the row, over the posts. Each choice has its count, how many posts the list
    * would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
    * clears it, and so is its choice, or all while it isn't set. home-filters.css does the same without the script.
@@ -135,9 +137,9 @@
     flex-wrap: wrap;
     align-items: baseline;
     gap: 8px 2.5ch;
-    margin: 9px 0 11px;
+    margin-block: 8px 10px;
     font-size: var(--text-sm);
-    line-height: 1.6;
+    line-height: 24px;
 
     & .key {
       color: var(--muted);
@@ -169,8 +171,9 @@
       display: flex;
       align-items: baseline;
       gap: 1ch;
-      padding: 0 1ch;
-      border: 1px solid var(--edge);
+      height: 24px;
+      padding-inline: 1.2ch;
+      border: 1px solid var(--ctl);
       list-style: none;
       white-space: nowrap;
       cursor: pointer;
@@ -233,12 +236,12 @@
   }
 
   /*
-   * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 11px
+   * The list hangs from the frame: its top border lies on the frame's bottom one, 12px under the row (the row's 10px
    * margin and the frame's 2px padding), so the two read as one line rather than two a few pixels apart.
    */
   .filter-popover {
     position: absolute;
-    top: calc(100% + 13px);
+    top: calc(100% + 12px);
     right: 0;
     left: 0;
     z-index: 30;
@@ -291,12 +294,13 @@
     }
 
     &[aria-disabled] {
+      border-color: var(--ctl);
       border-style: dashed;
       color: var(--muted);
       cursor: default;
 
       &:hover {
-        border-color: var(--edge);
+        border-color: var(--ctl);
       }
     }
   }

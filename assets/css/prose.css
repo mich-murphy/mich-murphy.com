@@ -3,11 +3,11 @@
  * that the colophon (post.css) and the keyed boxes (pages.css) share. Callouts are in main.css, since 404 has one too.
  */
 @layer components {
-  /* the head: the title, a meta line in muted (a bare head has none) and a 1px rule at the column's width */
+  /* the head: the title, a meta line in muted (a bare head has none) and a hairline at the column's width */
   .page-head {
     margin: 0 0 32px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--fg);
+    border-bottom: 1px solid var(--edge);
 
     & h1 {
       margin: 0 0 10px;
@@ -89,7 +89,7 @@
     & blockquote {
       margin: 0 0 1.15em;
       padding-left: 2ch;
-      border-left: 2px solid var(--edge);
+      border-left: 1px solid var(--edge);
     }
 
     /* an image (render-image.html) shrinks to fit the column, keeping its shape */
