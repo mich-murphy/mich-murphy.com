@@ -9,6 +9,21 @@
 @layer base, layout, components, utilities, print;
 
 /*
+ * A navigation between two pages of the site cross-fades, in the browser's own view transition rather than a script
+ * (so a browser without it just cuts, as before): the default's 250ms cut to 160ms, which reads as a fade rather than
+ * a wait. Under reduced motion there's no transition at all, and the new page is simply there.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-group(root) {
+    animation-duration: 0.16s;
+  }
+}
+
+/*
  * The dither ladder's step (see the nav's marker): a number, registered so a transition can walk it in whole steps.
  * Where @property isn't known the marker just jumps to its end state.
  */
