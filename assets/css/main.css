@@ -158,7 +158,10 @@
    * - tick, for the Contents tree's lines and the empty cells of its meter, mixes in more muted: 4.1:1 on the ground
    *   in dark and 3.3:1 in light, with fg on it at 3.5:1 and 5.2:1, so the filled cells stand out.
    * - edge rules things off and is 1.95:1, enough for a divider; a control's border has to show 3:1 (WCAG 1.4.11),
-   *   so the key hint, the filter menus and their choices take ctl (3.0:1 on the ground in both schemes).
+   *   so the key hint, the filter menus and their choices take ctl (3.0:1 on the ground in both schemes), and so
+   *   does Contents' frame, which is a control's weight rather than a box's.
+   * - every line is 1px and its weight is in its tone: fg for a frame (a box, a code window, a callout, the filter
+   *   menu's list, the skip link), ctl for Contents, edge for a rule or divider. The focus ring stays 2px.
    */
   :root {
     color-scheme: light dark;
@@ -348,8 +351,8 @@
     top: 8px;
     left: 8px;
     z-index: 2;
-    padding: 4px 8px;
-    border: 2px solid var(--fg);
+    padding: 5px 9px;
+    border: 1px solid var(--fg);
     background: var(--bg);
     font-size: var(--text-xs);
 
@@ -379,7 +382,7 @@
   }
 
   /*
-   * The header and footer are ruled off with a 1px hairline in edge, so they sit back from the 2px frames between
+   * The header and footer are ruled off with a 1px hairline in edge, so they sit back from the fg frames between
    * them. The header is a 64px bar: the mark's 32px with 16px above and below, on the 8px grid
    */
   .site-header {
@@ -620,7 +623,7 @@
   }
 
   .frame {
-    border: 2px solid var(--fg);
+    border: 1px solid var(--fg);
     background: var(--bg);
   }
 
@@ -647,7 +650,7 @@
     margin-block: 2em 2.2em;
 
     & .frame {
-      padding: 18px 16px 2px;
+      padding: 19px 17px 3px;
     }
 
     /*
@@ -807,7 +810,7 @@
       border-color: transparent;
 
       & pre.code {
-        border: 2px solid var(--fg);
+        border: 1px solid var(--fg);
       }
     }
 
