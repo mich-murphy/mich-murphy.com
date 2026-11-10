@@ -1,7 +1,9 @@
 # The feeds I read, for the Feeds page (layouts/feeds.html), edited by hand. topics sets the order the topics are
 # listed in, and every feed's topic must be one of them. Every feed needs a name and a URL with its scheme, like
 # https://noted.lol/. A feed's host is its URL's, without www., unless host is set. Write an apostrophe in a name as
-# ’, the curly one Goldmark gives the intro
+# ’, the curly one Goldmark gives the intro. A feed whose name (and host, if set) isn't in English sets lang, its
+# BCP 47 code, so a screen reader speaks it in that voice (WCAG 3.1.2); it goes on the link, and on the host when
+# host is set
 topics = ["Data", "Development", "Self Hosting", "Technology"]
 
 [[feed]]
@@ -28,6 +30,7 @@ url = "https://xeiaso.net/"
 topic = "Development"
 name = "マリウス"
 url = "https://xn--gckvb8fzb.com/"
+lang = "ja"
 # the URL's host is the punycode form of this
 host = "マリウス.com"
 

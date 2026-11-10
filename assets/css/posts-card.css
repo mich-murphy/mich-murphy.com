@@ -15,7 +15,7 @@
    * The first row's 8px padding has room for it.
    */
   .posts-card {
-    margin-top: 32px;
+    margin-top: var(--stack);
 
     & .frame {
       padding: 13px 19px 5px;

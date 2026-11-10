@@ -264,7 +264,10 @@
    * The reading meter: cells of the dither under the rail's frame and along the bar's top edge, and the percentage
    * cut into the frame's top edge like its label. --p is the window's scroll position, 0 to 100, and a steps(20)
    * animation on the root's scroll timeline moves it in twenty whole steps, so the meter fills cell by cell (5% a
-   * cell) and never smoothly. The empty cells are the tile (2 of 16 dots) in ink (--mt, which falls back to --fg),
+   * cell) and never smoothly. The animation runs on the three elements that read --p (the rail's box, and the bar's
+   * open and close buttons), not on :root: an inherited property animated on the root restyles the whole document
+   * twenty times over a read, where here it restyles only those and their pseudo-elements (under half the style time
+   * over a full scroll of the longest post). scroll(root) is still the window's scroller, wherever it is named. The empty cells are the tile (2 of 16 dots) in ink (--mt, which falls back to --fg),
    * the same tile and tone as the boxes' shadows, so the site has one static dither and no pale one; the full cells are
    * 12 of 16 in the text colour (--mc): the ladder of the tile's own shifts, as a rail of dense and sparse block glyphs
    * would be. The track is a gradient under a mask of eight tile layers, the first for the empty cells and the last six
@@ -287,7 +290,9 @@
       }
     }
 
-    :root {
+    .contents-box,
+    .contents-open,
+    .contents-close {
       animation: read steps(20, end) both;
       animation-timeline: scroll(root);
     }
@@ -309,7 +314,15 @@
       }
     }
 
+    /*
+     * p2 and p12 are the meter's two rungs of the tile's ladder (main.css), as mask-position lists: p2 is the one
+     * layer of the empty cells (2 of 16), and p12 is the six layers of the full ones, each on a pair of cells of its
+     * own (12 of 16). Only the meter has them, so they are defined here and not on :root.
+     */
     :is(.contents-box, .contents-open, .contents-close)::after {
+      --p2: 0 0;
+      --p12: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0;
+
       content: "";
       display: block;
       height: 4px;
@@ -338,7 +351,7 @@
   /*
    * The box: its label in capitals in the machine face, cut into the frame's top edge, over a 1px frame in ctl, not
    * fg like a box's. A Contents frame is a rail or a sheet rather than a box in the text, so it takes a control's
-   * tone.
+   * tone, and its label is the one legend in capitals, as the rail is the one thing that is a control and not a box.
    */
   .contents-box {
     position: relative;
@@ -364,7 +377,9 @@
    * to the text at the first line's middle; the last h2's trunk stops at its stub. An h3 is one step in, with its own
    * trunk and stubs (::after), and the top-level trunk passes behind it while a later h2 is to come. The first branch
    * starts at its stub. --rp is the link's padding above and below, so the stub finds the first line's middle (0.5lh);
-   * --row is the least height of a row, 44px for a finger and 24px for a pointer (WCAG 2.5.8).
+   * --row is the least height of a row, 44px for a finger and 24px for a pointer (WCAG 2.5.8). --tl is the trunk's
+   * tone and --tc the stub's, both ctl like the frame so the tree is the one tone, 3:1 on the ground (WCAG 1.4.11);
+   * they are two names so the current row can turn only its own stub to ink, and forced colours can set each.
    *
    * The current row is in the chip tone with its stub in ink, and its text is bold: Argon's bold has the same
    * advance, so nothing moves. Hover inverts a link as any other does.
@@ -372,7 +387,8 @@
   .contents-list {
     --rp: 10px;
     --row: 44px;
-    --tl: var(--tick);
+    --tl: var(--ctl);
+    --tc: var(--ctl);
 
     & li {
       display: block;
@@ -406,8 +422,7 @@
         left: -12px;
         width: 8px;
         border-left: 1px solid var(--tl);
-        background:
-          linear-gradient(var(--tc, var(--tick)), var(--tc, var(--tick))) 0 calc(var(--rp) + 0.5lh) / 100% 1px no-repeat;
+        background: linear-gradient(var(--tc), var(--tc)) 0 calc(var(--rp) + 0.5lh) / 100% 1px no-repeat;
         pointer-events: none;
       }
     }
@@ -485,10 +500,12 @@
   /*
    * Narrower than 1280px: the status bar, one 44px strip (plus the safe area) fixed to the foot of the window, with
    * the meter along its top edge. The button is stretched across it, so a tap anywhere opens the list, with the menu
-   * icon at the right. Over it, the ticks' own line of text (aria-hidden, so the page is still read once): § 3/7 in
-   * the machine face, from the counters, then the current section's title, which is the one tick :target-current
-   * picks, the others rendered but see-through. Before the first heading it says Contents, and in a browser without
-   * :target-current it always does, and the bar is only a button.
+   * icon at the right. Over it, the ticks' own line of text (aria-hidden, so the page is still read once): Contents,
+   * always, then § 3/7 in the machine face, from the counters, then the current section's title, which is the one tick
+   * :target-current picks, the others rendered but see-through. The constant label is the button's own name (the link's
+   * hidden text), so what a speech user reads on it contains its accessible name (WCAG 2.5.3); the title is the one
+   * part that gives way to the ellipsis. Before the first heading it is only Contents, and in a browser without
+   * :target-current it always is, and the bar is only a button.
    *
    * The list opens above it as a sheet, while #toc is the target: a 1px frame in ctl as wide as the window, up to
    * 640px, with the dim behind it. A tap on the dim, or ✕ where the menu icon was, links to #_, which matches
@@ -580,6 +597,9 @@
 
       &::before {
         content: "Contents";
+        order: -2;
+        flex: none;
+        width: 10ch;
         color: var(--muted);
       }
 
@@ -598,7 +618,7 @@
         position: absolute;
         top: 0;
         right: 0;
-        left: 8ch;
+        left: 18ch;
         display: block;
         height: 44px;
         overflow: hidden;
@@ -622,8 +642,7 @@
         }
 
         /* before the first heading there is no section to count or name */
-        &:not(:has(li:not(.head-anchor) a:target-current))::after,
-        &:has(li:not(.head-anchor) a:target-current)::before {
+        &:not(:has(li:not(.head-anchor) a:target-current))::after {
           content: none;
         }
 
@@ -752,6 +771,7 @@
    */
   @media (width >= 1280px) {
     .contents {
+      /* the rail's width: the left margin less the column's gutter and a 16px edge, 240px at most */
       --rw: min(240px, calc(50% - var(--wrap) / 2 - 16px));
 
       position: sticky;
@@ -820,11 +840,13 @@
    * Highlight over GrayText.
    */
   @media (forced-colors: active) {
+    .contents-list {
+      --tl: CanvasText;
+      --tc: CanvasText;
+    }
+
     .contents-list a::before,
     .contents-list a::after {
-      --tick: CanvasText;
-      --tl: CanvasText;
-
       forced-color-adjust: none;
     }
 
