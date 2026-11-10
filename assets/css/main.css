@@ -9,6 +9,16 @@
 @layer base, layout, components, utilities, print;
 
 /*
+ * The dither ladder's step (see the nav's marker): a number, registered so a transition can walk it in whole steps.
+ * Where @property isn't known the marker just jumps to its end state.
+ */
+@property --lv {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/*
  * Monaspace 1.400 by GitHub Next and Lettermatic, SIL Open Font License 1.1 (static/fonts/LICENSE-Monaspace.txt),
  * subset by scripts/fonts.py to the characters each face sets. Monaspace reserves its names and a subset may not use
  * them, so each face is named after its element's symbol. The faces share one grid, and each has one role:
@@ -156,6 +166,23 @@
     --focus: light-dark(#0f1214, #e7a15a);
     --comment: light-dark(#5f6a72, #75818b);
     --string: light-dark(#9f5510, #e7a15a);
+
+    /*
+     * The dither's tile and the ladder built from it. The tile is a 4x4 ordered-dither (Bayer) cell with two dots on a
+     * diagonal, cells 0 and 1 of the threshold matrix, so 2 of 16 are ink. Every pair of cells of the matrix is this
+     * tile shifted: (0,0) is cells 0-1, (2,0) is 2-3, (1,1) is 4-5, (3,1) is 6-7, (1,0) is 8-9, (3,0) is 10-11, (0,1)
+     * is 12-13 and (2,1) is 14-15. m stacks eight copies as mask layers, and pN puts the first N/2 of them on their own
+     * cells and the rest on the first's, so mask-position: var(--p8) shows 8 of 16 cells and var(--p16) all of them.
+     * - chip is fg at 8%, a flat ground a little off the page's own, for a marked row.
+     */
+    --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E");
+    --m: var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile), var(--tile);
+    --p2: 0 0;
+    --p4: 0 0, 2px 0;
+    --p8: 0 0, 2px 0, 1px 1px, 3px 1px;
+    --p12: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0;
+    --p16: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0, 0 1px, 2px 1px;
+    --chip: color-mix(in srgb, var(--fg) 8%, var(--bg));
 
     /*
      * the only type sizes: 12 (the key hint and the footer's figures), 13.5, 15, 17, 21.5 and 27px at the browser's
@@ -364,32 +391,98 @@
     }
 
     /*
-     * The current page is underlined 3px in accent text, well below the letters; on a post, posts is dashed: you're
-     * in that section, not on its page. Hover is a 1px fg underline in the same place, never the inversion other links
-     * take, so it can't pass for the current one. Each link's box runs 6px below its text, taken back by its margin so
-     * nothing moves, so its focus ring takes the underline in
+     * A marker, the Contents trace's, sits in the gap before each link: an 8px square drawn through the site's dither
+     * ladder (below). Hover fills it to half-tone (8 of 16 cells), keyboard focus to solid, and leaving thins it out
+     * again. The current page's is solid accent text and, on a post, posts' is a hollow frame: you're in that section,
+     * not on its page. Hover never inverts a nav link, so it can't pass for the current one. Each link's box runs 6px
+     * below its text, taken back by its margin so nothing moves, so its focus ring has room under the letters.
+     * Forced colours drop the mask and the background, which is all the marker is, so there the nav keeps underlines:
+     * 1px on hover and focus, 3px under the current page and dashed under its section, in the system's text colour.
      */
     & nav a {
       position: relative;
       margin-bottom: -6px;
       padding-bottom: 6px;
-      text-underline-offset: 7px;
 
       &:hover {
         background: none;
         color: var(--fg);
-        text-decoration: underline 1px;
       }
 
-      &[aria-current],
-      &[aria-current]:hover {
-        text-decoration: underline 3px var(--accent-text);
-        text-decoration-skip-ink: none;
+      &::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: -15px;
+        z-index: -1;
+        width: 8px;
+        height: 8px;
+        background: var(--fg);
+        opacity: clamp(0, var(--lv), 1);
+        pointer-events: none;
+        mask-image: var(--m);
+        mask-size: 4px;
+        mask-position:
+          0 0,
+          calc(2px * clamp(0, var(--lv) - 1, 1)) 0,
+          calc(1px * clamp(0, var(--lv) - 2, 1)) calc(1px * clamp(0, var(--lv) - 2, 1)),
+          calc(3px * clamp(0, var(--lv) - 3, 1)) calc(1px * clamp(0, var(--lv) - 3, 1)),
+          calc(1px * clamp(0, var(--lv) - 4, 1)) 0,
+          calc(3px * clamp(0, var(--lv) - 5, 1)) 0,
+          0 calc(1px * clamp(0, var(--lv) - 6, 1)),
+          calc(2px * clamp(0, var(--lv) - 7, 1)) calc(1px * clamp(0, var(--lv) - 7, 1));
       }
 
-      &[aria-current="true"],
-      &[aria-current="true"]:hover {
-        text-decoration-style: dashed;
+      &:is(:hover, :focus-visible):not([aria-current])::before {
+        --lv: 4;
+      }
+
+      &:focus-visible:not([aria-current])::before {
+        --lv: 8;
+      }
+
+      &[aria-current="page"]::before {
+        --lv: 8;
+
+        background: var(--accent-text);
+      }
+
+      &[aria-current="true"]::before {
+        --lv: 8;
+
+        background: none;
+        box-shadow: inset 0 0 0 1px var(--fg);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        &:not([aria-current])::before {
+          transition: --lv 0.13s steps(8, end);
+        }
+
+        &:is(:hover, :focus-visible):not([aria-current])::before {
+          transition: --lv 0.26s steps(8, start);
+        }
+      }
+
+      @media (forced-colors: active) {
+        &::before {
+          display: none;
+        }
+
+        &:is(:hover, :focus-visible) {
+          text-decoration: underline 1px;
+          text-underline-offset: 7px;
+        }
+
+        &[aria-current] {
+          text-decoration: underline 3px;
+          text-underline-offset: 7px;
+          text-decoration-skip-ink: none;
+        }
+
+        &[aria-current="true"] {
+          text-decoration-style: dashed;
+        }
       }
     }
 
@@ -498,8 +591,6 @@
     position: relative;
 
     &::before {
-      --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E");
-
       content: "";
       position: absolute;
       inset: 8px -8px -8px 8px;
