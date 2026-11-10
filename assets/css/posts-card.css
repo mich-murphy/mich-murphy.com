@@ -9,8 +9,8 @@
   }
 
   /*
-   * One row per post: the title, then the date in muted at the right, with dotted rules between rows. When home's
-   * filters hide the first rows, the first one on show would bring its dotted rule to the top of the list, so the
+   * One row per post: the title, then the date in muted at the right, with hairlines between rows. When home's
+   * filters hide the first rows, the first one on show would bring its hairline to the top of the list, so the
    * list's top 2px are clipped: the list can start between pixels, and a 1px clip there leaves half the rule showing.
    * The first row's 8px padding has room for it.
    */
@@ -33,7 +33,7 @@
     }
 
     & .post-row + .post-row {
-      border-top: 1px dotted var(--edge);
+      border-top: 1px solid var(--edge);
     }
 
     /* titles don't invert, and are underlined only while their row is hovered */

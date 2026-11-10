@@ -43,7 +43,7 @@
     list-style: none;
   }
 
-  /* Projects: each project's name, linked, over its description in muted, with dotted rules between */
+  /* Projects: each project's name, linked, over its description in muted, with hairlines between */
   .projects {
     margin-top: 40px;
 
@@ -60,7 +60,7 @@
     }
 
     & li + li {
-      border-top: 1px dotted var(--edge);
+      border-top: 1px solid var(--edge);
     }
 
     & .project-desc {
@@ -73,7 +73,7 @@
 
   /*
    * Feeds I read: a list keyed by topic, each feed's name, linked, at the left and its host in muted at the right.
-   * No column gap, so the dotted rules between topics run unbroken across both columns. The host's auto margin keeps
+   * No column gap, so the hairlines between topics run unbroken across both columns. The host's auto margin keeps
    * it at the right when it wraps under a long name. On phones the topic goes above its feeds, and each host under
    * its name.
    */
@@ -105,7 +105,7 @@
 
     & dt ~ dt,
     & dt ~ dt + dd {
-      border-top: 1px dotted var(--edge);
+      border-top: 1px solid var(--edge);
     }
 
     & li {
