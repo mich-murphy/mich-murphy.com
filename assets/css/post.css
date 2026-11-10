@@ -264,9 +264,10 @@
    * The reading meter: cells of the dither under the rail's frame and along the bar's top edge, and the percentage
    * cut into the frame's top edge like its label. --p is the window's scroll position, 0 to 100, and a steps(20)
    * animation on the root's scroll timeline moves it in twenty whole steps, so the meter fills cell by cell (5% a
-   * cell) and never smoothly. The empty cells are the tile (2 of 16 dots) in the tick colour, and the full ones 12 of
-   * 16 in the text colour (--mc): the ladder of the tile's own shifts, as a rail of dense and sparse block glyphs would
-   * be. The track is a gradient under a mask of eight tile layers, the first for the empty cells and the last six
+   * cell) and never smoothly. The empty cells are the tile (2 of 16 dots) in ink (--mt, which falls back to --fg),
+   * the same tile and tone as the boxes' shadows, so the site has one static dither and no pale one; the full cells are
+   * 12 of 16 in the text colour (--mc): the ladder of the tile's own shifts, as a rail of dense and sparse block glyphs
+   * would be. The track is a gradient under a mask of eight tile layers, the first for the empty cells and the last six
    * for the full ones, intersected with the gradient's stop. Every list in the mask is spelt out, since a short one
    * repeats and would put the wrong layer in the wrong place.
    *
@@ -312,7 +313,7 @@
       content: "";
       display: block;
       height: 4px;
-      background: linear-gradient(90deg, var(--mc, var(--fg)) calc(var(--p) * 1%), var(--tick) 0);
+      background: linear-gradient(90deg, var(--mc, var(--fg)) calc(var(--p) * 1%), var(--mt, var(--fg)) 0);
       mask-image:
         var(--tile), linear-gradient(90deg, #000 calc(var(--p) * 1%), #0000 0), var(--tile), var(--tile), var(--tile),
         var(--tile), var(--tile), var(--tile);
@@ -833,7 +834,7 @@
 
     :is(.contents-box, .contents-open, .contents-close)::after {
       --mc: Highlight;
-      --tick: GrayText;
+      --mt: GrayText;
 
       forced-color-adjust: none;
     }

@@ -155,8 +155,8 @@
    * - code-chip grounds inline code. In light it's the code ground; in dark the code ground is darker than the page
    *   and all but vanishes behind a word, so the chip is as much lighter than the page as light's is darker.
    * - scrollbar-thumb is the least mix of muted into edge that shows 3:1 on the code ground (3.3:1 dark, 3.1:1 light).
-   * - tick, for the Contents tree's lines and the empty cells of its meter, mixes in more muted: 4.1:1 on the ground
-   *   in dark and 3.3:1 in light, with fg on it at 3.5:1 and 5.2:1, so the filled cells stand out.
+   * - tick, for the Contents tree's lines only, mixes in more muted: 4.1:1 on the ground in dark and 3.3:1 in light.
+   *   The meter's empty cells are not in it: they are ink, the tile and tone of every box's shadow.
    * - edge rules things off and is 1.95:1, enough for a divider; a control's border has to show 3:1 (WCAG 1.4.11),
    *   so the key hint, the filter menus and their choices take ctl (3.0:1 on the ground in both schemes), and so
    *   does Contents' frame, which is a control's weight rather than a box's.
