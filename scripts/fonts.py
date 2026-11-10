@@ -53,8 +53,11 @@ LATIN = (
     "U+0020-007E,U+00A0-00A3,U+00A5-00AB,U+00AE-00B1,U+00B4,U+00B6-00B8,U+00BA-00BB,U+00BF-00FF,U+2013-2014,"
     "U+2018-201A,U+201C-201D,U+2022,U+2026"
 )
-# Box drawing, for the trees that Argon sets: the search results' and a file tree in a post's code
-BOX = "U+2500-257F"
+# Box drawing, for the trees that Argon sets: the search results' (a corner, U+2514) and a file tree in a post's code
+# (U+251C, U+2500, U+2502, U+2514). Contents' tree is drawn in CSS and no page sets the rest of the block's 128
+# glyphs, so only the light single-line set that a tree or a box is made of is kept (lines, corners, tees and the
+# cross), about 1.4 KB a file. Add a character here before setting one that isn't in it
+BOX = "U+2500,U+2502,U+250C,U+2510,U+2514,U+2518,U+251C,U+2524,U+252C,U+2534,U+253C"
 WEB_CHARS = {
     # Argon sets prose, UI and code, so it has the most
     "Ar": f"{LATIN},{BOX}",
