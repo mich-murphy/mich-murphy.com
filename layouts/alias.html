@@ -1,0 +1,25 @@
+{{- /* The pages Hugo writes for a page's aliases (content/_index.md: /archive/ and /page/1/, /page/2/, which the site
+  has no pagination for): a 0-second meta refresh to the page. Hugo's own is a bare tag set with the destination's
+  address for its title, no viewport and no body, so a reader whose browser doesn't follow the refresh (some
+  assistive technology, reader modes) gets a blank page called by a URL. This one is a page: a title that says what
+  it is (WCAG 2.4.2), the viewport, a canonical link to the destination and noindex, so the stub isn't listed
+  in its place, and a link for when the refresh doesn't happen, as the tag pages (tags/list.html) give. Hugo
+  passes .Permalink as the destination and .Page as the page that has the alias */}}
+{{- $host := (urls.Parse .Permalink).Host }}
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redirecting to {{ $host }}</title>
+<link rel="canonical" href="{{ .Permalink }}">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url={{ .Permalink }}">
+</head>
+<body>
+<main>
+<h1>Redirecting to {{ $host }}</h1>
+<p>This page has moved. Go to <a href="{{ .Permalink }}">{{ $host }}</a>.</p>
+</main>
+</body>
+</html>
