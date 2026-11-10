@@ -354,6 +354,14 @@
     }
   }
 
+  /*
+   * Home's Posts card is tighter than 404's, 6px above and below each row. The row you hover or focus is marked as
+   * any link is, by its title's underline: nothing is drawn behind the text.
+   */
+  .posts-card .post-row {
+    padding-block: 6px;
+  }
+
   /* forced colours drop backgrounds, so the menus keep their inversion in system colours, and marks take the system's */
   @media (forced-colors: active) {
     .filters {
