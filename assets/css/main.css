@@ -150,7 +150,11 @@
   /*
    * The palette, as light-dark(light, dark). The page follows the reader's colour scheme (a toggle would need a
    * script), and print always takes light.
-   * - accent is only 1.98:1 on the light ground, so accent text and the focus ring have their own values.
+   * - accent (the orange) is only 1.98:1 on the light ground, and it appears in three places only: the text selection,
+   *   the search-match highlight (with ink on it, via on-accent) and code strings, which have their own text value in
+   *   string. The chrome has none: the focus ring is ink in both schemes, as are the nav's marker, Contents' current
+   *   stub and the search prompt, and a commit hash is muted. Ink on the ground is 17:1 in light and 14:1 in dark, and
+   *   on the code ground more, so the ring clears 3:1 (WCAG 1.4.11) on both.
    * - body text is fg mixed into the ground, softer than headings.
    * - code-chip grounds inline code. In light it's the code ground; in dark the code ground is darker than the page
    *   and all but vanishes behind a word, so the chip is as much lighter than the page as light's is darker.
@@ -180,8 +184,7 @@
     --tick: color-mix(in srgb, var(--muted) 55%, var(--edge));
     --accent: #e7a15a;
     --on-accent: #0f1214;
-    --accent-text: light-dark(#9f5510, #e7a15a);
-    --focus: light-dark(#0f1214, #e7a15a);
+    --focus: var(--fg);
     --comment: light-dark(#5f6a72, #75818b);
     --string: light-dark(#9f5510, #e7a15a);
 
@@ -273,9 +276,9 @@
     }
   }
 
-  /* a commit hash (the footer's build, the colophon's commit) is accent text; a:hover outranks it, so it still inverts */
+  /* a commit hash (the footer's build, the colophon's commit) is muted, a quieter tone than the line around it; it is a link, so a:hover outranks it and it still inverts */
   .hash {
-    color: var(--accent-text);
+    color: var(--muted);
   }
 
   :focus-visible {
@@ -411,11 +414,16 @@
     /*
      * A marker, the Contents trace's, sits in the gap before each link: an 8px square drawn through the site's dither
      * ladder (below). Hover fills it to half-tone (8 of 16 cells), keyboard focus to solid, and leaving thins it out
-     * again. The current page's is solid accent text and, on a post, posts' is a hollow frame: you're in that section,
-     * not on its page. Hover never inverts a nav link, so it can't pass for the current one. Each link's box runs 6px
-     * below its text, taken back by its margin so nothing moves, so its focus ring has room under the letters.
-     * Forced colours drop the mask and the background, which is all the marker is, so there the nav keeps underlines:
-     * 1px on hover and focus, 3px under the current page and dashed under its section, in the system's text colour.
+     * again. A marked link is solid ink, the whole ladder (16 of 16): the current page, and on a post posts too, since
+     * you're in that section. aria-current is "page" for one and "true" for the other, and both look the same, so posts
+     * reads the same on home and on a post and the nav has one you-are-here state, not two levels. Hover is half-tone,
+     * and focus is solid with the 2px ink ring every focus gets. Hover and focus never change a marked link, and
+     * never invert one, so nothing can pass for it. Leaving thins an unmarked link out over .13s; a marked link has no
+     * exit, and reduced motion shows each end state at once. The nav has no accent: marker, ring and hover are all ink.
+     * Each link's box runs 6px below its text, taken back by its margin so nothing moves, so its focus ring has room
+     * under the letters.
+     * Forced colours drop the mask and the background, which is all the marker is, so there the nav keeps underlines
+     * in the system's text colour: 1px on hover and focus, 3px under a marked link, on home and on a post alike.
      */
     & nav a {
       position: relative;
@@ -459,17 +467,8 @@
         --lv: 8;
       }
 
-      &[aria-current="page"]::before {
+      &[aria-current]::before {
         --lv: 8;
-
-        background: var(--accent-text);
-      }
-
-      &[aria-current="true"]::before {
-        --lv: 8;
-
-        background: none;
-        box-shadow: inset 0 0 0 1px var(--fg);
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -496,10 +495,6 @@
           text-decoration: underline 3px;
           text-underline-offset: 7px;
           text-decoration-skip-ink: none;
-        }
-
-        &[aria-current="true"] {
-          text-decoration-style: dashed;
         }
       }
     }

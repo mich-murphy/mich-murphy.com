@@ -366,7 +366,7 @@
    * starts at its stub. --rp is the link's padding above and below, so the stub finds the first line's middle (0.5lh);
    * --row is the least height of a row, 44px for a finger and 24px for a pointer (WCAG 2.5.8).
    *
-   * The current row is in the chip tone with its stub in accent text, and its text is bold: Argon's bold has the same
+   * The current row is in the chip tone with its stub in ink, and its text is bold: Argon's bold has the same
    * advance, so nothing moves. Hover inverts a link as any other does.
    */
   .contents-list {
@@ -461,7 +461,7 @@
 
     .contents-list {
       & li:has(> a:target-current) {
-        --tc: var(--accent-text);
+        --tc: var(--fg);
 
         background: var(--chip);
       }
