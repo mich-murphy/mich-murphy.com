@@ -328,7 +328,7 @@
   main {
     flex: 1 0 auto;
     width: 100%;
-    padding-block: 36px 56px;
+    padding-block: 40px 56px;
 
     /* the skip link focuses main (tabindex=-1), which needs no ring */
     &:focus {
@@ -338,10 +338,9 @@
 
   /*
    * The header and footer are ruled off with a 1px hairline in edge, so they sit back from the 2px frames between
-   * them. The 1px of padding keeps each the height a 2px rule gave it
+   * them. The header is a 64px bar: the mark's 32px with 16px above and below, on the 8px grid
    */
   .site-header {
-    padding-bottom: 1px;
     border-bottom: 1px solid var(--edge);
   }
 
@@ -351,7 +350,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 8px 24px;
-    padding-block: 12px;
+    padding-block: 16px;
     font-size: var(--text-xs);
 
     & a {
@@ -361,7 +360,7 @@
     & nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 3ch;
+      gap: 4px 24px;
     }
 
     /*
@@ -397,12 +396,12 @@
     /*
      * Phones, where the name and the nav don't fit on one line (below 398px at the default 16px, and a little more in
      * em at a smaller default, since the mark and the gaps are px): the nav takes a row of its own, its links in line
-     * with the name
+     * with the name (the mark's 32px and the brand's 12px gap)
      */
     @media (width < 25.5em) {
       & nav {
         flex-basis: 100%;
-        padding-left: 34px;
+        padding-left: 44px;
       }
     }
   }
@@ -411,7 +410,7 @@
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
     overflow-wrap: anywhere;
     text-transform: uppercase;
@@ -423,11 +422,12 @@
     }
   }
 
+  /* 32px, two pixels to each of the mark's 16: at 24px its squares drew unevenly */
   .mark {
     display: block;
     flex: none;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     fill: currentColor;
 
     & .knockout {
@@ -441,7 +441,6 @@
   }
 
   .site-footer {
-    padding-top: 1px;
     border-top: 1px solid var(--edge);
   }
 
@@ -449,14 +448,23 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 6px 24px;
-    padding-block: 14px 28px;
+    align-items: baseline;
+    gap: 4px 24px;
+    padding-block: 16px 24px;
     color: var(--muted);
     font-family: var(--font-machine);
     font-size: var(--text-xs);
 
     & a {
       position: relative;
+      text-decoration-color: var(--edge);
+    }
+
+    /* the build's figures, set small in tabular numerals so they line up from build to build */
+    & > span + span {
+      font-size: var(--text-2xs);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
     }
   }
 
