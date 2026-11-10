@@ -106,7 +106,7 @@
    */
   :is(.key-values, .colophon) {
     & .frame {
-      padding: 20px 18px 14px;
+      padding: 21px 19px 15px;
       font-family: var(--font-machine);
       font-size: var(--text-sm);
       line-height: 1.55;

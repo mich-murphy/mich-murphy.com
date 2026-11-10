@@ -18,10 +18,10 @@
     margin-top: 30px;
 
     & .frame {
-      padding: 12px 18px 2px;
+      padding: 13px 19px 3px;
 
       @media (width <= 37.5em) {
-        padding-inline: 12px;
+        padding-inline: 13px;
       }
     }
 
@@ -236,17 +236,18 @@
   }
 
   /*
-   * The list hangs from the frame: its top border lies on the frame's bottom one, 12px under the row (the row's 10px
-   * margin and the frame's 2px padding), so the two read as one line rather than two a few pixels apart.
+   * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 10px
+   * margin and the frame's 3px padding, which is the 2px it had when the frame was a 2px line, plus the 1px the
+   * thinner line gave up), so the two read as one line rather than two a few pixels apart.
    */
   .filter-popover {
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 13px);
     right: 0;
     left: 0;
     z-index: 30;
-    padding: 10px 12px;
-    border: 2px solid var(--fg);
+    padding: 10px 13px 11px;
+    border: 1px solid var(--fg);
     background: var(--bg);
   }
 
