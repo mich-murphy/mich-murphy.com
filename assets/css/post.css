@@ -353,8 +353,9 @@
 
   /*
    * The box: its label in capitals in the machine face, cut into the frame's top edge, over a 1px frame in ctl, not
-   * fg like a box's. A Contents frame is a rail or a sheet rather than a box in the text, so it takes a control's
-   * tone, and its label is the one legend in capitals, as the rail is the one thing that is a control and not a box.
+   * fg like a box's. A Contents frame is a sheet rather than a box in the text, so it takes a control's tone, and its
+   * label is the one legend in capitals, as Contents is the one thing that is a control and not a box. The rail has no
+   * frame at all (1280px and up, below): it is navigation, like the header's nav, and its label sits over the list.
    */
   .contents-box {
     position: relative;
@@ -385,8 +386,9 @@
    * they are two names so a marked row can turn only its own stub to ink, and forced colours can set each.
    *
    * Every mark on a row is drawn on one box: the link, with 4px either side of its text, which the li's padding gives
-   * back, so nothing moves and each stub ends on the box's edge. The current row is that box in the chip tone, with its
-   * text bold (Argon's bold has the same advance, so nothing moves) and its stub in ink. Hover inverts the box as any
+   * back, so nothing moves and each stub ends on the box's edge. The current row is that box in the chip tone (on the
+   * sheet; the rail drops the tint), with its text bold (Argon's bold has the same advance, so nothing moves) and its
+   * stub in ink. Hover inverts the box as any
    * link inverts, the current row too, and its stub turns to ink so the branch meets it; the focus ring is drawn just
    * inside the box's edge, where it neither crosses the stub nor overlaps the rows above and below.
    */
@@ -772,10 +774,13 @@
    * left margin, so the rail never covers text. The nav is a zero-height sticky box in the page's flow right under
    * the header, so the rail starts level with the top of the post (40px under the header's rule, the h1's top) and
    * holds 24px from the window's top as you scroll. It is before main in the DOM and on the page's left, so the
-   * keyboard meets it first, in reading order. A long list scrolls inside the frame, which is never taller than
-   * the window. The label is only Contents: the count would disagree with the folded list.
+   * keyboard meets it first, in reading order. The rail is unframed, as the header's nav is: its label, only
+   * Contents (the count would disagree with the folded list), sits 12px over the list, its top level with the h1's,
+   * and the tree starts at the rail's left edge. A long list scrolls inside its own box, which is never taller than the
+   * window. The current row is bold in ink with its stub in ink, and no tint: with no frame around it, a tinted block
+   * reads as a button, and hover's inversion already is one.
    *
-   * The meter is a gauge row 12px under the frame: an 8px bar, two rows of the tile, and the percentage after it,
+   * The meter is a gauge row 16px under the list: an 8px bar, two rows of the tile, and the percentage after it,
    * 8px on, right-aligned in 4ch so the bar keeps its length from 0% to 100%, its line centred on the bar without
    * adding to the row's height.
    *
@@ -809,10 +814,19 @@
 
       & .frame {
         max-height: calc(100vh - 150px);
-        padding: 14px 8px 8px;
+        padding: 0;
+        border: 0;
         font-size: var(--text-xs);
         line-height: 1.45;
       }
+    }
+
+    .contents-box > .legend {
+      position: static;
+      display: block;
+      margin-bottom: 12px;
+      padding: 0;
+      background: none;
     }
 
     .contents-count {
@@ -837,17 +851,30 @@
         --pr: 0 0, 2px 0, 1px 1px, 3px 1px, 0 0, 0 0;
 
         height: 8px;
-        margin: 12px calc(4ch + 8px) 0 0;
+        margin: 16px calc(4ch + 8px) 0 0;
         font: var(--text-xs) / 1 var(--font-machine);
       }
     }
 
+    /* the trunk on the rail's left edge, under the label and over the gauge, with the h3s' trunk the same 18px in */
     .contents-list {
       --rp: 3px;
       --row: 24px;
+
+      & li {
+        padding-left: 8px;
+      }
+
+      & .level-3 {
+        padding-left: 26px;
+      }
     }
 
     @supports selector(:target-current) {
+      .contents-list a:target-current:not(:hover) {
+        background: none;
+      }
+
       .contents-list .level-3 {
         height: 0;
         overflow: hidden;
