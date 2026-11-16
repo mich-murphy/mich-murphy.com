@@ -261,18 +261,20 @@
   }
 
   /*
-   * The reading meter: cells of the dither under the rail's frame and along the bar's top edge, and the percentage
-   * cut into the frame's top edge like its label. --p is the window's scroll position, 0 to 100, and a steps(20)
+   * The reading meter: cells of the dither along the bar's top edge, and on the rail a gauge row under its frame,
+   * with the percentage after it (1280px and up, below); the sheet has the percentage cut into the frame's top edge
+   * like its label. --p is the window's scroll position, 0 to 100, and a steps(20)
    * animation on the root's scroll timeline moves it in twenty whole steps, so the meter fills cell by cell (5% a
    * cell) and never smoothly. The animation runs on the three elements that read --p (the rail's box, and the bar's
    * open and close buttons), not on :root: an inherited property animated on the root restyles the whole document
    * twenty times over a read, where here it restyles only those and their pseudo-elements (under half the style time
    * over a full scroll of the longest post). scroll(root) is still the window's scroller, wherever it is named. The empty cells are the tile (2 of 16 dots) in ink (--mt, which falls back to --fg),
    * the same tile and tone as the boxes' shadows, so the site has one static dither and no pale one; the full cells are
-   * 12 of 16 in the text colour (--mc): the ladder of the tile's own shifts, as a rail of dense and sparse block glyphs
-   * would be. The track is a gradient under a mask of eight tile layers, the first for the empty cells and the last six
-   * for the full ones, intersected with the gradient's stop. Every list in the mask is spelt out, since a short one
-   * repeats and would put the wrong layer in the wrong place.
+   * a denser rung of the ladder of the tile's own shifts in the text colour (--mc), as a rail of dense and sparse block
+   * glyphs would be: 12 of 16 on the bar's 4px edge, and 8 of 16 on the rail's 8px gauge, where two rows of the tile
+   * at 12 would read as a solid bar. The track is a gradient under a mask of eight tile layers, the first for the empty
+   * cells and the last six for the full ones, intersected with the gradient's stop. Every list in the mask is spelt
+   * out, since a short one repeats and would put the wrong layer in the wrong place.
    *
    * Reduced motion doesn't remove it: a scroll timeline moves only as you scroll, and the steps are discrete, so there
    * is no animation to take away. Without scroll timelines the whole meter is off, and so is the percentage.
@@ -315,13 +317,14 @@
     }
 
     /*
-     * p2 and p12 are the meter's two rungs of the tile's ladder (main.css), as mask-position lists: p2 is the one
-     * layer of the empty cells (2 of 16), and p12 is the six layers of the full ones, each on a pair of cells of its
-     * own (12 of 16). Only the meter has them, so they are defined here and not on :root.
+     * p2 and pr are the meter's two rungs of the tile's ladder (main.css), as mask-position lists: p2 is the one
+     * layer of the empty cells (2 of 16), and pr is the six layers of the read ones, each on a pair of cells of its
+     * own (12 of 16). The rail sets pr to four pairs and two repeats, which add nothing (8 of 16). Only the meter has
+     * them, so they are defined here and not on :root.
      */
     :is(.contents-box, .contents-open, .contents-close)::after {
       --p2: 0 0;
-      --p12: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0;
+      --pr: 0 0, 2px 0, 1px 1px, 3px 1px, 1px 0, 3px 0;
 
       content: "";
       display: block;
@@ -344,7 +347,7 @@
       mask-position:
         var(--p2),
         0 0,
-        var(--p12);
+        var(--pr);
     }
   }
 
@@ -379,10 +382,13 @@
    * starts at its stub. --rp is the link's padding above and below, so the stub finds the first line's middle (0.5lh);
    * --row is the least height of a row, 44px for a finger and 24px for a pointer (WCAG 2.5.8). --tl is the trunk's
    * tone and --tc the stub's, both ctl like the frame so the tree is the one tone, 3:1 on the ground (WCAG 1.4.11);
-   * they are two names so the current row can turn only its own stub to ink, and forced colours can set each.
+   * they are two names so a marked row can turn only its own stub to ink, and forced colours can set each.
    *
-   * The current row is in the chip tone with its stub in ink, and its text is bold: Argon's bold has the same
-   * advance, so nothing moves. Hover inverts a link as any other does.
+   * Every mark on a row is drawn on one box: the link, with 4px either side of its text, which the li's padding gives
+   * back, so nothing moves and each stub ends on the box's edge. The current row is that box in the chip tone, with its
+   * text bold (Argon's bold has the same advance, so nothing moves) and its stub in ink. Hover inverts the box as any
+   * link inverts, the current row too, and its stub turns to ink so the branch meets it; the focus ring is drawn just
+   * inside the box's edge, where it neither crosses the stub nor overlaps the rows above and below.
    */
   .contents-list {
     --rp: 10px;
@@ -393,25 +399,31 @@
     & li {
       display: block;
       margin: 0;
-      padding: 0 6px 0 18px;
+      padding: 0 2px 0 14px;
     }
 
     & .level-3 {
-      padding-left: 36px;
+      padding-left: 32px;
     }
 
     & a {
       position: relative;
       display: block;
       min-height: var(--row);
-      padding-block: var(--rp);
+      padding: var(--rp) 4px;
       color: var(--muted);
       line-height: 1.4;
       text-decoration: none;
 
       &:hover {
+        --tc: var(--fg);
+
         background: var(--fg);
         color: var(--bg);
+      }
+
+      &:focus-visible {
+        outline-offset: -2px;
       }
 
       &::before,
@@ -419,7 +431,7 @@
         content: "";
         position: absolute;
         top: 0;
-        left: -12px;
+        left: -8px;
         width: 8px;
         border-left: 1px solid var(--tl);
         background: linear-gradient(var(--tc), var(--tc)) 0 calc(var(--rp) + 0.5lh) / 100% 1px no-repeat;
@@ -450,7 +462,7 @@
     }
 
     & .level-3 a::before {
-      left: -30px;
+      left: -26px;
       bottom: 0;
       background: none;
     }
@@ -477,8 +489,6 @@
     .contents-list {
       & li:has(> a:target-current) {
         --tc: var(--fg);
-
-        background: var(--chip);
       }
 
       /* bold for where you are; hover still inverts it as any other row, so its text doesn't vanish into the fg */
@@ -486,6 +496,7 @@
         font-weight: 700;
 
         &:not(:hover) {
+          background: var(--chip);
           color: var(--fg);
         }
       }
@@ -762,7 +773,11 @@
    * the header, so the rail starts level with the top of the post (40px under the header's rule, the h1's top) and
    * holds 24px from the window's top as you scroll. It is before main in the DOM and on the page's left, so the
    * keyboard meets it first, in reading order. A long list scrolls inside the frame, which is never taller than
-   * the window, and the meter sits under it.
+   * the window. The label is only Contents: the count would disagree with the folded list.
+   *
+   * The meter is a gauge row 12px under the frame: an 8px bar, two rows of the tile, and the percentage after it,
+   * 8px on, right-aligned in 4ch so the bar keeps its length from 0% to 100%, its line centred on the bar without
+   * adding to the row's height.
    *
    * The h3s show only under the h2 you are in: the others fold to nothing, though they stay in the keyboard's and
    * the screen reader's list, and open as the keyboard passes. A folded row is a clipped box of no height, and an
@@ -800,8 +815,31 @@
       }
     }
 
-    .contents-box::after {
-      margin-top: 10px;
+    .contents-count {
+      display: none;
+    }
+
+    .contents-box {
+      &::before {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 4ch;
+        height: 8px;
+        padding: 0;
+        background: none;
+      }
+
+      &::after {
+        --pr: 0 0, 2px 0, 1px 1px, 3px 1px, 0 0, 0 0;
+
+        height: 8px;
+        margin: 12px calc(4ch + 8px) 0 0;
+        font: var(--text-xs) / 1 var(--font-machine);
+      }
     }
 
     .contents-list {
@@ -852,6 +890,10 @@
 
     .contents-list li:has(> a:target-current) {
       --tc: Highlight;
+    }
+
+    .contents-list a:hover {
+      --tc: CanvasText;
     }
 
     :is(.contents-box, .contents-open, .contents-close)::after {

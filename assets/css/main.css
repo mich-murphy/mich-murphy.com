@@ -193,7 +193,7 @@
      * 0-1, (2,0) is 2-3, (1,1) is 4-5, (3,1) is 6-7, (1,0) is 8-9, (3,0) is 10-11, (0,1) is 12-13 and (2,1) is 14-15.
      * m stacks eight copies as mask layers, for a ladder of 2 to 16 of 16 cells by shifting layers onto cells of their
      * own. The nav's marker climbs it with --lv, 0 to 8 layers moved (its mask-position calc list, below), so it can
-     * step in a transition; the meter's two rungs, p2 and p12, are in post.css.
+     * step in a transition; the meter's two rungs, p2 and pr, are in post.css.
      * - chip is fg at 8%, a flat ground a little off the page's own, for a marked row.
      */
     --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h1v1H0zM2 2h1v1H2z'/%3E%3C/svg%3E");
