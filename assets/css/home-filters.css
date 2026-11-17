@@ -42,7 +42,7 @@
   }
 
   {{ $on }} .filter-clear {
-    margin-left: -2.5ch;
+    margin-left: -1.5ch;
   }
 
   /*
