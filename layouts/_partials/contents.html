@@ -2,30 +2,29 @@
   in, both CSS only (post.css), split at 1280px:
   - 1280px and up, with any pointer: the rail, always open in the left margin beside the column, never over it. Its
     label, a tree of the headings (h3s only under the h2 you are in) and a reading meter are all drawn in CSS
-  - narrower: a status bar fixed to the foot of the window, showing Contents, § 3/7, the current section's title
-    and the meter. The constant Contents is the link's visible label, so it contains its accessible name (WCAG
-    2.5.3). The bar opens the same list as a sheet above it. The open state is #toc:target. #toc is an empty element
+  - narrower: a status bar fixed to the foot of the window, showing the meter and the current section's title, or
+    Contents, the link's own name, before the first heading. The bar opens the same list as a sheet above it, under
+    the label Contents and the percentage read. The open state is #toc:target. #toc is an empty element
     fixed to the top of the window, so following the bar scrolls nothing. Picking a heading changes the target,
     which closes the sheet; ✕ and a tap outside link to #_, which matches nothing, so they close it without
     scrolling
   The ticks are scroll markers for the current section, aria-hidden with tabindex=-1, with each heading's title
   inside for the bar to show, and the Contents links are the ones for keyboards and screen readers, so the page is
   read once. The head's anchor comes first in both lists, empty and hidden, so nothing is current until the first
-  heading. The ticks also count the sections up to the current one for the bar's 4/7. Without :target-current
-  (Firefox, Safari) nothing is current: the bar reads only Contents and the rail lists every heading.
-  WebKit drops the role from a list without markers, but not inside a nav, so Contents needs no role=list. --n, the
-  number of headings, is the bar's total */}}
+  heading. Without :target-current (Firefox, Safari) nothing is current: the bar reads only Contents and the rail
+  lists every heading. WebKit drops the role from a list without markers, but not inside a nav, so Contents needs no
+  role=list */}}
 {{- $hs := partial "headings.html" . }}
 {{- $n := len $hs }}
 {{- if ge $n 2 }}
-<nav class="contents" aria-label="Contents" style="--n:{{ $n }}">
+<nav class="contents" aria-label="Contents">
 <span id="toc"></span>
 <ol class="ticks" aria-hidden="true"><li class="head-anchor"><a href="#top" tabindex="-1"></a></li>
 {{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}" tabindex="-1">{{ .title }}</a></li>{{ end }}</ol>
 <a class="contents-open" href="#toc"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M0 0h18v2H0zM0 6h18v2H0zM0 12h18v2H0z"/></svg><span class="visually-hidden">Contents</span></a>
 <a class="contents-close" href="#_"><svg viewBox="0 0 18 14" aria-hidden="true"><path d="M3 1l12 12M15 1L3 13"/></svg><span class="visually-hidden">Close contents</span></a>
 <a class="contents-dim" href="#_" tabindex="-1" aria-hidden="true"></a>
-<div class="contents-popover"><div class="contents-box"><span class="legend">Contents<span class="contents-count"> · {{ $n }}</span></span><div class="frame">
+<div class="contents-popover"><div class="contents-box"><span class="legend">Contents</span><div class="frame">
 <ol class="contents-list"><li class="head-anchor" aria-hidden="true"><a href="#top" tabindex="-1"></a></li>
 {{- range $hs }}<li class="level-{{ .level }}"><a href="#{{ .id }}">{{ .title }}</a></li>{{ end }}</ol>
 </div></div></div>
