@@ -277,19 +277,30 @@
     }
   }
 
+  /*
+   * A choice is its value, then its count in brackets, nixos (11) and 2024 (4), so a year's count can't be read as
+   * more of the year, as it could when the counts were set apart at the columns' right
+   */
   .filter-choice {
     display: flex;
-    justify-content: space-between;
     padding: 0 0.8ch;
     border: 1px solid transparent;
     text-decoration: none;
     white-space: nowrap;
 
     & .count {
-      margin-left: 0.8ch;
+      margin-left: 0.6ch;
       color: var(--muted);
       font-family: var(--font-machine);
       font-variant-numeric: tabular-nums;
+
+      &::before {
+        content: "(";
+      }
+
+      &::after {
+        content: ")";
+      }
     }
 
     /* a name too long for its column, like nixos-anywhere at 375px, ellipsises and keeps its count in view */
