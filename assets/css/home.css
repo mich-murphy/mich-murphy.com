@@ -141,18 +141,21 @@
    * open at a time, whose list opens under the row, over the posts. Each choice has its count, how many posts the list
    * would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
    * clears it, and so is its choice, or all while it isn't set. home-filters.css does the same without the script.
+   * The row sits 12px under the rule and 12px over the frame's bottom border (its 9px margin and the frame's 3px).
    */
   .filters {
     position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 8px 2.5ch;
-    margin-block: 11px 10px;
+    gap: 8px 1.5ch;
+    margin-block: 12px 9px;
     font-size: var(--text-sm);
     line-height: 24px;
 
+    /* filter labels the pair, so it stands a little further off them (2ch) than they stand apart (1.5ch) */
     & .key {
+      margin-right: 0.5ch;
       color: var(--muted);
     }
 
@@ -162,6 +165,10 @@
       grid-template-columns: max-content minmax(0, 1fr);
       justify-items: start;
       column-gap: 2ch;
+
+      & .key {
+        margin-right: 0;
+      }
     }
   }
 
@@ -181,9 +188,9 @@
     & > summary {
       display: flex;
       align-items: baseline;
-      gap: 1ch;
+      gap: 0.8ch;
       height: 24px;
-      padding-inline: 1.2ch;
+      padding-inline: 1ch;
       border: 1px solid var(--ctl);
       list-style: none;
       white-space: nowrap;
@@ -227,9 +234,11 @@
     }
   }
 
+  /* the ×'s line is its menu's 24px less its borders, so the two are one height */
   .filter-clear {
     display: none;
-    padding: 0 0.9ch;
+    padding: 0 0.8ch;
+    line-height: 22px;
     border: 1px solid var(--fg);
     border-left-color: var(--bg);
     background: var(--fg);
@@ -247,12 +256,12 @@
   }
 
   /*
-   * The list hangs from the frame: its top border lies on the frame's bottom one, 13px under the row (the row's 10px
+   * The list hangs from the frame: its top border lies on the frame's bottom one, 12px under the row (the row's 9px
    * margin and the frame's 3px bottom padding), so the two read as one line rather than two a few pixels apart.
    */
   .filter-popover {
     position: absolute;
-    top: calc(100% + 13px);
+    top: calc(100% + 12px);
     right: 0;
     left: 0;
     z-index: 30;
