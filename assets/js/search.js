@@ -19,9 +19,9 @@
 // - Ctrl+K, or ⌘K on Apple's platforms, focuses the box from anywhere on the page, down moves to the first result,
 //   and Enter opens it. Esc closes an open menu, or clears the words, then the filters. A menu also closes when focus
 //   leaves it, so it isn't left open over the list.
-// - The list and its counts show a change at once. The address follows as /?q=…, or /#nixos for a tag alone, once
-//   typing pauses or as the page is left, and a fragment typed into it sets the menus as following a menu's link to
-//   it would. The status line that screen readers announce waits for typing to pause too, but follows a pick, Esc or
+// - The list and its counts show a change at once. The address follows as /?q=…, the filters as if typed in full and
+//   then the words, or /#nixos for a tag alone, once typing pauses or as the page is left, and opening it brings the
+//   same list back. A fragment typed into it sets the menus as following a menu's link to it would. The status line that screen readers announce waits for typing to pause too, but follows a pick, Esc or
 //   × at once.
 
 /**
@@ -170,6 +170,10 @@ let pauseTimer = 0;
 /** what the status line says, and whether a typed change is waiting for the pause to write it */
 let statusText = "";
 let statusWaits = false;
+/** whether the box has shown, so the opening query is applied once */
+let opened = false;
+/** whether the page went back to working without the script, so that when the box shows again the address follows it */
+let fellBack = false;
 
 // ---- searching: pure functions, reading only their arguments and the menus' entries ---------------------------------
 
@@ -361,15 +365,21 @@ const liftFilters = (text, filters) => {
 
 /**
  * The address's query or fragment for the box's words and the filters: #nixos for a tag alone, ?q=… for anything
- * else, and nothing for neither.
+ * else, and nothing for neither. In ?q= the filters come first, each followed by a space, as if typed in full, and then
+ * the words, so the page opens with each where it was: a word still being typed, like #nix, which finds every tag
+ * starting with nix, has no space after it, so it stays in the box rather than become the tag nix. With no words, the
+ * query ends in that space, as ?q=%23nixos+2023+.
  * @param {string} words
  * @param {Filters} filters
  */
 const addressFor = (words, { tags, year }) => {
   const text = words.trim();
   if (tags.length === 1 && !year && !text) return `#${tags[0]}`;
-  const q = [...tags.map((tag) => `#${tag}`), year, text].filter(Boolean).join(" ");
-  return q ? `?${new URLSearchParams({ q })}` : "";
+  const q = [...tags.map((tag) => `#${tag}`), year]
+    .filter(Boolean)
+    .map((filter) => `${filter} `)
+    .join("");
+  return q || text ? `?${new URLSearchParams({ q: q + text })}` : "";
 };
 
 /** What the status line says: how many posts match, or nothing while the list isn't searched or filtered */
@@ -578,6 +588,7 @@ const fetchIndex = async () => {
 const disableSearch = (serverAnsweredBadly) => {
   if (box.hidden) return;
   box.hidden = true;
+  fellBack = true;
   frameLegend.textContent = "Filter";
   renderRows([], null, false);
   renderCounts(rows.length, false);
@@ -626,12 +637,14 @@ const applyFragment = () => {
 
 /**
  * Shows the box, with the filters the address names and the opening query's words. Until then, home-filters.css
- * filters the list by the fragment, and the menus' links change it, so it's read again here.
+ * filters the list by the fragment, and the menus' links change it, so it's read again here. The query is read as if
+ * typed: a tag or year followed by a space is a filter, and the rest are words (addressFor).
  */
 const showSearch = () => {
   applyFragment();
-  if (openingQuery) {
-    const lifted = liftFilters(`${openingQuery} `, filters);
+  // once: shown again after falling back, the box holds what was typed since
+  if (openingQuery && !opened) {
+    const lifted = liftFilters(openingQuery, filters);
     input.value = lifted.text.trimEnd();
     filters = lifted.filters;
   }
@@ -642,7 +655,16 @@ const showSearch = () => {
   }
   box.hidden = false;
   frameLegend.textContent = "Search";
+  opened = true;
+  // nothing typed is waiting for a pause: a pause that was running as the box hid has passed, or a pick cancelled it
+  statusWaits = false;
   render();
+  // shown again, the address follows what the box and the menus hold: the links left it with only a fragment
+  if (fellBack) {
+    fellBack = false;
+    cancelPause();
+    writeAddress();
+  }
 };
 
 /** The first result's link, the first shown row's, or null */
@@ -783,6 +805,9 @@ addEventListener("click", (event) => {
     if (!menu.contains(event.target)) menu.open = false;
   }
   if (link && indexRequest === "failed") loadIndex();
+  // a link followed as without the script sets the address itself, so an update still waiting from typing, from before
+  // the box hid, is out of date, and would replace the link's fragment when the pause ends
+  if (link && box.hidden) cancelPause();
   if (!link || box.hidden) return;
   event.preventDefault();
   if (link.hasAttribute("aria-disabled")) return;

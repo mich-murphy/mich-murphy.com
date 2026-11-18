@@ -10,6 +10,9 @@
 {{- range $hs }}
   {{- /* no h4 and below, so for search a line under an h4 maps to the nearest h2 or h3 before it */}}
   {{- if and .ID (ge .Level 2) (le .Level 3) }}{{ $out = $out | append (dict "id" .ID "level" .Level "title" (.Title | plainify | htmlUnescape)) }}{{ end }}
-  {{- with .Headings }}{{ $out = $out | append (partial "headings.html" .) }}{{ end }}
+  {{- /* only a list with headings in it: append spreads a list of dicts into $out, but adds an empty one whole, as an
+    element, and a heading whose children are all h4s or below gives an empty one. Contents and search would read it
+    as a heading, and fail the build */}}
+  {{- with .Headings }}{{ with partial "headings.html" . }}{{ $out = $out | append . }}{{ end }}{{ end }}
 {{- end }}
 {{- return $out }}

@@ -217,4 +217,4 @@ in
 }
 ```
 
-Now that we have added a new SSH key to our `secrets.nix` file we must [rekey](https://github.com/ryantm/agenix?tab=readme-ov-file#rekeying) our existing secrets, and specify our existing ssh key: `nix run github:ryantm/agenix --rekey -i ~/.ssh/existing_key`.
+Now that we have added a new SSH key to our `secrets.nix` file we must [rekey](https://ryantm.github.io/agenix/rekeying/) our existing secrets, and specify our existing ssh key: `nix run github:ryantm/agenix --rekey -i ~/.ssh/existing_key`.
