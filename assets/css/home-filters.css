@@ -11,8 +11,8 @@
   /*
    * Nothing closes a menu after a pick, so its open list would stay over the posts it just filtered. It joins the
    * flow instead, on a line of its own under both menus, and the posts move down; a closed one takes no line, or its
-   * row gap would pad the frame. On phones the menus wrap rather than stack. With no box above it, the row is the
-   * frame's first, so it clears the Filter label that the top border carries.
+   * row gap would pad the frame. On phones the menus wrap rather than take half the row each. With no box above it,
+   * the row is the frame's first, so it clears the Filter label that the top border carries.
    */
   {{ $on }} .filters {
     display: flex;
