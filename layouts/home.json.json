@@ -14,23 +14,29 @@
   {{- $h := 0 }}
   {{- $anchor := "" }}
   {{- $fence := "" }}
+  {{- /* whether the open fence is in a callout, whose lines all start with >, which isn't the code's */}}
+  {{- $quotedFence := false }}
   {{- $rows := slice }}
   {{- range $line := split .RawContent "\n" }}
     {{- /* in a callout, every line starts with the quote's >, its code's fences and lines too */}}
     {{- $unquoted := replaceRE `^ {0,3}>[ \t]?` "" $line }}
     {{- $text := strings.TrimSpace $unquoted }}
     {{- $marker := "" }}
-    {{- with findRESubmatch "^ {0,3}(`{3,}|~{3,})" $unquoted 1 }}{{ $marker = index . 0 1 }}{{ end }}
+    {{- /* at any indent: a fence in a list item is indented to the item's text, or by four for a tab stop, which a fence
+      outside a list can't be, but an indented code block with a line of backticks in it is rarer than either */}}
+    {{- with findRESubmatch "^[ \t]*(`{3,}|~{3,})" $unquoted 1 }}{{ $marker = index . 0 1 }}{{ end }}
     {{- $row := false }}
     {{- if $fence }}
       {{- /* a fence closes with a line of only its character, at least as many times as it opened */}}
+      {{- $code := strings.TrimSpace (cond $quotedFence $unquoted $line) }}
       {{- if and $marker (eq (substr $marker 0 1) (substr $fence 0 1)) (ge (len $marker) (len $fence)) (eq $text $marker) }}
         {{- $fence = "" }}
-      {{- else if $text }}
-        {{- $row = slice $text $anchor 2 }}
+      {{- else if $code }}
+        {{- $row = slice $code $anchor 2 }}
       {{- end }}
     {{- else if $marker }}
       {{- $fence = $marker }}
+      {{- $quotedFence = ne $unquoted $line }}
     {{- else if $text }}
       {{- with findRESubmatch `^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$` $line 1 }}
         {{- $match := index . 0 }}
