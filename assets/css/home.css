@@ -142,8 +142,12 @@
    * would show with it instead, and one that would show none is off. A menu that's set is inverted, with a × that
    * clears it, and so is its choice, or all while it isn't set. home-filters.css does the same without the script.
    * The row sits 12px under the rule and 12px over the frame's bottom border (its 9px margin and the frame's 3px).
+   * --tap is the height of a menu, its × and a choice in its list: 24px for a pointer, WCAG 2.5.8's least, and 32px
+   * on a phone, for a finger.
    */
   .filters {
+    --tap: 24px;
+
     position: relative;
     display: flex;
     flex-wrap: wrap;
@@ -151,7 +155,7 @@
     gap: 8px 1.5ch;
     margin-block: 12px 9px;
     font-size: var(--text-sm);
-    line-height: 24px;
+    line-height: var(--tap);
 
     /* filter labels the pair, so it stands a little further off them (2ch) than they stand apart (1.5ch) */
     & .key {
@@ -161,6 +165,8 @@
 
     /* phones: the menus stack beside the filter key */
     @media (width <= 37.5em) {
+      --tap: 32px;
+
       display: grid;
       grid-template-columns: max-content minmax(0, 1fr);
       justify-items: start;
@@ -189,7 +195,7 @@
       display: flex;
       align-items: baseline;
       gap: 0.8ch;
-      height: 24px;
+      height: var(--tap);
       padding-inline: 1ch;
       border: 1px solid var(--ctl);
       list-style: none;
@@ -234,11 +240,11 @@
     }
   }
 
-  /* the ×'s line is its menu's 24px less its borders, so the two are one height */
+  /* the ×'s line is its menu's height less its borders, so the two are one height */
   .filter-clear {
     display: none;
     padding: 0 0.8ch;
-    line-height: 22px;
+    line-height: calc(var(--tap) - 2px);
     border: 1px solid var(--fg);
     border-left-color: var(--bg);
     background: var(--fg);
@@ -268,6 +274,7 @@
     padding: 10px 13px 11px;
     border: 1px solid var(--fg);
     background: var(--bg);
+    line-height: 24px;
   }
 
   .filter-choices {
@@ -292,6 +299,8 @@
    */
   .filter-choice {
     display: flex;
+    align-items: center;
+    min-height: var(--tap);
     padding: 0 0.8ch;
     border: 1px solid transparent;
     text-decoration: none;
