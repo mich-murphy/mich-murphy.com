@@ -284,19 +284,34 @@
     line-height: 24px;
   }
 
+  /*
+   * Phones take two columns, half as far apart, with tighter choices and their counts a size down (below), so that
+   * nearly every tag fits whole beside its count at 390px
+   */
   .filter-choices {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(19ch, 1fr));
     gap: 2px 2ch;
-  }
 
-  .filter-year .filter-choices {
-    grid-template-columns: repeat(auto-fill, minmax(12ch, 1fr));
-  }
-
-  .filter-tag .filter-choices {
     @media (width <= 37.5em) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 1ch;
+    }
+  }
+
+  /* on phones, years run down the two columns, newest first, so they read in order rather than across and back */
+  .filter-year .filter-choices {
+    grid-template-columns: repeat(auto-fill, minmax(12ch, 1fr));
+
+    @media (width <= 37.5em) {
+      display: block;
+      column-gap: 1ch;
+      columns: 2;
+
+      & .filter-choice {
+        margin-bottom: 2px;
+        break-inside: avoid;
+      }
     }
   }
 
@@ -313,11 +328,20 @@
     text-decoration: none;
     white-space: nowrap;
 
+    @media (width <= 37.5em) {
+      padding-inline: 0.5ch;
+    }
+
     & .count {
       margin-left: 0.6ch;
       color: var(--muted);
       font-family: var(--font-machine);
       font-variant-numeric: tabular-nums;
+
+      @media (width <= 37.5em) {
+        margin-left: 0.4ch;
+        font-size: var(--text-xs);
+      }
 
       &::before {
         content: "(";
