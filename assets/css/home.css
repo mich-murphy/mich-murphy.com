@@ -163,33 +163,36 @@
       color: var(--muted);
     }
 
-    /* phones: the menus stack beside the filter key */
+    /*
+     * phones: the menus share the row half and half, each with its caret at its right, and the frame's Search label
+     * does for the filter key, which would take a column of its own and leave the menus too narrow for their values
+     */
     @media (width <= 37.5em) {
       --tap: 32px;
 
       display: grid;
-      grid-template-columns: max-content minmax(0, 1fr);
-      justify-items: start;
-      column-gap: 2ch;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 10px;
 
-      & .key {
-        margin-right: 0;
+      & > .key {
+        display: none;
       }
     }
   }
 
-  /* a value too long for its row, like three tags typed at 390px, ellipsises and keeps the × in view */
+  /* a value too long for its row or its half, like nixos-anywhere at 390px, ellipsises and keeps the × in view */
   .filter {
     display: flex;
+    min-width: 0;
     max-width: 100%;
-
-    @media (width <= 37.5em) {
-      grid-column: 2;
-    }
   }
 
   .filter-menu {
     min-width: 0;
+
+    @media (width <= 37.5em) {
+      flex: 1;
+    }
 
     & > summary {
       display: flex;
@@ -233,6 +236,10 @@
       overflow: hidden;
       font-weight: 400;
       text-overflow: ellipsis;
+
+      @media (width <= 37.5em) {
+        flex: 1;
+      }
 
       &:empty::before {
         content: "all";
