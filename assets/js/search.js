@@ -170,6 +170,10 @@ let pauseTimer = 0;
 /** what the status line says, and whether a typed change is waiting for the pause to write it */
 let statusText = "";
 let statusWaits = false;
+/** whether the box has shown, so the opening query is applied once */
+let opened = false;
+/** whether the page went back to working without the script, so that when the box shows again the address follows it */
+let fellBack = false;
 
 // ---- searching: pure functions, reading only their arguments and the menus' entries ---------------------------------
 
@@ -584,6 +588,7 @@ const fetchIndex = async () => {
 const disableSearch = (serverAnsweredBadly) => {
   if (box.hidden) return;
   box.hidden = true;
+  fellBack = true;
   frameLegend.textContent = "Filter";
   renderRows([], null, false);
   renderCounts(rows.length, false);
@@ -637,7 +642,8 @@ const applyFragment = () => {
  */
 const showSearch = () => {
   applyFragment();
-  if (openingQuery) {
+  // once: shown again after falling back, the box holds what was typed since
+  if (openingQuery && !opened) {
     const lifted = liftFilters(openingQuery, filters);
     input.value = lifted.text.trimEnd();
     filters = lifted.filters;
@@ -649,7 +655,16 @@ const showSearch = () => {
   }
   box.hidden = false;
   frameLegend.textContent = "Search";
+  opened = true;
+  // nothing typed is waiting for a pause: a pause that was running as the box hid has passed, or a pick cancelled it
+  statusWaits = false;
   render();
+  // shown again, the address follows what the box and the menus hold: the links left it with only a fragment
+  if (fellBack) {
+    fellBack = false;
+    cancelPause();
+    writeAddress();
+  }
 };
 
 /** The first result's link, the first shown row's, or null */
@@ -790,6 +805,9 @@ addEventListener("click", (event) => {
     if (!menu.contains(event.target)) menu.open = false;
   }
   if (link && indexRequest === "failed") loadIndex();
+  // a link followed as without the script sets the address itself, so an update still waiting from typing, from before
+  // the box hid, is out of date, and would replace the link's fragment when the pause ends
+  if (link && box.hidden) cancelPause();
   if (!link || box.hidden) return;
   event.preventDefault();
   if (link.hasAttribute("aria-disabled")) return;
