@@ -8,7 +8,7 @@
 {{- $names := slice "main" }}
 {{- if or .IsHome (eq .Kind "404") }}{{ $names = $names | append "posts-card" }}{{ end }}
 {{- if .IsHome }}{{ $names = $names | append "home" "home-filters" }}{{ end }}
-{{- if .IsPage }}{{ $names = $names | append "prose" (cond (eq .Section "posts") "post" "pages") }}{{ end }}
+{{- if .IsPage }}{{ $names = $names | append "prose" (cond (partialCached "is-post.html" . .Path) "post" "pages") }}{{ end }}
 {{- $files := slice }}
 {{- range $names }}
   {{- $file := resources.Get (printf "css/%s.css" .) }}

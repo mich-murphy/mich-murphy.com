@@ -2,7 +2,7 @@
   its date, reading time and tags; any other page's head is bare. A tag links to the index filtered by it, /#<slug>,
   where search replaced the tag pages. A post's summary stays out of the page: head/meta.html uses it for the
   description. Styles are in prose.css */}}
-{{- $post := eq .Section "posts" }}
+{{- $post := partialCached "is-post.html" . .Path }}
 <header class="page-head{{ if not $post }} bare{{ end }}" id="top">
 <h1>{{ .Title }}</h1>
 {{- if $post }}
