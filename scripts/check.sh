@@ -38,12 +38,25 @@ check_site() {
       --exclude '#_$' "$site/**/*.html"
 }
 
+# The oxipng CI's build job installs (OXIPNG_VERSION in the workflow) must be the
+# flake's, which this shell has, so CI and a local build write the same cards
+check_oxipng() {
+  local want have
+  want=$(sed -nE 's/^ *OXIPNG_VERSION: *([0-9.]+) *$/\1/p' .github/workflows/hugo.yaml)
+  have=$(oxipng --version | awk '{ print $2 }')
+  if [ -z "$want" ] || [ "$want" != "$have" ]; then
+    echo "the workflow's OXIPNG_VERSION is '$want', but the flake's oxipng is '$have'; update the workflow (README)" >&2
+    return 1
+  fi
+}
+
 check "shellcheck: shell scripts" shellcheck scripts/*.sh
 check "shfmt: shell formatting" shfmt -d scripts/*.sh
 check "ruff check: Python lint" ruff check scripts
 check "ruff format: Python formatting" ruff format --check scripts
 check "biome: CSS and JavaScript" biome ci
 check "actionlint: workflows" actionlint
+check "oxipng: the workflow pins the flake's version" check_oxipng
 # zizmor's pedantic persona adds to its security audits the habits that keep a
 # workflow easy to review, like naming every job and saying why it needs each
 # permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
