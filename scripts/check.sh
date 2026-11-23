@@ -63,6 +63,7 @@ check "oxipng: the workflow pins the flake's version" check_oxipng
 # permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
 # update. --offline keeps it to the files here, with no GitHub API or token
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
+check "refs: files named in comments exist" python3 scripts/check-refs.py
 check "tests: postbuild.py" python3 -m unittest discover --quiet -s tests/python
 check "tests: search.js" node --test tests/js/*.test.mjs
 check "tests: templates" tests/templates/run.sh
