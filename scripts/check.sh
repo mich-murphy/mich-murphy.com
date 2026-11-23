@@ -64,6 +64,7 @@ check "oxipng: the workflow pins the flake's version" check_oxipng
 # update. --offline keeps it to the files here, with no GitHub API or token
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
 check "tests: postbuild.py" python3 -m unittest discover --quiet -s tests/python
+check "tests: search.js" node --test tests/js/*.test.mjs
 check "tests: templates" tests/templates/run.sh
 check "tests: search index" tests/search-index/run.sh
 check "site: build, postbuild.py and lychee's link check" check_site

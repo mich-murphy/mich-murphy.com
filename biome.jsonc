@@ -10,6 +10,7 @@
     // own biome.jsonc that would fail the run as a second root
     "includes": [
       "assets/js/**/*.js",
+      "tests/js/**/*.mjs",
       "assets/css/**/*.css",
       "!assets/css/home-filters.css",
       "!!**/.direnv",

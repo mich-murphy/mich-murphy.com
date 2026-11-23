@@ -153,7 +153,13 @@ describe("scoreOf and search", () => {
   });
 
   test("takes the heaviest place a word is found, and adds its lines", () => {
-    const found = post({ t: "Nix", l: [["nix", "", 0], ["nix", "", 1]] });
+    const found = post({
+      t: "Nix",
+      l: [
+        ["nix", "", 0],
+        ["nix", "", 1],
+      ],
+    });
     assert.equal(scoreOf(found, words("nix")), 42);
   });
 
@@ -207,7 +213,16 @@ describe("bestLine and excerpts", () => {
     ];
     assert.equal(bestLine(lines, words("nix"))[1], "c");
     assert.equal(bestLine(lines, words("nix zfs"))[1], "e");
-    assert.equal(bestLine([["nix one", "a", 0], ["nix two", "b", 0]], words("nix"))[1], "a");
+    assert.equal(
+      bestLine(
+        [
+          ["nix one", "a", 0],
+          ["nix two", "b", 0],
+        ],
+        words("nix"),
+      )[1],
+      "a",
+    );
     assert.equal(bestLine(lines, words("plex")), undefined);
   });
 
