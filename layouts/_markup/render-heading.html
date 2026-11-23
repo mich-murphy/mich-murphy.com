@@ -3,6 +3,6 @@
   those ids fails the build */ -}}
 {{- $taken := dict "top" "the page head uses" "toc" "opens Contents" "_" "closes Contents" -}}
 {{- with index $taken .Anchor -}}
-  {{- errorf "%s: heading %q has the id %s, which %s; give it another id with {#…}" (partial "hook-source.html" $) $.PlainText $.Anchor . -}}
+  {{- errorf "%s: heading %q has the id %s, which %s; give it another id with {#…}" .PageInner.File.Path $.PlainText $.Anchor . -}}
 {{- end -}}
 <h{{ .Level }} id="{{ .Anchor }}">{{ .Text }}</h{{ .Level }}>
