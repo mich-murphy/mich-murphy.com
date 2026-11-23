@@ -1,0 +1,9 @@
+{{- /* The Chroma token classes post.css colours, read from its syntax rules (between "Two-tone syntax" and the end of
+  .code-window), so post.css is their one list. render-codeblock.html keeps only these spans. Returns them as an RE2
+  alternation. Call it as partialCached "code-tokens.html" "code-tokens" */}}
+{{- $css := (resources.Get "css/post.css").Content }}
+{{- $rules := index (findRESubmatch `(?s)Two-tone syntax.*?\*/(.*?)\n  \}\n` $css 1) 0 1 }}
+{{- $classes := slice }}
+{{- range findRE `\.[a-z][a-z0-9]*` $rules | uniq }}{{ $classes = $classes | append (strings.TrimPrefix "." .) }}{{ end }}
+{{- if not $classes }}{{ errorf "code-tokens.html: found no token classes after \"Two-tone syntax\" in assets/css/post.css" }}{{ end }}
+{{- return delimit $classes "|" }}

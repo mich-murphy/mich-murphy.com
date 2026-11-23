@@ -38,17 +38,36 @@ check_site() {
       --exclude '#_$' "$site/**/*.html"
 }
 
-check "shellcheck: shell scripts" shellcheck scripts/*.sh
-check "shfmt: shell formatting" shfmt -d scripts/*.sh
-check "ruff check: Python lint" ruff check scripts
-check "ruff format: Python formatting" ruff format --check scripts
+# The oxipng CI's build job installs (OXIPNG_VERSION in the workflow) must be the
+# flake's, which this shell has, so CI and a local build write the same cards
+check_oxipng() {
+  local want have
+  want=$(sed -nE 's/^ *OXIPNG_VERSION: *([0-9.]+) *$/\1/p' .github/workflows/hugo.yaml)
+  have=$(oxipng --version | awk '{ print $2 }')
+  if [ -z "$want" ] || [ "$want" != "$have" ]; then
+    echo "the workflow's OXIPNG_VERSION is '$want', but the flake's oxipng is '$have'; update the workflow (README)" >&2
+    return 1
+  fi
+}
+
+shell=(scripts/*.sh tests/*/run.sh)
+check "shellcheck: shell scripts" shellcheck "${shell[@]}"
+check "shfmt: shell formatting" shfmt -d "${shell[@]}"
+check "ruff check: Python lint" ruff check scripts tests
+check "ruff format: Python formatting" ruff format --check scripts tests
 check "biome: CSS and JavaScript" biome ci
 check "actionlint: workflows" actionlint
+check "oxipng: the workflow pins the flake's version" check_oxipng
 # zizmor's pedantic persona adds to its security audits the habits that keep a
 # workflow easy to review, like naming every job and saying why it needs each
 # permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
 # update. --offline keeps it to the files here, with no GitHub API or token
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
+check "refs: files named in comments exist" python3 scripts/check-refs.py
+check "tests: postbuild.py" python3 -m unittest discover --quiet -s tests/python
+check "tests: search.js" node --test tests/js/*.test.mjs
+check "tests: templates" tests/templates/run.sh
+check "tests: search index" tests/search-index/run.sh
 check "site: build, postbuild.py and lychee's link check" check_site
 
 echo

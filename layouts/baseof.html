@@ -8,7 +8,7 @@
 {{- /* A post's Contents comes before main, so the keyboard reaches it before the post. Its rail is a zero-height sticky
   box right under the header, which puts it level with the top of the post, and its bar is fixed to the window, so
   neither takes room in the column */}}
-{{- if and .IsPage (eq .Section "posts") }}
+{{- if partialCached "is-post.html" . .Path }}
 {{ partial "contents.html" . }}
 {{- end }}
 <main id="main" tabindex="-1">

@@ -1,0 +1,11 @@
+# A site with no content that runs the template tests in layouts/home.html against the real partials, which the mount
+# below brings in. tests/templates/run.sh builds it
+baseURL = "https://example.org/"
+disableKinds = ["page", "section", "taxonomy", "term", "rss", "sitemap", "robotsTXT", "404"]
+
+[[module.mounts]]
+  source = "../../layouts/_partials"
+  target = "layouts/_partials"
+[[module.mounts]]
+  source = "layouts"
+  target = "layouts"

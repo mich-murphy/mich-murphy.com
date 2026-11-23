@@ -1,0 +1,24 @@
+{{- /* A redirect stub outside the site's shell, for aliases (alias.html) and tag pages (tags/list.html): a 0-second
+  meta refresh, which keeps a fragment, plus a real page for readers that don't follow it (WCAG 2.4.2), noindex, and a
+  canonical link so the stub isn't listed in its destination's place. Call it with a dict of title, to (the
+  destination), canonical, label (the link text) and, optionally, feed (an output format to link as alternate) */}}
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .title }}</title>
+<link rel="canonical" href="{{ .canonical }}">
+{{- with .feed }}
+<link rel="alternate" type="application/atom+xml" href="{{ .Permalink }}" title="{{ $.title }}">
+{{- end }}
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url={{ .to }}">
+</head>
+<body>
+<main>
+<h1>{{ .heading }}</h1>
+<p>This page has moved. Go to <a href="{{ .to }}">{{ .label }}</a>.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{{- /* A page's text as the reader sees it, read from its rendered content: a list of dicts of text, anchor (the id
+  of the h2 or h3 above it, "" before the first) and kind (0 prose, 1 heading, 2 code), one per non-blank line. The
+  search index and the colophon's word count read it, so neither needs a Markdown parser of its own. It relies on
+  the render hooks' markup: headings with an id, code windows, and callouts with a legend, which isn't text */}}
+{{- $cut := "\x1f" }}
+{{- $html := replaceRE `<div class="callout"><span class="legend">[^<]*</span>` `<div class="callout">` (string .Content) }}
+{{- $html = replaceRE `(?s)(<h[1-6] id="[^"]*">.*?</h[1-6]>|<figure class="code-window.*?</figure>)` (printf "%s${1}%s" $cut $cut) $html }}
+{{- $anchor := "" }}
+{{- $rows := slice }}
+{{- range split $html $cut }}
+  {{- $kind := 0 }}
+  {{- $text := "" }}
+  {{- with findRESubmatch `(?s)^<h([1-6]) id="([^"]*)">(.*)</h[1-6]>$` . 1 }}
+    {{- $m := index . 0 }}
+    {{- if in (slice "2" "3") (index $m 1) }}{{ $anchor = index $m 2 }}{{ end }}
+    {{- $kind = 1 }}
+    {{- $text = index $m 3 }}
+  {{- else with findRESubmatch `(?s)^<figure class="code-window.*?(?:<span class="path">[^<]*? · ([^<]*)</span>.*?)?<code>(.*)</code></pre></figure>$` . 1 }}
+    {{- /* the window's path is in its title bar, not its code, but still the reader's to search for */}}
+    {{- $kind = 2 }}
+    {{- $text = print (index . 0 1) "\n" (index . 0 2) }}
+  {{- else }}
+    {{- $text = replaceRE `</?(?:p|li|ul|ol|dl|dt|dd|div|blockquote|table|thead|tbody|tfoot|tr|td|th|hr|br|figure|figcaption|pre)\b[^>]*>` "\n" . }}
+  {{- end }}
+  {{- /* curly quotes back to straight ones, which is what a reader types in the search box */}}
+  {{- $text = replaceRE `<[^>]*>` "" $text | replaceRE `&[lr]squo;` "'" | replaceRE `&[lr]dquo;` `"` | htmlUnescape }}
+  {{- range split $text "\n" }}
+    {{- with strings.TrimSpace . }}{{ $rows = $rows | append (dict "text" . "anchor" $anchor "kind" $kind) }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return $rows }}

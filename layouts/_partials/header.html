@@ -4,7 +4,7 @@
 <a class="brand" href="/">{{ partial "mark.html" . }}<span>{{ site.Title }}</span></a>
 {{- /* posts is current on the index and on every post, and nothing is current on tag pages */}}
 {{- $here := .RelPermalink }}
-{{- $post := and .IsPage (eq .Section "posts") }}
+{{- $post := partialCached "is-post.html" . .Path }}
 <nav aria-label="Site">
 {{- range slice (slice "posts" "/") (slice "about" "/about/") (slice "feeds" "/feeds/") }}
   {{- $name := index . 0 }}

@@ -19,13 +19,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STATIC = ROOT / "static"
 MARK = ROOT / "layouts/_partials/mark.html"
+CSS = ROOT / "assets/css/main.css"
 
 # The map is this many cells square
 CELLS = 16
 
-# The palette's bg and fg, dark and light (assets/css/main.css)
-DARK = {"bg": "#0f1214", "fg": "#e6e2d6"}
-LIGHT = {"bg": "#f5f4f0", "fg": "#0f1214"}
+
+def read_palette(css: str) -> tuple[dict[str, str], dict[str, str]]:
+    """bg and fg, light and dark, from main.css's light-dark() tokens, the palette's one source."""
+    light, dark = {}, {}
+    for name in ("bg", "fg"):
+        match = re.search(rf"--{name}: light-dark\((#[0-9a-f]{{6}}), (#[0-9a-f]{{6}})\);", css)
+        if not match:
+            raise SystemExit(f"favicons: {CSS.name} has no --{name}: light-dark(#rrggbb, #rrggbb);")
+        light[name], dark[name] = match.groups()
+    return light, dark
+
+
+LIGHT, DARK = read_palette(CSS.read_text())
 
 
 def read_map(mark: str) -> list[str]:

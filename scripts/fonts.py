@@ -5,7 +5,7 @@ It downloads monaspace-variable-v1.400.zip, checks its hash, and cuts each face 
 TTFs at a fixed weight and slant:
 - static/fonts/*.woff2, which the pages load, each subset to the characters its face sets (WEB_CHARS)
 - assets/fonts/*.ttf, which the build draws the social cards with (layouts/_partials/social-card.html), subset to the
-  characters in CARD, which that partial's title check allows
+  characters in data/card_chars.toml, which that partial's title check allows
 
 Only texture healing (the calt feature) is kept: the coding ligatures (ss01-ss10), character variants and the rest
 are dropped. Monaspace reserves its names ("Monaspace", "Argon", "Neon", "Xenon", "Radon" and "Krypton") under the SIL
@@ -20,6 +20,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
+import tomllib
 from fontTools import subset
 from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
@@ -68,13 +69,10 @@ WEB_CHARS = {
     # Krypton sets what the build writes, including the single guillemets of the Older and Newer links
     "Kr": f"{LATIN},U+2039-203A",
 }
-# The social cards' TTFs keep what social-card.html's title check allows
-CARD = (
-    "U+0020-007E,U+00A0-00AC,U+00AE-0148,U+014A-017E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,"
-    "U+2039-203A,U+20AC,U+2122,U+2212,U+2248,U+2260,U+2264-2265"
-)
-
 ROOT = Path(__file__).resolve().parent.parent
+
+# The social cards' TTFs keep what social-card.html's title check allows, from the list both read
+CARD = ",".join(f"U+{r}" for r in tomllib.loads((ROOT / "data/card_chars.toml").read_text())["ranges"])
 
 
 def unicodes(ranges: str) -> list[int]:

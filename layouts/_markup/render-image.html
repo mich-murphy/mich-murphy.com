@@ -5,7 +5,7 @@
   - is remote, since the build can't know its size
   - has no alt text
   - isn't in the bundle or assets/ */ -}}
-{{- $where := partial "hook-source.html" . -}}
+{{- $where := .PageInner.File.Path -}}
 {{- $u := urls.Parse .Destination -}}
 {{- if or $u.IsAbs $u.Host -}}
   {{- errorf "%s: the image %q is remote; save it in the post's bundle, beside its index.md" $where .Destination -}}

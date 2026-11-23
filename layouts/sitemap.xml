@@ -7,7 +7,7 @@
 {{- range where site.Pages "Kind" "in" (slice "home" "page") }}
 <url>
 <loc>{{ .Permalink }}</loc>
-{{- if eq .Section "posts" }}{{ with (partialCached "origin.html" . .Path).date }}
+{{- if partialCached "is-post.html" . .Path }}{{ with (partialCached "origin.html" . .Path).date }}
 <lastmod>{{ .Format "2006-01-02" }}</lastmod>
 {{- end }}{{ end }}
 </url>

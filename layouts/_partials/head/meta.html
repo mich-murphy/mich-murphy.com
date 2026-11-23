@@ -1,6 +1,6 @@
 {{- /* The page's title and description, and what search engines and link previews read. A post's summary is its
   description, so a post without one fails the build rather than share the site's; the other pages use the site's */}}
-{{- $post := and .IsPage (eq .Section "posts") }}
+{{- $post := partialCached "is-post.html" . .Path }}
 {{- if and $post (not .Params.summary) }}
   {{- errorf "%s has no summary: add one to its front matter, for search results and link previews" .File.Path }}
 {{- end }}

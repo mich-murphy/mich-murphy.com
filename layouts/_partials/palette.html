@@ -1,0 +1,12 @@
+{{- /* The palette's light and dark values, read from main.css's tokens so it stays their one source: a dict of bg, fg
+  and muted, each a dict of light and dark. Call it as partialCached "palette.html" "palette" */}}
+{{- $css := (resources.Get "css/main.css").Content }}
+{{- $out := dict }}
+{{- range $name := slice "bg" "fg" "muted" }}
+  {{- with findRESubmatch (printf `--%s: light-dark\((#[0-9a-f]{6}), (#[0-9a-f]{6})\);` $name) $css 1 }}
+    {{- $out = merge $out (dict $name (dict "light" (index . 0 1) "dark" (index . 0 2))) }}
+  {{- else }}
+    {{- errorf "palette.html: main.css has no --%s: light-dark(#rrggbb, #rrggbb);" $name }}
+  {{- end }}
+{{- end }}
+{{- return $out }}

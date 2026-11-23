@@ -30,6 +30,8 @@
         pkgs.actionlint
         pkgs.zizmor
         pkgs.lychee
+        # tests/js runs on Node's built-in test runner
+        pkgs.nodejs
       ];
     in {
       # For working on the site: `nix develop`, or direnv with .envrc. scripts/fonts.py needs fontTools, and brotli

@@ -21,7 +21,7 @@
     {{- end -}}
   {{- else -}}
     {{- if and $path (not $u.Host) -}}
-      {{- errorf "link to %q in %s doesn't resolve to a page or resource; link to the content file (e.g. /posts/<name>.md) or use a full https:// URL" $.Destination (partial "hook-source.html" $) -}}
+      {{- errorf "link to %q in %s doesn't resolve to a page or resource; link to the content file (e.g. /posts/<name>.md) or use a full https:// URL" $.Destination .PageInner.File.Path -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
