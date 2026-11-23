@@ -1,0 +1,24 @@
+{{- /* Each case is a title, the width card-wrap.html wraps it to, and the size and lines it should give; size 0 means
+  the title doesn't fit. A mismatch fails the build with both */}}
+{{- $cases := slice
+  (dict "title" "Short title" "size" 62 "lines" (slice "Short title"))
+  (dict "title" "Restore Nextcloud From Backup NixOS" "size" 62 "lines" (slice "Restore Nextcloud" "From Backup NixOS"))
+  (dict "title" "Using nixos-anywhere and disko to install NixOS on a remote machine over ssh" "size" 62
+    "lines" (slice "Using nixos-anywhere and" "disko to install NixOS on" "a remote machine over ssh"))
+  (dict "title" "Using nixos-anywhere and disko to install NixOS on a remote machine over plain ssh" "size" 54
+    "lines" (slice "Using nixos-anywhere and" "disko to install NixOS on a" "remote machine over plain ssh"))
+  (dict "title" "Using nixos-anywhere and disko to install NixOS on a remote machine over ssh with a key" "size" 48
+    "lines" (slice "Using nixos-anywhere and disko" "to install NixOS on a remote" "machine over ssh with a key"))
+  (dict "title" "Supercalifragilisticexpialidocious-and-then-some" "size" 0 "lines" slice)
+  (dict "title" "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen" "size" 0 "lines" slice)
+}}
+{{- $failed := 0 }}
+{{- range $cases }}
+  {{- $got := partial "card-wrap.html" (dict "words" (split .title " ") "width" 978) }}
+  {{- if or (ne $got.size .size) (ne (delimit $got.lines "|") (delimit .lines "|")) }}
+    {{- warnf "card-wrap.html: %q gave size %d and lines %q, want size %d and lines %q" .title $got.size $got.lines .size .lines }}
+    {{- $failed = add $failed 1 }}
+  {{- end }}
+{{- end }}
+{{- if $failed }}{{ errorf "card-wrap.html: %d of %d cases failed" $failed (len $cases) }}{{ end -}}
+ok {{ len $cases }}

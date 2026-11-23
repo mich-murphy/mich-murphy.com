@@ -1,0 +1,34 @@
+{{- /* A social card title's lines: wrapped on spaces at the largest of 62, 54 and 48px that fits it in 3 lines, then
+  balanced as text-wrap:balance would, at the narrowest width that keeps as many lines. Monaspace's advance is 0.62em,
+  so a line holds ⌊width ÷ (0.62 × size)⌋ characters. Call it with a dict of words and width (px); it returns a dict of
+  size (0 if the title doesn't fit), lines, and cols, the characters a line holds at the last size tried.
+  social-card.html uses it, and tests/templates checks it */}}
+{{- $words := .words }}
+{{- $width := .width }}
+{{- $size := 0 }}
+{{- $cols := 0 }}
+{{- $lines := slice }}
+{{- range $s := slice 62 54 48 }}
+  {{- $cols = int (math.Floor (div $width (mul 0.62 $s))) }}
+  {{- /* wrap at the full width, then 1 character narrower each time, until a word no longer fits or the title takes
+    more lines: at the full width up to 3, and after that no more than it took there */}}
+  {{- range $w := seq $cols -1 1 }}
+    {{- $l := slice }}
+    {{- $line := "" }}
+    {{- $fits := true }}
+    {{- range $words }}
+      {{- if gt (strings.RuneCount .) $w }}{{ $fits = false }}{{ end }}
+      {{- if and $line (gt (add (strings.RuneCount $line) 1 (strings.RuneCount .)) $w) }}
+        {{- $l = $l | append $line }}
+        {{- $line = . }}
+      {{- else }}
+        {{- $line = strings.TrimSpace (print $line " " .) }}
+      {{- end }}
+    {{- end }}
+    {{- $l = $l | append $line }}
+    {{- if or (not $fits) (gt (len $l) (cond (eq $w $cols) 3 (len $lines))) }}{{ break }}{{ end }}
+    {{- $lines = $l }}
+  {{- end }}
+  {{- if $lines }}{{ $size = $s }}{{ break }}{{ end }}
+{{- end }}
+{{- return dict "size" $size "lines" $lines "cols" $cols }}
