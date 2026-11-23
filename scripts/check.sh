@@ -50,10 +50,11 @@ check_oxipng() {
   fi
 }
 
-check "shellcheck: shell scripts" shellcheck scripts/*.sh
-check "shfmt: shell formatting" shfmt -d scripts/*.sh
-check "ruff check: Python lint" ruff check scripts
-check "ruff format: Python formatting" ruff format --check scripts
+shell=(scripts/*.sh tests/*/run.sh)
+check "shellcheck: shell scripts" shellcheck "${shell[@]}"
+check "shfmt: shell formatting" shfmt -d "${shell[@]}"
+check "ruff check: Python lint" ruff check scripts tests
+check "ruff format: Python formatting" ruff format --check scripts tests
 check "biome: CSS and JavaScript" biome ci
 check "actionlint: workflows" actionlint
 check "oxipng: the workflow pins the flake's version" check_oxipng
@@ -62,6 +63,8 @@ check "oxipng: the workflow pins the flake's version" check_oxipng
 # permission. The flake pins zizmor, so a new audit only arrives with a nixpkgs
 # update. --offline keeps it to the files here, with no GitHub API or token
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
+check "tests: postbuild.py" python3 -m unittest discover --quiet -s tests/python
+check "tests: templates" tests/templates/run.sh
 check "site: build, postbuild.py and lychee's link check" check_site
 
 echo
