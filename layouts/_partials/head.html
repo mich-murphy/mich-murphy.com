@@ -5,9 +5,10 @@
 {{ partial "head/meta.html" . }}
 {{- /* every page points feed readers to the site's feed, /atom.xml */}}
 <link rel="alternate" type="application/atom+xml" href="{{ (site.Home.OutputFormats.Get "atom").Permalink }}" title="{{ site.Title }}">
-{{- /* the browser's chrome takes the page's ground, --bg in main.css */}}
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1214">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f4f0">
+{{- /* the browser's chrome takes the page's ground */}}
+{{- $bg := (partialCached "palette.html" "palette").bg }}
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="{{ $bg.dark }}">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="{{ $bg.light }}">
 <meta name="color-scheme" content="dark light">
 {{- /* every page sets text in the reading face and the machine face (the footer, at least), so both load early. The
   other faces load on the pages that use them */}}

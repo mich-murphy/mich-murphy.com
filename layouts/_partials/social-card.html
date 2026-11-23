@@ -76,10 +76,11 @@
   were. Fingerprinting puts the font's hash in its path. Neither font is published */}}
 {{- $head := resources.Get "fonts/MMXe-Bold.ttf" | fingerprint }}
 {{- $machine := resources.Get "fonts/MMKr-Regular.ttf" | fingerprint }}
+{{- $palette := partialCached "palette.html" "palette" }}
 {{- $title := images.Text (delimit $lines "\n") (dict
-  "font" $head "size" $size "linespacing" $gap "color" "#e6e2d6" "x" 104 "y" (add $y $gap)) }}
+  "font" $head "size" $size "linespacing" $gap "color" $palette.fg.dark "x" 104 "y" (add $y $gap)) }}
 {{- $meta := images.Text (printf "%s · %d min read" (.Date.Format "2006-01-02") .ReadingTime) (dict
-  "font" $machine "size" 23 "color" "#a39f93" "x" 104 "y" (add $y $height 41 $metagap)) }}
+  "font" $machine "size" 23 "color" $palette.muted.dark "x" 104 "y" (add $y $height 41 $metagap)) }}
 {{- $card := resources.Get (printf "images/card-base-%d.png" $n) | images.Filter $title $meta }}
 {{- /* .RelPermalink is percent-encoded, and a target path is written as given, so the card takes the decoded path: a
   post at /café/ gets café/card.png, not caf%C3%A9/card.png */}}

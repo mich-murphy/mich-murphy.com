@@ -34,11 +34,29 @@ trap 'if [ -n "$pid" ]; then kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev
 sed -n '/^<svg/,/^<\/svg>/p' layouts/_partials/mark.html >"$tmp/mark.svg"
 font=$(base64 <static/fonts/MMAr-Regular.woff2 | tr -d '\n')
 
+# The dark value of a palette token in main.css, the palette's one source
+dark() {
+  local value
+  value=$(sed -nE "s/^ *--$1: light-dark\((#[0-9a-f]{6}), (#[0-9a-f]{6})\);.*/\2/p" assets/css/main.css)
+  if [ -z "$value" ]; then
+    echo "card-base: assets/css/main.css has no --$1: light-dark(#rrggbb, #rrggbb);" >&2
+    exit 1
+  fi
+  echo "$value"
+}
+bg=$(dark bg)
+fg=$(dark fg)
+muted=$(dark muted)
+
 for lines in 1 2 3; do
   out=assets/images/card-base-$lines.png
-  awk -v font="data:font/woff2;base64,$font" -v mark="$tmp/mark.svg" -v lines="$lines" '
+  awk -v font="data:font/woff2;base64,$font" -v mark="$tmp/mark.svg" -v lines="$lines" \
+    -v bg="$bg" -v fg="$fg" -v muted="$muted" '
     $0 == "@MARK@" { while ((getline l <mark) > 0) print l; next }
-    { sub(/url\(@FONT@\)/, "url(" font ")"); sub(/@LINES@/, lines); print }
+    {
+      sub(/url\(@FONT@\)/, "url(" font ")"); sub(/@LINES@/, lines)
+      sub(/@BG@/, bg); sub(/@FG@/, fg); sub(/@MUTED@/, muted); print
+    }
   ' scripts/card-base.html >"$tmp/card-base.html"
 
   # Chrome can keep running after it writes the screenshot, so wait for its
