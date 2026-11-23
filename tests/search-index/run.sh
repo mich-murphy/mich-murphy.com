@@ -8,8 +8,9 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 cd "$here/../.."
-HUGO_ENABLEGITINFO=false hugo build --quiet --panicOnWarning \
-  --contentDir "$here/content" --destination "$tmp/public"
+# not --quiet, which would hide why a build failed
+HUGO_ENABLEGITINFO=false hugo build --logLevel warn --panicOnWarning \
+  --contentDir "$here/content" --destination "$tmp/public" >/dev/null
 python3 -m json.tool "$tmp/public/search.json" >"$tmp/search.json"
 if [ "${1:-}" = --update ]; then
   cp "$tmp/search.json" "$here/expected.json"

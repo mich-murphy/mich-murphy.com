@@ -65,6 +65,7 @@ check "oxipng: the workflow pins the flake's version" check_oxipng
 check "zizmor: workflow security" zizmor --offline --no-progress --persona pedantic .github
 check "tests: postbuild.py" python3 -m unittest discover --quiet -s tests/python
 check "tests: templates" tests/templates/run.sh
+check "tests: search index" tests/search-index/run.sh
 check "site: build, postbuild.py and lychee's link check" check_site
 
 echo
