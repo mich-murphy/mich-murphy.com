@@ -48,14 +48,29 @@ bg=$(dark bg)
 fg=$(dark fg)
 muted=$(dark muted)
 
+# The box's numbers, as key=value pairs, from data/card.toml, which social-card.html reads too
+geometry=$(sed -nE 's/^([a-z0-9_]+) *= *([0-9]+) *$/\1=\2/p' data/card.toml | tr '\n' ' ')
+for key in box_left box_width base pitch centre2; do
+  case " $geometry" in
+    *" $key="*) ;;
+    *)
+      echo "card-base: data/card.toml has no $key" >&2
+      exit 1
+      ;;
+  esac
+done
+
 for lines in 1 2 3; do
   out=assets/images/card-base-$lines.png
   awk -v font="data:font/woff2;base64,$font" -v mark="$tmp/mark.svg" -v lines="$lines" \
-    -v bg="$bg" -v fg="$fg" -v muted="$muted" '
+    -v bg="$bg" -v fg="$fg" -v muted="$muted" -v geometry="$geometry" '
+    BEGIN { n = split(geometry, pairs, " ") }
     $0 == "@MARK@" { while ((getline l <mark) > 0) print l; next }
     {
       sub(/url\(@FONT@\)/, "url(" font ")"); sub(/@LINES@/, lines)
-      sub(/@BG@/, bg); sub(/@FG@/, fg); sub(/@MUTED@/, muted); print
+      sub(/@BG@/, bg); sub(/@FG@/, fg); sub(/@MUTED@/, muted)
+      for (i = 1; i <= n; i++) { split(pairs[i], kv, "="); gsub("@" kv[1] "@", kv[2]) }
+      print
     }
   ' scripts/card-base.html >"$tmp/card-base.html"
 

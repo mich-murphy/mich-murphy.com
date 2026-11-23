@@ -1,0 +1,15 @@
+# The social card's box, in px on the 1200x630 card, for both what draws its bases (scripts/card-base.sh fills these
+# into scripts/card-base.html) and what draws each post's title and date on them (layouts/_partials/social-card.html).
+# Change a number here, then rerun scripts/card-base.sh and commit the bases
+box_left = 58
+box_width = 1070
+# The box's frame and padding, from its outer edge to the text
+inset = 46
+# The box is base + pitch × N tall for N title lines at 62px, whose lines are pitch apart
+base = 178
+pitch = 71
+# Twice the y of the box's centre (364.5): its top is ⌊(centre2 − its height) ÷ 2⌋
+centre2 = 729
+# From the box's top to the title, and from the title's last line to the meta line
+title_top = 39
+meta_gap = 41
