@@ -11,12 +11,14 @@
   {{- errorf "%s: the post's bundle has a card.png, which would take the social card's address; rename it" $.File.Path }}
 {{- end }}
 {{- $text := replaceRE `\s+` " " (strings.TrimSpace .Title) }}
-{{- /* images.Text draws a character its font lacks as an empty box, so a title with one fails the build. These are the
-  characters the card's TTFs keep, CARD in scripts/fonts.py: Latin-1 and Latin Extended-A, and some punctuation and
-  symbols. Monaspace has many more, e.g. Vietnamese, Greek and Cyrillic: add any a title needs to both lists, and
-  rerun the script */}}
-{{- with findRE `[^\x20-\x7E\xA0-\xAC\xAE-\x{148}\x{14A}-\x{17E}\x{2013}\x{2014}\x{2018}-\x{201A}\x{201C}-\x{201E}\x{2020}-\x{2022}\x{2026}\x{2039}\x{203A}\x{20AC}\x{2122}\x{2212}\x{2248}\x{2260}\x{2264}\x{2265}]` $text }}
-  {{- errorf "%s: the social card's font can't draw %q in the title; change them, or add them to CARD in scripts/fonts.py and to social-card.html's list" $.File.Path (delimit (uniq .) "") }}
+{{- /* images.Text draws a character its font lacks as an empty box, so a title with one fails the build. The card's
+  TTFs keep the ranges in data/card_chars.toml */}}
+{{- $class := "" }}
+{{- range hugo.Data.card_chars.ranges }}
+  {{- $class = print $class (delimit (apply (split . "-") "printf" "\\x{%s}" ".") "-") }}
+{{- end }}
+{{- with findRE (printf "[^%s]" $class) $text }}
+  {{- errorf "%s: the social card's font can't draw %q in the title; change them, or add them to data/card_chars.toml and rerun scripts/fonts.py" $.File.Path (delimit (uniq .) "") }}
 {{- end }}
 {{- $words := split $text " " }}
 {{- $size := 0 }}
