@@ -1,7 +1,6 @@
 # Basic config
 title = "Michael Murphy"
 baseURL = "https://mich-murphy.com"
-defaultContentLanguage = "en"
 
 # The language tag in each page's <html lang> and each feed's xml:lang
 locale = "en-AU"
@@ -39,8 +38,6 @@ enableRobotsTXT = true
 [outputFormats.atom]
   mediaType = "application/atom+xml"
   baseName = "atom"
-  rel = "alternate"
-  noUgly = true
 
 # The search index's address. It was /index.json until its lines were grouped by section, and moved with the change, so
 # a page built before it that's still open gets a 404, and filters without the script, rather than misread the new one.
@@ -84,8 +81,6 @@ enableRobotsTXT = true
     # content: stop pinning search.nixos.org links to a channel. It only changed link parameters, so its 3 posts
     # keep their old updated dates. Drop this line to count it as an update
     "2a2721c064775048bc021ddd68c4cc3574a501c5",
-    # content: turn notes into callouts and point internal links at their files. It has the trailer too
-    "26d75ce253e5ce8cb388fdff60ef9197f1e2fdf2",
   ]
 
   [params.author]

@@ -1,5 +1,5 @@
 {{- /* The heading with its id and nothing else: no anchor link beside it. The ids feed Contents and search. The page
-  head has the id top (page.html), Contents opens on #toc and closes on #_ (contents.html), so a heading with one of
+  head has the id top (page-head.html), Contents opens on #toc and closes on #_ (contents.html), so a heading with one of
   those ids fails the build */ -}}
 {{- $taken := dict "top" "the page head uses" "toc" "opens Contents" "_" "closes Contents" -}}
 {{- with index $taken .Anchor -}}
