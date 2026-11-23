@@ -26,8 +26,6 @@
   {{- if $e.updated.Before $e.published }}{{ $e = merge $e (dict "updated" $e.published) }}{{ end }}
   {{- $entries = $entries | append $e }}
 {{- end }}
-{{- /* RFC 3339. A date goes out through safeHTML, so its offset reads +00:00 rather than &#43;00:00 */}}
-{{- $f := "2006-01-02T15:04:05-07:00" }}
 {{- /* a root-relative href or src, but not a protocol-relative one (//host) */}}
 {{- $root := `(\s(?:href|src)=")/([^/])` }}
 {{- $abs := printf "${1}%s${2}" site.Home.Permalink }}
@@ -44,7 +42,7 @@
 <link rel="alternate" type="text/html" href="{{ $p.Permalink }}"/>
 <id>{{ $self }}</id>
 {{- with sort $entries "updated" "desc" }}
-<updated>{{ (index . 0).updated.Format $f | safeHTML }}</updated>
+<updated>{{ partial "rfc3339.html" (index . 0).updated | safeHTML }}</updated>
 {{- end }}
 <author><name>{{ site.Params.author.name }}</name></author>
 <generator uri="https://gohugo.io/" version="{{ hugo.Version }}">Hugo</generator>
@@ -55,8 +53,8 @@
 <title>{{ .Title }}</title>
 <link rel="alternate" type="text/html" href="{{ .Permalink }}"/>
 <id>{{ .Permalink }}</id>
-<published>{{ $e.published.Format $f | safeHTML }}</published>
-<updated>{{ $e.updated.Format $f | safeHTML }}</updated>
+<published>{{ partial "rfc3339.html" $e.published | safeHTML }}</published>
+<updated>{{ partial "rfc3339.html" $e.updated | safeHTML }}</updated>
 <content type="html">{{ replaceRE $span "${1}" .Content | replaceRE $root $abs | transform.XMLEscape | safeHTML }}</content>
 </entry>
 {{- end }}

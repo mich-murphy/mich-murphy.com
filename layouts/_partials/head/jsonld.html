@@ -9,7 +9,6 @@
 {{- $published := $p.Date }}
 {{- $modified := or $origin.date $published }}
 {{- if $modified.Before $published }}{{ $modified = $published }}{{ end }}
-{{- $rfc3339 := "2006-01-02T15:04:05-07:00" }}
 {{- $author := dict "@type" "Person" "name" site.Params.author.name "sameAs" (slice site.Params.author.github) }}
 {{- with site.GetPage "/about" }}{{ $author = merge $author (dict "url" .Permalink) }}{{ end }}
 <script type="application/ld+json">{{ dict
@@ -18,8 +17,8 @@
   "headline" $p.Title
   "description" $p.Params.summary
   "url" $p.Permalink
-  "datePublished" ($published.Format $rfc3339)
-  "dateModified" ($modified.Format $rfc3339)
+  "datePublished" (partial "rfc3339.html" $published)
+  "dateModified" (partial "rfc3339.html" $modified)
   "author" $author
   "image" .card.Permalink
 }}</script>
