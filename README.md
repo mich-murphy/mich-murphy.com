@@ -71,7 +71,7 @@ The workflow has three jobs. Build installs Hugo and oxipng, runs `scripts/build
 
 Internal links in content must point at content files, like `/posts/<name>.md`. The link hook resolves each one, and a link that doesn't resolve to a page or resource fails the build. Links with a scheme, like `https://`, aren't checked.
 
-The search on the index reads `/search.json`, which the build writes from each post's Markdown. It gives each `##` and `###` line the next heading id Hugo found, so write headings with `#`s: a post whose Markdown and Hugo count a different number of them fails the build. A tag can't be called `all`, `main` or `search-label`, or look like `y2023`, since the index already uses those ids.
+The search on the index reads `/search.json`, which the build writes from each post's rendered HTML (`layouts/_partials/content-lines.html`, which the colophon's word count also reads): every line a reader sees, filed under the id of the h2 or h3 above it. `tests/search-index/run.sh` builds a fixture post and diffs its index with `tests/search-index/expected.json`; run it with `--update` after a deliberate change. A tag can't be called `all`, `main` or `search-label`, or look like `y2023`, since the index already uses those ids.
 
 ## Writing a post
 `hugo new content posts/<name>.md` writes a new post from `archetypes/posts.md`. The post is titled from its name and dated today. Fill in its `summary`, which search results and link previews show. The build fails without one. Each post also gets structured data for search engines (`layouts/_partials/head/jsonld.html`) with its title, summary, dates, author and social card.

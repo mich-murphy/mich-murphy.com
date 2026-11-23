@@ -1,0 +1,41 @@
+[
+    {
+        "d": "2024-01-01",
+        "g": [
+            "test"
+        ],
+        "l": [
+            [
+                "",
+                "0",
+                "Prose with a link, bold, emphasis, inline code and known_hosts."
+            ],
+            [
+                "custom-id",
+                "1020",
+                "A Custom Id",
+                "An item with code under it:",
+                "echo \"> not a quote\"",
+                "A second item"
+            ],
+            [
+                "under-it",
+                "110022",
+                "Under It",
+                "Deeper Still",
+                "Text under the h4 keeps the h3's anchor.",
+                "A callout with code:",
+                "{ a = 1; }",
+                "a tilde fence"
+            ],
+            [
+                "last",
+                "10",
+                "Last",
+                "The end."
+            ]
+        ],
+        "s": "fixture",
+        "t": "Search Index Fixture"
+    }
+]
